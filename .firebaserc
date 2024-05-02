@@ -1,0 +1,11 @@
+{
+  "projects": {
+    "default": "ebooking-web"
+  },
+  "targets": {},
+  "etags": {
+    "ebooking-web": {
+      "extensionInstances": {}
+    }
+  }
+}
