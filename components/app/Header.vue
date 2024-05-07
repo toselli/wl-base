@@ -1,49 +1,48 @@
 <template>
   <div>
-    <v-app-bar class="menu-bar">
+    <v-app-bar class="menu-bar" id="top" flat>
       <v-container class="pa-0">
-        <v-row dense align="center">
-          <v-col>
-            <div class="d-flex align-center">
-                <a href="/" v-if="isMobile" class="body-3" >
-                  <CommonLogoMobileDark height="70" class="ml-2"
-                    v-if="theme.name == 'ThemeDark'" />
-                  <CommonLogoMobileLight height="70" class="ml-2"  v-else />
-                </a>
-                <a href="/" v-else class="body-3">
-                  <CommonLogoDark height="i30" class="ml-2"
-                    v-if="theme.name == 'ThemeDark'" />
-                  <CommonLogoLight height="30" class="ml-2" v-else />
-                </a>
-              <CommonServiceTypesMenu class="ml-lg-6"  v-if="$route.path != '/'" />
-            </div>
+        <v-row dense>
+          <v-col cols="2">
+            <a href="/">
+              <CommonLogoDark :height="isMobile ? '45' : '45'" :class="isMobile ? 'ml-2' : ''" />
+            </a>
           </v-col>
-          <v-col class="text-right" v-if="getLoggedUser == null" :class="isMobile ? 'pr-2' : ''">
+          <v-col cols="9"  class="text-right pt-2" >
+            <v-btn href="https://360regional.com/360/" variant="text">Inicio</v-btn>
+            <v-btn href="https://360regional.com/360/reserva-de-paquetes-online/" variant="text">Reservas paquetes</v-btn>            
+            <v-btn href="https://360regional.com/360/destinos-internacionales/" variant="text">Destinos</v-btn>
+            <v-btn href="https://360regional.com/360/una-empresa-solida/" variant="text">Nosotros</v-btn>
+            <v-btn href="https://360regional.com/360/pago-y-financiacion/" variant="text">Administración</v-btn>
+            <v-btn href="https://360regional.com/360/contacto/" variant="text">Contacto</v-btn>
+          </v-col>
+          <v-col cols="1" class="text-right pt-2" v-if="getLoggedUser == null" :class="isMobile ? 'pr-2' : ''">
             <!-- <v-btn rounded variant="outlined" color="primary" class="mr-2" @click="openRegisterDialog()">
               {{ $capitalize($t("sign_up")) }}
             </v-btn> -->
-            <v-btn rounded="md" color="secondary" variant="outlined" @click="openLoginDialog()">
+            <v-btn rounded variant="flat" color="primary" @click="openLoginDialog()">
               {{ $capitalize($t("log_in")) }}
             </v-btn>
           </v-col>
-          <v-col class="text-right" v-else>
-            <v-tooltip text="Cambiar modo" location="bottom">
+          <v-col class="text-right pt-2" v-else>
+            <!-- <v-tooltip text="Cambiar modo" location="bottom">
               <template v-slot:activator="{ props }">
                 <v-btn rounded icon="mdi-theme-light-dark" class="mr-2" color="primary" @click="toggleTheme()"
                   v-bind="props">
                 </v-btn>
               </template>
-            </v-tooltip>
+            </v-tooltip> -->
             <v-menu>
               <template v-slot:activator="{ props }">
-                <v-btn variant="text" size="xl" rounded="xl" class="pr-2" v-bind="props">
-                  <v-avatar class="bg-secondary mr-2" size="42">
+                <v-btn variant="text" size="xl"  class="py-1 px-2" v-bind="props">
+
+                  <v-icon size="sm" icon="mdi-menu">
+                  </v-icon>
+                  <v-avatar class="bg-secondary ml-2" size="32">
                     {{
                       getLoggedUser.FirstName[0] + getLoggedUser.LastName[0]
                     }}
                   </v-avatar>
-                  <v-icon size="16" icon="mdi-chevron-down">
-                  </v-icon>
                 </v-btn>
               </template>
               <v-card flat>
@@ -57,12 +56,13 @@
                     getLoggedUser.FirstName + ' ' + getLoggedUser.LastName
                   }}</p>
                 </v-card-text>
-                <v-list>
-                  <v-list-item @click="openChangePasswordDialog">
-                    <v-icon icon="mdi-lock-outline" size="md"></v-icon> {{ $capitalize($t("change_password")) }}
+                <v-list density="compact">
+
+                  <v-list-item @click="openChangePasswordDialog"  prepend-icon="mdi-lock-outline">
+                     {{ $capitalize($t("change_password")) }}
                   </v-list-item>
-                  <v-list-item @click="logout">
-                    <v-icon icon="mdi-logout" size="md"></v-icon> {{ $capitalize($t("log_out")) }}
+                  <v-list-item @click="logout" prepend-icon="mdi-logout">
+                    {{ $capitalize($t("log_out")) }}
                   </v-list-item>
                 </v-list>
               </v-card>
@@ -72,7 +72,9 @@
       </v-container>
     </v-app-bar>
     <AuthLoginDialog v-model="loginDialog" @close="closeLoginDialog" @openRegister="openRegisterDialog" />
+    <AuthRegisterDialog v-model="registerDialog" @close="closeRegisterDialog" />
     <AuthChangePasswordDialog v-model="changePasswordDialog" @close="closeChangePasswordDialog" />
+
   </div>
 </template>
 
@@ -80,22 +82,23 @@
 //MOBILE
 const isMobile = useMobile()
 
+//#region imports
+
+import { useAbility } from "@casl/vue";
+
+//#endregion
+
+
+const { can, cannot } = useAbility();
+
 const usersStore = useUsersStore();
 const { getLoggedUser } = storeToRefs(usersStore);
-const loginStore = useLoginStore();
 
 function logout() {
   usersStore.loggedUser.value = null;
+  const loginStore = useLoginStore();
   loginStore.logout();
 }
-
-//captura los 401 y abre el loginDialog
-
-// watch(() => loginStore.isExpired, (newValue) => {
-//   if (newValue) {
-//     openLoginDialog();
-//   }
-// }, { immediate: true });
 
 //LOGIN
 
@@ -134,6 +137,11 @@ function closeChangePasswordDialog() {
 }
 
 //THEME
+const route = useRoute();
+
+const isHomePage = computed(() => {
+  return route.path === '/';
+});
 
 import { useTheme } from 'vuetify'
 
