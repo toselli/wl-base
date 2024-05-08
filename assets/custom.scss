@@ -9,7 +9,7 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
 .hero {
        background: url(../img/hero_360.jpg) no-repeat top left !important;
         background-size: cover !important;
-    height: 450px;
+    height: calc(100vh - 332px);
     border-radius: 0 !important;
 }
 .search-container .v-tab  .v-icon {

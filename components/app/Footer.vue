@@ -31,13 +31,13 @@
         </v-row>
       </v-container>
     </v-card>
-    <v-card class="bg-black pa-6" theme="ThemeLight">
+    <v-card class="bg-black pa-6" theme="ThemeLight" tile>
       <v-row>
         <v-col cols="12">
-          <p class="body-2 text-center mb-4">
-            ©2023 - 360 Regional - Reservas online
+          <p class="body-2 text-white text-center mb-4">
+            ©2024 - 360 Regional - Reservas online
           </p>
-          <p class="body-2 text-center mb-4 d-flex align-center justify-center">
+          <p class="body-2 text-white text-center mb-4 d-flex align-center justify-center">
             Developed by
             <CommonTplusDLogo width="100" height="14" :dark="true" class="mx-3" />
           </p>
