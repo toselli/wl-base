@@ -24,9 +24,9 @@ export default defineNuxtConfig({
         { name: "theme-color", content: '#F05C22' },
       ],
       link: [
-        { rel: 'icon', type: 'image/png', href: '/base/img/favicon.png' },
-        { rel: 'apple-touch-icon', type: 'image/png', href: '/base/img/favicon.png' },
-        { rel: 'mask-icon', type: 'image/png', href: '/base/img/favicon.png' }
+        { rel: 'icon', type: 'image/png', href: '/base/img/favicon_360.png' },
+        { rel: 'apple-touch-icon', type: 'image/png', href: '/base/img/favicon_360.png' },
+        { rel: 'mask-icon', type: 'image/png', href: '/base/img/favicon_360.png' }
       ]
     },
     pageTransition: { name: 'page', mode: 'out-in' }

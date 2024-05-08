@@ -1,9 +1,11 @@
 <template>
-    <v-container fluid :class="compact ? 'search-container-compact pa-0' : 'search-container text-center py-0'">
-        <v-sheet v-if="!compact" rounded="lg" class="pa-2 bg-midground ease" :class="isMobile ? '' : 'd-inline-block'">
-            <v-tabs v-model="serviceType" grow class="text-secondary_text " color="secondary" :align-tabs="align"
-                :stacked="!compact" hide-slider  :density="compact ? 'compact' : 'default'"  :class="isMobile ? 'service-tabs-mobile' : ''">
-                <v-tab :value="st.serviceType" v-for="st in  getServiceTypes " :class="!isMobile ? 'grow service-tab mx-1' : 'service-tab-mobile'"
+    <v-container fluid     
+    :class="compact ? (alignTabs == 'center' ? 'search-container-compact pa-0 text-center' : 'search-container-compact pa-0') : (alignTabs == 'center' ? 'search-container  py-0 text-center' : 'search-container py-0')"
+    >
+        <v-sheet v-if="!compact" rounded="lg" class="service-tab-container bg-midground ease" :class="isMobile ? '' : 'd-inline-block'">
+            <v-tabs v-model="serviceType" grow class="text-secondary_text " color="secondary" 
+                :stacked="!compact" hide-slider  :density="compact ? 'compact' : 'default'" >
+                <v-tab :value="st.serviceType" v-for="st in  getServiceTypes " :class="!isMobile ? 'grow  mx-1' : ''"
                     :density="compact ? 'compact' : 'default'"@click.middle.prevent="handleMiddleClick($event, st.serviceType)" @click="st.oldUrl ? goToEbookingOld(st.oldUrl) : ''">
                     <v-icon :icon="st.icon" size="small"></v-icon>
                     <transition name="slide-fade" v-if="!isMobile">
@@ -11,7 +13,6 @@
                     </transition>
                 </v-tab>
             </v-tabs>
-            {{compact}}
         </v-sheet>
         <!-- <CommonServiceTypesMobile v-else/> -->
         <v-window v-model="serviceType" class="rounded-lg text-left" :class="compact ? 'mt-1' : 'mt-4'">
@@ -39,7 +40,7 @@
 
 <script setup>
 const props = defineProps({
-     align: {
+     alignTabs: {
          type: String,
          default: 'center'
      }

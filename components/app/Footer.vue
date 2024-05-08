@@ -1,23 +1,23 @@
 <template>
-  <v-container fluid class="pa-0 mt-16 pt-8">
+  <v-container fluid class="pa-0 mt-0">
     <v-card class="footer bg-secondary px-6 pb-6" theme="ThemeLight">
       <v-container class="pb-0">
         <v-row justify="center" class="pb-0" align="center">
-          <v-col cols="12" md="3" class="pb-0">
+          <v-col cols="12" md="3" class="pb-0 text-center text-md-left">
             <CommonLogoDark :height="50" />
           </v-col>
-          <v-col md="6" class="text-center">
+          <v-col cols="12" md="5" class="text-center">
             <v-img src="../img/footer_logos.png" ></v-img>
           </v-col>
-          <v-col md="2" class="text-right">
-            <v-btn href="https://www.instagram.com/360regionaltour/" target="_blank" icon="mdi-instagram" variant="fab" color="white"> </v-btn>
-            <v-btn href="https://www.facebook.com/people/360-REGIONAL-TOUR-OPERATOR/100064435760055/" target="_blank" variant="fab" color="white" 
+          <v-col cols="12" md="3" class="text-center text-md-right">
+            <v-btn href="https://www.instagram.com/360regionaltour/" target="_blank" icon="mdi-instagram" variant="text" color="white"> </v-btn>
+            <v-btn href="https://www.facebook.com/people/360-REGIONAL-TOUR-OPERATOR/100064435760055/" target="_blank" variant="text" color="white" 
               icon="mdi-facebook"></v-btn>
             <v-btn
-              href="https://api.whatsapp.com/send?phone=5493518112254&text=Quiero%20consultar%20sobre%20mi%20pr%C3%B3ximo%20viaje..." variant="fab" color="white" 
+              href="https://api.whatsapp.com/send?phone=5493518112254&text=Quiero%20consultar%20sobre%20mi%20pr%C3%B3ximo%20viaje..." variant="text" color="white" 
               target="_blank" icon="mdi-whatsapp"> </v-btn>
               <v-btn
-              href="https://twitter.com/360regionalok" variant="fab" color="white" 
+              href="https://twitter.com/360regionalok" variant="text" color="white" 
               target="_blank" icon="mdi-twitter"> </v-btn>
           </v-col>
           <v-col cols="12">
