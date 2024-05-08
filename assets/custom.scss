@@ -7,9 +7,10 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
     font-family: 'Open Sans', sans-serif !important;
 }
 .hero {
-       background: url(../img/hero_360.jpg) no-repeat top left !important;
-        background-size: cover !important;
+    background: url(../img/hero_360.jpg) no-repeat top left !important;
+    background-size: cover !important;
     height: calc(100vh - 332px);
+    min-height: 400px;
     border-radius: 0 !important;
 }
 .search-container .v-tab  .v-icon {
