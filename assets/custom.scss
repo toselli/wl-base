@@ -6,35 +6,15 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
     scroll-behavior: smooth;
     font-family: 'Sora', sans-serif !important;
 }
-.hero {
-       background: url(../img/hero_360.jpg) no-repeat top left !important;
-        background-size: cover !important;
-    height: 450px;
-    border-radius: 0 !important;
+.search-container .v-tabs, .service-tab-container {
+    display: none !important;
 }
-.search-container .v-tab  .v-icon {
-    display: none;
-}
-.search-container .v-tabs--density-default.v-tabs--stacked {
-    --v-tabs-height: 40px !important;
-}
+
 .v-tab {
     border-radius: 8px !important;
 }
 
-.service-tab-container {
-    padding: 0 !important;
-}
-
-.search-container .v-tabs .v-btn__content {
-    color: white !important;
-}
-
-.search-container .v-tabs .v-btn__underlay {
-    background-color: rgb(var(--v-theme-secondary)) !important;
-    border-radius: 8px !important;
-}
-
+ 
 .search-datepicker-menu  {
     margin: -180px 0 0 0;
 }
@@ -87,4 +67,8 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
        display: none !important;
     }
 
+}
+
+.search-datepicker-multiple-bar button {
+    color: rgb(var(--v-theme-primary_text)) !important
 }

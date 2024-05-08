@@ -1,5 +1,6 @@
 
 
+@import url('custom.scss') ;
 
 html, body, p, h1, h2, h3, h4, h5, h6 {
     scroll-behavior: smooth;
@@ -105,7 +106,7 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
 }
 
 .hero {
-    border-radius: 24px;
+    border-radius: 24px !important;
     margin: 0 auto;
 }
 
@@ -651,11 +652,11 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
 }
 
 .search-datepicker-multiple .dp--header-wrap .dp__month_year_wrap  {
-    margin-top: 35px !important;
+    margin-top: 30px !important;
 }
 
 .search-datepicker-multiple .dp--arrow-btn-nav {
-    margin-top: 40px !important;
+    margin-top: 30px !important;
 }
 
 .search-datepicker-menu .dp__arrow_top {
@@ -678,11 +679,30 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
     position: fixed !important;
 }
 
+.search-datepicker-multiple.search-datepicker-mobile .search-datepicker-multiple-header {
+    width: 98% !important;
+}
+
+.search-datepicker-multiple.search-datepicker-mobile .dp__instance_calendar:nth-child(2) .dp--header-wrap .dp__month_year_wrap  {
+    margin-top: 0 !important;
+    margin-bottom: 15px;
+}
+
+.search-datepicker-multiple.search-datepicker-mobile .dp__instance_calendar:nth-child(2) .dp--arrow-btn-nav {
+    margin-top: -15px !important;
+}
+
 .search-datepicker-mobile .dp__arrow_top {
     display: none !important;
 }
 .search-datepicker-mobile .dp__calendar_row {
-    margin: 2px !important;
+    margin: 3px 0 !important;
+}
+.search-datepicker-multiple-bar {
+    padding: 2px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    background-color:rgb(var(--v-theme-background)) !important;
 }
 
 .search-datepicker-mobile .dp__instance_calendar {
@@ -710,12 +730,14 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
     display: block !important;
     width: 100%;
 }
-
+.search-datepicker-mobile .text-h6{
+    font-size: 14px !important;
+}
 
 .search-timepicker-menu  {
     margin: -120px 0 0 0;
-    box-shadow: 0px 4px 24px 0px rgba(32, 57, 96, 0.25);}
-
+    box-shadow: 0px 4px 24px 0px rgba(32, 57, 96, 0.25);
+}
 
 .search-timepicker-menu .dp__arrow_top {
     display: none !important;
