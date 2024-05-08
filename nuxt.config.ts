@@ -24,9 +24,9 @@ export default defineNuxtConfig({
         { name: "theme-color", content: '#F05C22' },
       ],
       link: [
-        { rel: 'icon', type: 'image/png', href: '/base/img/favicon_360.png' },
-        { rel: 'apple-touch-icon', type: 'image/png', href: '/base/img/favicon_360.png' },
-        { rel: 'mask-icon', type: 'image/png', href: '/base/img/favicon_360.png' }
+        { rel: 'icon', type: 'image/png', href: '/base/img/favicon.png' },
+        { rel: 'apple-touch-icon', type: 'image/png', href: '/base/img/favicon.png' },
+        { rel: 'mask-icon', type: 'image/png', href: '/base/img/favicon.png' }
       ]
     },
     pageTransition: { name: 'page', mode: 'out-in' }
@@ -120,7 +120,7 @@ export default defineNuxtConfig({
       ebookingApi5: process.env.EBOOKING_API5,
       ebookingWs: process.env.EBOOKING_WS,
       historical: process.env.EBOOKING_STATS_URL,
-      ebookingApi: process.env.EBOOKING_API,
+      ebookingApi: process.env.EBOOKING_URL,
       identityApi: process.env.IDENTITY_URL,
       clientsApi: process.env.CLIENTS_URL,
       cloudMessagingApi:  process.env.CLOUD_MESSAGING_URL,
