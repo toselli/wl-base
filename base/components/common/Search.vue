@@ -1,37 +1,13 @@
 <template>
     <v-container fluid :class="compact ? 'search-container-compact pa-0' : 'search-container text-center py-0'">
         <v-sheet v-if="!compact" rounded="lg" class="pa-2 bg-midground ease" :class="isMobile ? '' : 'd-inline-block'">
-            <v-tabs v-model="serviceType" grow class="text-secondary_text " color="secondary" align-tabs="center"
+            <v-tabs v-model="serviceType" grow class="text-secondary_text " color="secondary" :align-tabs="align"
                 :stacked="!compact" hide-slider  :density="compact ? 'compact' : 'default'"  :class="isMobile ? 'service-tabs-mobile' : ''">
                 <v-tab :value="st.serviceType" v-for="st in  getServiceTypes " :class="!isMobile ? 'grow service-tab mx-1' : 'service-tab-mobile'"
-                    :density="compact ? 'compact' : 'default'"@click.middle.prevent="handleMiddleClick($event, st.serviceType)" >
+                    :density="compact ? 'compact' : 'default'"@click.middle.prevent="handleMiddleClick($event, st.serviceType)" @click="st.oldUrl ? goToEbookingOld(st.oldUrl) : ''">
                     <v-icon :icon="st.icon" size="small"></v-icon>
                     <transition name="slide-fade" v-if="!isMobile">
                         <span :key="st.serviceType" v-show="!compact || serviceType == st.serviceType"> {{ st.name }} </span>
-                    </transition>
-                </v-tab>
-                <v-tab :class="!isMobile ? 'service-tab grow mx-1' : 'service-tab-mobile'" @click="goToEbookingOld('salidas')">
-                    <v-icon icon="md:luggage" size="small"></v-icon>
-                    <transition name="slide-fade" v-if="!isMobile">
-                      Paquetes
-                    </transition>
-                </v-tab>
-                <v-tab :class="!isMobile ? 'service-tab grow mx-1' : 'service-tab-mobile'" @click="goToEbookingOld('atracciones')">
-                    <v-icon icon="md:local_activity" size="small"></v-icon>
-                    <transition name="slide-fade" v-if="!isMobile">
-                      Atracciones
-                    </transition>
-                </v-tab>
-                <v-tab :class="!isMobile ? 'service-tab grow mx-1' : 'service-tab-mobile'" @click="goToEbookingOld('cruceros')">
-                    <v-icon icon="md:directions_boat_filled " size="small"></v-icon>
-                    <transition name="slide-fade" v-if="!isMobile">
-                      Cruceros
-                    </transition>
-                </v-tab>
-                <v-tab :class="!isMobile ? 'service-tab grow mx-1' : 'service-tab-mobile'" @click="goToEbookingOld('disney')">
-                    <v-icon icon="md:castle " size="small"></v-icon>
-                    <transition name="slide-fade" v-if="!isMobile">
-                      Disney
                     </transition>
                 </v-tab>
             </v-tabs>
@@ -62,7 +38,13 @@
 </template>
 
 <script setup>
-const props = defineProps(['compact'])
+const props = defineProps({
+     align: {
+         type: String,
+         default: 'center'
+     }
+},
+     'compact')
 const isMobile = useMobile()
 //PLACES
 

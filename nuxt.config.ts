@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  css: ['vuetify/styles', '~/assets/base.scss'],
+  css: ['vuetify/styles', '~/assets/custom.scss'],
   build: {
     transpile: ['vuetify'],
   },
@@ -8,8 +8,6 @@ export default defineNuxtConfig({
     './base', 
     {
        from: './base',
-       middleware: false,
-       plugins: false
     }
   ],
   app: {
@@ -130,7 +128,7 @@ export default defineNuxtConfig({
       ownerId: process.env.OWNER_ID,
       agencyId: process.env.AGENCY_ID,
       ebookingCdn: process.env.CDN_URL,
-      searchTime: process.env.SEARCH_TIME
+      searchTime: process.env.SEARCH_TIME,
     }
   }
 })
