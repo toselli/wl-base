@@ -1,15 +1,18 @@
 <template>
-    <v-container fluid     
-    :class="compact ? (alignTabs == 'center' ? 'search-container-compact pa-0 text-center' : 'search-container-compact pa-0') : (alignTabs == 'center' ? 'search-container  py-0 text-center' : 'search-container py-0')"
-    >
-        <v-sheet v-if="!compact" rounded="lg" class="service-tab-container bg-midground ease" :class="isMobile ? '' : 'd-inline-block'">
-            <v-tabs v-model="serviceType" grow class="text-secondary_text " color="secondary" 
-                :stacked="!compact" hide-slider  :density="compact ? 'compact' : 'default'" >
+    <v-container fluid
+        :class="compact ? (alignTabs == 'center' ? 'search-container-compact pa-0 text-center' : 'search-container-compact pa-0') : (alignTabs == 'center' ? 'search-container  py-0 text-center' : 'search-container py-0')">
+        <v-sheet v-if="!compact" rounded="lg" class="service-tab-container bg-midground ease"
+            :class="isMobile ? '' : 'd-inline-block'">
+            <v-tabs v-model="serviceType" grow class="text-secondary_text " color="secondary" :stacked="!compact"
+                hide-slider :density="compact ? 'compact' : 'default'">
                 <v-tab :value="st.serviceType" v-for="st in  getServiceTypes " :class="!isMobile ? 'grow  mx-1' : ''"
-                    :density="compact ? 'compact' : 'default'"@click.middle.prevent="handleMiddleClick($event, st.serviceType)" @click="st.oldUrl ? goToEbookingOld(st.oldUrl) : ''">
+                    :density="compact ? 'compact' : 'default'"
+                    @click.middle.prevent="handleMiddleClick($event, st.serviceType)"
+                    @click="st.oldUrl ? goToEbookingOld(st.oldUrl) : ''">
                     <v-icon :icon="st.icon" size="small"></v-icon>
                     <transition name="slide-fade" v-if="!isMobile">
-                        <span :key="st.serviceType" v-show="!compact || serviceType == st.serviceType"> {{ st.name }} </span>
+                        <span :key="st.serviceType" v-show="!compact || serviceType == st.serviceType"> {{ st.name }}
+                        </span>
                     </transition>
                 </v-tab>
             </v-tabs>
@@ -22,30 +25,33 @@
             <v-window-item :value="2">
                 <TransfersSearchCard :compact="compact" :nologo="true" themed="tonal" />
             </v-window-item>
-           <v-window-item :value="3">
+            <v-window-item :value="3">
                 <CarsSearchCard :compact="compact" :nologo="true" themed="tonal" />
             </v-window-item>
-              <v-window-item :value="4">
+            <v-window-item :value="4">
                 <FlightsSearchCard :compact="compact" :nologo="true" themed="tonal" />
-            </v-window-item> 
-          <v-window-item :value="5">
+            </v-window-item>
+            <v-window-item :value="5">
                 <AssistancesSearchCard :compact="compact" :nologo="true" themed="tonal" />
             </v-window-item>
             <v-window-item :value="6">
                 <CircuitsSearchCard :compact="compact" :nologo="true" themed="tonal" />
             </v-window-item>
-        </v-window> 
+        </v-window>
     </v-container>
 </template>
 
 <script setup>
 const props = defineProps({
-     alignTabs: {
-         type: String,
-         default: 'center'
-     }
-},
-     'compact')
+    alignTabs: {
+        type: String,
+        default: 'center'
+    },
+    compact: {
+        type: Boolean,
+        default: false
+    }
+});
 const isMobile = useMobile()
 //PLACES
 
@@ -100,19 +106,19 @@ function handleMiddleClick(event, serviceTypeId) {
 }
 
 function getServiceUrl(serviceTypeId) {
-    switch(serviceTypeId) {
+    switch (serviceTypeId) {
         case 1: return "/?serviceType=stays";
         case 2: return "/?serviceType=transfers";
         case 3: return "/?serviceType=cars";
         case 4: return "/?serviceType=flights";
         case 5: return "/?serviceType=assistances";
         case 6: return "/?serviceType=circuits";
-        default: return "/"; 
+        default: return "/";
     }
 }
 
 function goToEbookingOld(service) {
-    window.open("https://www.ebooking.com.ar/#/"+service, "_blank");
+    window.open("https://www.ebooking.com.ar/#/" + service, "_blank");
     serviceType.value = 1
 }
 

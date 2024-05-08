@@ -6,41 +6,28 @@
             :hide-offset-dates="true" :alt-position="isMobile ? mobilePosition : null" :enable-time-picker="false"
             :auto-apply="!multiple" :clearable="false" locale="es" month-name-format="long" :min-date="minDate"
             :dark="theme.name != 'ThemeLight'">
-
-            <!-- <template #month-year="{
-            month,
-            year,
-            updateMonthYear,
-            handleMonthYearChange
-        }">
-                <div class="text-center" style="width: 100%">
-                    <v-btn variant="text" size="small" @click="handleMonthYearChange(false)">
-                        <v-icon>mdi-chevron-left</v-icon>
-                    </v-btn>
-                    {{ dayjs().month(month).format('MMMM') }} {{ year }}
-                    <v-btn variant="text" size="small" @click="handleMonthYearChange(true)">
-                        <v-icon>mdi-chevron-right</v-icon>
-                    </v-btn>
-                </div>
-            </template> -->
             <template #top-extra="{ value }" v-if="multiple">
-                <div class="search-datepicker-multiple-header d-flex mb-2">
+          
+                <div class="search-datepicker-multiple-bar d-flex justify-space-between" v-if="isMobile"><span class="pa-2 text-primary_text body-1 semi">Seleccionar fechas</span>
+                    <button @click="closeMenu" class="body-1 semi bg-foreground rounded-md px-3 py-1">
+                    X</button> </div>
+                <div class="search-datepicker-multiple-header d-flex mb-2">                    
                     <div class="pa-2 rounded-md v-col v-col-4 mr-1"
                         :class="value && value.length > 0 ? 'bg-secondary' : 'v-card--variant-outlined secondary'">
-                        <p class="mb-0" :class="value && value.length > 0 ? 'text-shade_light' : 'text-secondary_text'">
+                        <p class="body-2 mb-0" :class="value && value.length > 0 ? 'text-shade_light' : 'text-secondary_text'">
                             {{ $t("from") }}</p>
-                        <h4 class="mb-0 text-shade_light" v-if="value && value.length > 0">
+                        <h4 class="text-h6 semi  mb-0 text-shade_light" v-if="value && value.length > 0">
                             {{ $dayjs(value[0]).format('ddd D, MMM') }}
                         </h4>
-                        <h5 class="body-2 mb-0 text-secondary_text" v-else>
+                        <h5 class="body-3 mb-0 text-secondary_text" v-else>
                             {{ $t("select_date") }}
                         </h5>
                     </div>
                     <div class="pa-2 rounded-md v-col v-col-4 mr-1"
                         :class="value && value.length > 1 ? 'bg-secondary' : 'v-card--variant-outlined secondary'">
-                        <p class="mb-0" :class="value && value.length > 1 ? 'text-shade_light' : 'text-secondary_text'">
+                        <p class="body-2 mb-0" :class="value && value.length > 1 ? 'text-shade_light' : 'text-secondary_text'">
                             {{ labelDays }}</p>
-                        <h4 class="mb-0 text-shade_light" v-if="value && value.length > 1">
+                        <h4 class="text-h6 semi mb-0 text-shade_light" v-if="value && value.length > 1">
                             {{ $dayjs(value[1]).diff($dayjs(value[0]), "day") }}
                         </h4>
                         <h5 class="body-2 mb-0 text-secondary_text" v-else>
@@ -49,16 +36,17 @@
                     </div>
                     <div class="pa-2 rounded-md v-col v-col-4"
                         :class="value && value.length > 1 ? 'bg-secondary' : 'v-card--variant-outlined secondary'">
-                        <p class="mb-0" :class="value && value.length > 1 ? 'text-shade_light' : 'text-secondary_text'">
+                        <p class="body-2 mb-0" :class="value && value.length > 1 ? 'text-shade_light' : 'text-secondary_text'">
                             {{ $t("to") }}</p>
-                        <h4 class="mb-0 text-shade_light" v-if="value && value.length > 1">
+                        <h4 class="text-h6 semi mb-0 text-shade_light" v-if="value && value.length > 1">
                             {{ $dayjs(value[1]).format('ddd D, MMM') }}
                         </h4>
-                        <h5 class="body-2 mb-0 text-secondary_text" v-else>
+                        <h5 class="body-3 mb-0 text-secondary_text" v-else>
                             {{ $t("select_date") }}
                         </h5>
                     </div>
                 </div>
+                
             </template>
             <template #top-extra="{ value }" v-else>
                 <h4 class="body-1 text-center py-2">Seleccione una fecha</h4>
@@ -112,6 +100,10 @@ const dp = ref();
 const selectDate = () => {
     dp.value.selectDate();
     emit('update:selectedDate', date.value);
+};
+
+const closeMenu = () => {
+    dp.value.closeMenu();
 };
 
 
