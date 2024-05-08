@@ -9,12 +9,10 @@
             </a>
           </v-col>
           <v-col cols="9"  class="text-right pt-2" >
-            <v-btn href="https://360regional.com/360/" variant="text">Inicio</v-btn>
-            <v-btn href="https://360regional.com/360/reserva-de-paquetes-online/" variant="text">Reservas paquetes</v-btn>            
-            <v-btn href="https://360regional.com/360/destinos-internacionales/" variant="text">Destinos</v-btn>
-            <v-btn href="https://360regional.com/360/una-empresa-solida/" variant="text">Nosotros</v-btn>
-            <v-btn href="https://360regional.com/360/pago-y-financiacion/" variant="text">Administración</v-btn>
-            <v-btn href="https://360regional.com/360/contacto/" variant="text">Contacto</v-btn>
+            <v-btn @click="$router.push('/')" variant="text">Home</v-btn>
+            <v-btn @click="$router.push('/')" variant="text">Nosotros</v-btn>            
+            <v-btn @click="$router.push('/')" variant="text">Paquetes</v-btn>
+            <v-btn @click="$router.push('/')" variant="text">Contacto</v-btn>
           </v-col>
           <v-col cols="1" class="text-right pt-2" v-if="getLoggedUser == null" :class="isMobile ? 'pr-2' : ''">
             <!-- <v-btn rounded variant="outlined" color="primary" class="mr-2" @click="openRegisterDialog()">

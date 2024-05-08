@@ -1,10 +1,10 @@
 @import url('base.scss') ;
-@import url('https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:wght@400;600;700&family=Open+Sans:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
 
 html, body, p, h1, h2, h3, h4, h5, h6 {
     color: rgb(var(--v-theme-primary_text));
     scroll-behavior: smooth;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: 'Sora', sans-serif !important;
 }
 .hero {
        background: url(../img/hero_360.jpg) no-repeat top left !important;
@@ -35,8 +35,12 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
     border-radius: 8px !important;
 }
 
+.search-datepicker-menu  {
+    margin: -180px 0 0 0;
+}
+
 .menu-bar {
-    background-color: rgb(var(--v-theme-secondary)) !important;
+    background-color: rgb(var(--v-theme-midground)) !important;
     padding-top: 8px !important;
     position: relative !important;
 }
@@ -44,8 +48,7 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
     box-shadow: 0px 4px 24px rgba(32, 57, 96, 0.1) !important;
 }
 .menu-bar .v-btn__content {
-    text-transform: uppercase !important;
-    color: #fff !important;
+    color: rgb(var(--v-theme-primary)) !important;
     font-weight: 400 !important;
     font-family: 'Fira Sans Extra Condensed', sans-serif !important;
 }
