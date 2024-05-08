@@ -120,7 +120,7 @@ export default defineNuxtConfig({
       ebookingApi5: process.env.EBOOKING_API5,
       ebookingWs: process.env.EBOOKING_WS,
       historical: process.env.EBOOKING_STATS_URL,
-      ebookingApi: process.env.EBOOKING_API,
+      ebookingApi: process.env.EBOOKING_URL,
       identityApi: process.env.IDENTITY_URL,
       clientsApi: process.env.CLIENTS_URL,
       cloudMessagingApi:  process.env.CLOUD_MESSAGING_URL,
