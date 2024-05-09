@@ -7,7 +7,7 @@
       <div class="d-flex flex-column fill-height justify-space-start">
         <AppHeader />
         <VitePwaManifest />
-        <slot />
+        <NuxtPage  />
       </div>
     </transition>
     <AppFooter />

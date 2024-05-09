@@ -9,17 +9,17 @@ import '@mdi/font/css/materialdesignicons.css'
 const ThemeLight = {
   dark: false,
   colors: {
-    primary_text: '#212C3D',
-    secondary_text: '#5C6E8A',
-    border: '#A9B7CC',
-    background: '#F1F4F9',
-    midground: '#FAFCFF',
+    primary_text: '#15373D',
+    secondary_text: '#52757A',
+    border: '#B2C9CC',
+    background: '#E8F5F7',
+    midground: '#F5FEFF',
     foreground: '#FFFFFF',
-    primary: '#F05C22',
-    primary_hover: '#FF6C33',
-    primary_active: '#F9B99F',
-    primary_lighten_hover: '#FED4C3',
-    primary_lighten: '#FDE7DE',
+    primary: '#1AA5FF',
+    primary_hover: '#33AFFF',
+    primary_active: '#90CCF4',
+    primary_lighten_hover: '#B1DDFB',
+    primary_lighten: '#CCE8FA',
     secondary_darken: '#2E456B',
     secondary: '#0E63F1',
     secondary_hover: '#5C99FF',
@@ -40,7 +40,8 @@ const ThemeLight = {
     yellow_lighten: '#FEFBDD',
     accent: '#FF8F00',
     shade_light: '#FFFFFF',
-    shade_dark: '#0A1129'
+    shade_dark: '0A1129'
+
   }
 }
 const ThemeDark = {
@@ -52,12 +53,12 @@ const ThemeDark = {
     background: '#000000',
     midground: '#111213',
     foreground: '#1D1F20',
-    primary: '#F07342',
-    primary_hover: '#ED622C',
-    primary_active: '#F9B99F',
-    primary_lighten_hover: '#5F3423',
-    primary_lighten: '#32211A',
-    secondary_darken: '#B2CFFF',
+    primary: '#F05C22',
+    primary_hover: '#EFF3F8',
+    primary_active: '#BFC9D9',
+    primary_lighten_hover: '#52565C',
+    primary_lighten: '#444A53',
+    secondary_darken: '#146DFF',
     secondary: '#4285F4',
     secondary_hover: '#5C99FF',
     secondary_active: '#9FC2F9',
@@ -72,10 +73,10 @@ const ThemeDark = {
     warning: '#F58A3D',
     warning_map: '#774826',
     warning_lighten: '#332419',
+    accent: '#F5A43D',
     yellow: '#DDCD3C',
     yellow_map: '#6D6625',
     yellow_lighten: '#302E19',
-    accent: '#F5A43D',
     shade_light: '#FFFFFF',
     shade_dark: '#0A1129'
   }

@@ -1,5 +1,3 @@
-import gridMock from '~/assets/mock-flights-grid.json'
-
 export const useFlightsStore = defineStore("flights", () => {
     //state
     const results = ref([])
@@ -65,17 +63,36 @@ export const useFlightsStore = defineStore("flights", () => {
 
     function search(payload, flex) {
         return new Promise((resolve, reject) => {
-            useEbooking.post('flightService/search', null, payload)
+            if(flex) {
+                useEbooking.post('flightService/searchFlex', null, payload)
                 .then((res: any) => {
                     results.value = res.Services
                     basketId.value = res.Token
                     features.value = res.Features
                     matrix.value = res.Matrix
+                    resolve(res)
+                    // useEbooking.post('flightService/searchNdc', null, payload)
+                    //     .then((ndc: any) => {
+                    //         results.value.push(...ndc.Services) 
+                    //         features.value = ndc.Features
+                    //         matrix.value = ndc.Matrix 
+                    //         resolve(ndc)
+                    //     }) 
+                })
+                .catch((error) => {
+                    console.log(error)
+                    reject()
+                })
+            } else {
+                useEbooking.post('flightService/search', null, payload)
+                .then((res: any) => {
+                    results.value = res.Services
+                    basketId.value = res.Token
+                    features.value = res.Features
                     useEbooking.post('flightService/searchNdc', null, payload)
                         .then((ndc: any) => {
                             results.value.push(...ndc.Services) 
                             features.value = ndc.Features
-                            matrix.value = ndc.Matrix 
                             resolve(ndc)
                         }) 
                 })
@@ -83,6 +100,7 @@ export const useFlightsStore = defineStore("flights", () => {
                     console.log(error)
                     reject()
                 })
+            }
         })
     };
     function addService(payload: any) {

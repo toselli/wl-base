@@ -3,42 +3,7 @@
         "serviceType": 1,
         "ebookingServiceType": 0,
         "code": "stays",
-        "name": "Alojamientos",
+        "name": "Encontrá el alojamiento indicado",
         "icon": "md:hotel"
-    },
-    {
-        "serviceType": 2,
-        "name": "Traslados",
-        "ebookingServiceType": 3,
-        "code": "transfers",
-        "icon": "md:airport_shuttle"
-    },
-    {
-        "serviceType": 3,
-        "name": "Autos",
-        "ebookingServiceType": 2,
-        "code": "cars",
-        "icon": "md:directions_car"
-    },
-    {
-        "serviceType": 4,
-        "ebookingServiceType": 1,
-        "name": "Aéreos",
-        "code": "flights",
-        "icon": "md:flight_takeoff"
-    },
-    {
-        "serviceType": 5,
-        "name": "Asistencias",
-        "ebookingServiceType": 7,
-        "code": "assistances",
-        "icon": "md:health_and_safety"
-    },
-    {
-        "serviceType": 6,
-        "name": "Circuitos",
-        "ebookingServiceType": 6,
-        "code": "circuits",
-        "icon": "md:map"
     }
 ]

@@ -4,11 +4,17 @@ export default defineNuxtConfig({
     transpile: ['vuetify'],
   },
   pages: true,
+  extends: [
+    './base', 
+    {
+       from: './base',
+    }
+  ],
   app: {
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
-      title: 'ebooking v5 - BETA',
+      title:  process.env.SITE_NAME,
       meta: [
         // <meta name="description" content="My amazing site">
         { name: 'description', content: 'Ebooking es un motor de reservas turísticas online para agencias' },
@@ -18,9 +24,9 @@ export default defineNuxtConfig({
         { name: "theme-color", content: '#F05C22' },
       ],
       link: [
-        { rel: 'icon', type: 'image/png', href: '/img/favicon.png' },
-        { rel: 'apple-touch-icon', type: 'image/png', href: '/img/favicon.png' },
-        { rel: 'mask-icon', type: 'image/png', href: '/img/favicon.png' }
+        { rel: 'icon', type: 'image/png', href: '/base/img/favicon.png' },
+        { rel: 'apple-touch-icon', type: 'image/png', href: '/base/img/favicon.png' },
+        { rel: 'mask-icon', type: 'image/png', href: '/base/img/favicon.png' }
       ]
     },
     pageTransition: { name: 'page', mode: 'out-in' }
@@ -111,18 +117,18 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      ebookingApi5: process.env.EBOOKING_API5 || "https://ebooking5.juantoselli.com/api/",
-      ebookingWs: process.env.EBOOKING_WS || "https://ebooking5.juantoselli.com/ws",
+      ebookingApi5: process.env.EBOOKING_API5,
+      ebookingWs: process.env.EBOOKING_WS,
       historical: process.env.EBOOKING_STATS_URL,
-      ebookingApi: process.env.EBOOKING_API || "https://api.juantoselli.com/api/",
-      identityApi: process.env.IDENTITY_URL || "https://identity.juantoselli.com/api/",
-      clientsApi: process.env.CLIENTS_URL || "https://clients.juantoselli.com/api/",
-      cloudMessagingApi:  process.env.CLOUD_MESSAGING_URL || "https://notifications.juantoselli.com/api/",
-      websiteId: process.env.WEBSITE_ID || '540b0fb929116d03c81eb99b',
-      ownerId: process.env.OWNER_ID || '540b0fb929116d03c81eb99a',
-      agencyId: process.env.AGENCY_ID || '540b0fb929116d03c81eb99a',
-      ebookingCdn: process.env.CDN_URL || 'https://api.juantoselli.com/public/',
-      searchTime: process.env.SEARCH_TIME || '15000'
+      ebookingApi: process.env.EBOOKING_URL,
+      identityApi: process.env.IDENTITY_URL,
+      clientsApi: process.env.CLIENTS_URL,
+      cloudMessagingApi:  process.env.CLOUD_MESSAGING_URL,
+      websiteId: process.env.WEBSITE_ID,
+      ownerId: process.env.OWNER_ID,
+      agencyId: process.env.AGENCY_ID,
+      ebookingCdn: process.env.CDN_URL,
+      searchTime: process.env.SEARCH_TIME,
     }
   }
 })
