@@ -5,7 +5,7 @@
         <v-row dense>
           <v-col cols="2">
             <a href="/">
-              <CommonLogoDark :height="isMobile ? '45' : '45'" :class="isMobile ? 'ml-2' : ''" />
+              <CommonLogoLight :height="isMobile ? '45' : '45'" :class="isMobile ? 'ml-2' : ''" />
             </a>
           </v-col>
           <v-col cols="9"  class="text-right pt-2" >
@@ -18,7 +18,7 @@
             <!-- <v-btn rounded variant="outlined" color="primary" class="mr-2" @click="openRegisterDialog()">
               {{ $capitalize($t("sign_up")) }}
             </v-btn> -->
-            <v-btn rounded variant="flat" color="primary" @click="openLoginDialog()">
+            <v-btn rounded variant="outlined" color="primary" dark @click="openLoginDialog()">
               {{ $capitalize($t("log_in")) }}
             </v-btn>
           </v-col>
@@ -69,13 +69,11 @@
         </v-row>
       </v-container>
     </v-app-bar>
-    <v-app-bar class="menu-bar" id="top" flat v-else>
-   
+    <v-app-bar class="menu-bar" id="top" flat v-else>   
       <v-container class="pa-0">
         <v-row dense>
           <v-col cols="7" class="d-flex">
             <v-app-bar-nav-icon variant="text" @click.stop="menuMobile = !menuMobile"></v-app-bar-nav-icon>
-
             <a href="/">
               <CommonLogoDark :height="isMobile ? '40' : '45'" :class="isMobile ? '' : ''" />
             </a>
@@ -99,7 +97,6 @@
             <v-menu>
               <template v-slot:activator="{ props }">
                 <v-btn variant="text" size="xl"  class="py-1 px-2" v-bind="props">
-
                   <v-icon size="sm" icon="mdi-account">
                   </v-icon>
                   <v-avatar class="bg-secondary" size="32">
@@ -121,7 +118,6 @@
                   }}</p>
                 </v-card-text>
                 <v-list density="compact">
-
                   <v-list-item @click="openChangePasswordDialog"  prepend-icon="mdi-lock-outline">
                      {{ $capitalize($t("change_password")) }}
                   </v-list-item>
@@ -136,8 +132,7 @@
       </v-container>
     </v-app-bar>
     <v-navigation-drawer v-model="menuMobile" dark color="secondary" clipped app disable-resize-watcher v-if="isMobile">
-            <v-list color="transparent" class="pa-3">
-            
+            <v-list color="transparent" class="pa-3">            
             <v-list-item href="https://360regional.com/360/" block variant="text">Inicio</v-list-item>
             <v-list-item href="https://360regional.com/360/reserva-de-paquetes-online/" block variant="text">Reservas paquetes</v-list-item>            
             <v-list-item href="https://360regional.com/360/destinos-internacionales/" block variant="text">Destinos</v-list-item>

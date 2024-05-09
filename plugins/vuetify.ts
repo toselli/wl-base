@@ -15,17 +15,17 @@ const ThemeLight = {
     background: '#E8F5F7',
     midground: '#F5FEFF',
     foreground: '#FFFFFF',
-    primary: '#24A8BC',
-    primary_hover: '#18CBE7',
-    primary_active: '#90E7F4',
-    primary_lighten_hover: '#B1F1FB',
-    primary_lighten: '#CCF4FA',
-    secondary_darken: '#988C01',
-    secondary: '#F8E725',
-    secondary_hover: '#FFF47A',
-    secondary_active: '#FDF7BA',
-    secondary_lighten_hover: '#FDF9CE',
-    secondary_lighten: '#FEFBE2',
+    primary: '#1AA5FF',
+    primary_hover: '#33AFFF',
+    primary_active: '#90CCF4',
+    primary_lighten_hover: '#B1DDFB',
+    primary_lighten: '#CCE8FA',
+    secondary_darken: '#2E456B',
+    secondary: '#0E63F1',
+    secondary_hover: '#5C99FF',
+    secondary_active: '#9FC2F9',
+    secondary_lighten_hover: '#CFE0FC',
+    secondary_lighten: '#E3EDFD',
     error: '#FE504F',
     error_map: '#FFB0B0',
     error_lighten: '#FFE5E5',
@@ -40,7 +40,8 @@ const ThemeLight = {
     yellow_lighten: '#FEFBDD',
     accent: '#FF8F00',
     shade_light: '#FFFFFF',
-    shade_dark: '#0A1129'
+    shade_dark: '0A1129'
+
   }
 }
 const ThemeDark = {

@@ -40,12 +40,15 @@
 
 <script setup>
 const props = defineProps({
-     alignTabs: {
-         type: String,
-         default: 'center'
-     }
-},
-     'compact')
+  alignTabs: {
+    type: String,
+    default: 'center'
+  },
+  compact: {
+    type: Boolean,
+    default: false
+  }
+});
 const isMobile = useMobile()
 //PLACES
 
