@@ -1,4 +1,4 @@
-import { ability } from "../utils/ability";
+import { ability } from "../plugins/ability";
 import { abilitiesPlugin } from "@casl/vue";
 
 export default defineNuxtPlugin((nuxtApp) => {
