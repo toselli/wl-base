@@ -157,7 +157,7 @@
                   <v-btn color="primary" rounded="md" variant="flat" :block="mode == 'list'"
                     :class="mode == 'list' ? 'mt-2' : 'mt-6'" @click="$emit('book')"
                     v-if="cancellationPolicies.NonRefundable == true || $dayjs(cancellationPolicies.LastDayToCharge).isBefore($dayjs().add(1, 'day'), 'day')"
-                    :disabled="!$can('SellNonRef', 'Bookings')">{{
+                    :disabled="!can('SellNonRef', 'Bookings')">{{
                       $capitalize($t('get_book')) }}</v-btn>
                   <v-btn color="primary" rounded="md" variant="flat" :block="mode == 'list'"
                     :class="mode == 'list' ? 'mt-2' : 'mt-6'" @click="$emit('book')" v-else>{{
@@ -167,7 +167,7 @@
                   <v-btn color="primary" rounded="md" variant="flat" :block="mode == 'list'"
                     :class="mode == 'list' ? 'mt-2' : 'mt-6'" @click="$emit('book')"
                     v-if="item.NonRefundable == true || $dayjs(item.LastDayToCharge).isBefore($dayjs().add(1, 'day'), 'day')"
-                    :disabled="!$can('SellNonRef', 'Bookings')">{{
+                    :disabled="!can('SellNonRef', 'Bookings')">{{
                       $capitalize($t('get_book')) }} </v-btn>
                   <v-btn color="primary" rounded="md" variant="flat" :block="mode == 'list'"
                     :class="mode == 'list' ? 'mt-2' : 'mt-6'" @click="$emit('book')" v-else>{{
@@ -189,7 +189,7 @@
 <script setup>
 //MOBILE
 const isMobile = useMobile()
-const { can, cannot } = useAbility();
+const { can } = useAbility();
 
 const props = defineProps(["item", "mode", "multiple", "selected"]);
 
