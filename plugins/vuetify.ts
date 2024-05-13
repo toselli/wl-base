@@ -19,7 +19,8 @@ export default defineNuxtPlugin(nuxtApp => {
      theme: {
       themes: {
         ThemeDark, ThemeLight
-      }
+      },
+      defaultTheme: ThemeLight,
     }
 
   })
