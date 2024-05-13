@@ -5,7 +5,6 @@ import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import { md } from 'vuetify/lib/iconsets/md'
 import { aliases, mdi } from 'vuetify/lib/iconsets/mdi'
 import '@mdi/font/css/materialdesignicons.css'
-
 import {ThemeLight, ThemeDark} from '~/custom/themes.js'
 
 export default defineNuxtPlugin(nuxtApp => {
