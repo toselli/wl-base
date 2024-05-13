@@ -4,7 +4,7 @@
     :max-height="isMobile ? '' : '450'" :min-height="isMobile ? '750' : ''"
     :max-width="isMobile ? '360' : '380'" :min-width="isMobile ? '360' : '380'"> 
         <template v-slot:activator="{ props }">
-            <v-btn class="btn-search-places" :class="!compact ? 'mt-2' : ''" variant="tonal" v-bind="props">
+            <v-btn class="btn-search-places" :class="!compact ? 'mt-2' : ''" variant="tonal" v-bind="props" block>
                 <span class="text-primary_text" v-if="searchedPlace">
                     {{ substringPlaceName(searchedPlace.Name) }}
                 </span>
