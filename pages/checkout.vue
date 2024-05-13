@@ -379,8 +379,7 @@ const successBookingDialog = ref(false)
 const errorBookingDialog = ref(false)
 const paymentProcessor = ref('')
 
-import { useAbility } from "@casl/vue";
-const { can } = useAbility();
+const { can } = usePermissions();
 
 const confirmBookingOnCancellationPoliciesDialog = ref(false)
 

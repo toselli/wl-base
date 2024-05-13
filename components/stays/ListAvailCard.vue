@@ -189,7 +189,7 @@
 <script setup>
 //MOBILE
 const isMobile = useMobile()
-const { can } = useAbility();
+const { can } = usePermissions();
 
 const props = defineProps(["item", "mode", "multiple", "selected"]);
 

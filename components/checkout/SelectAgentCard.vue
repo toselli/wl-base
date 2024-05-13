@@ -45,7 +45,7 @@ const usersStore = useUsersStore();
 
 const props = defineProps(["clientSelected", "sellerSelected", "clientSellerSelected",'services']);
 
-const { can, cannot } = useAbility();
+const { can } = usePermissions();
 //SELLERS
 
 const runtimeConfig = useRuntimeConfig()
