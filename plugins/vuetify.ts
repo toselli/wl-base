@@ -22,11 +22,6 @@ export default defineNuxtPlugin(nuxtApp => {
         md
       }
     },
-    defaults: {
-      VBtn: {
-        style: 'text-transform: none; font-family: font-size: 0.875rem !important; letter-spacing: normal !important;',
-      },
-    },
     theme: {
       defaultTheme: 'light',
       themes: {
