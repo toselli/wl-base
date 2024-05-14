@@ -1,14 +1,17 @@
 export const usePermissions = () => {
-  const { getMyPermissions } = usePermissionsStore();
+  const permissionsStore = usePermissionsStore();
   const permissions = ref([]);
 
   const fetchPermissions = async () => {
-    if (permissions.value.length === 0) {
+    if (!permissionsStore.fetchingPermissions && permissions.value.length == 0) {
       try {
-        permissions.value = await getMyPermissions;
+        await permissionsStore.fetchMyPermissions();
+        permissions.value = permissionsStore.getMyPermissions;
       } catch (err) {
         console.error(err);
       }
+    } else {
+      permissions.value = permissionsStore.getMyPermissions;
     }
   };
 
