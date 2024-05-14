@@ -7,7 +7,7 @@
       <div class="d-flex flex-column fill-height justify-space-start">
         <AppHeader />
         <VitePwaManifest />
-        <NuxtPage  />
+        <slot />
       </div>
     </transition>
     <AppFooter />
@@ -16,17 +16,11 @@
 </template>
 
 <script setup>
-const { $pwa } = useNuxtApp()
 const loginDialog = ref(false)
-
-const store = useLoginStore();
 
 const showHideSpinner = ref(true)
 
 onMounted(() => {
-  if ($pwa.offlineReady) {
-    console.log('App ready to work offline')
-  }
   showHideSpinner.value = false;
 })
 

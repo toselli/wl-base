@@ -11,7 +11,6 @@
         <stays-search-card :compact="true" :noplaces="true" themed="tonal" />
       </v-col>
     </v-row>
-
     <v-skeleton-loader v-if="loading" class="list-result-loader mt-4" type="card">
     </v-skeleton-loader>
     <v-row dense v-if="getLoggedUser && property && !loading" justify="space-between"
@@ -108,8 +107,7 @@
           <v-col v-if="property && loadingAvail && rooms.length == 0" class="mt-12 d-flex justify-center flex-column">
             <v-progress-circular indeterminate color="primary" size="50" class="mx-auto"></v-progress-circular>
             <h3 class="text-center">
-              Buscando los mejores habitaciones en
-
+              Buscando las mejores habitaciones en
             </h3>
             <h2 class="semi text-center pb-12">
               {{ property.Name }}
@@ -141,8 +139,8 @@
                   <v-col cols="12" md="8" :class="!isMobile ? 'text-right' : ''">
                     <stays-details-tools :viewMode="viewMode" :loading="loading" @orderDes="orderDes(room.Id)"
                       @orderAsc="orderAsc(room.Id)" @update:prompt="searchPrompt = $event; roomNumber = room.Id"
-                      @update:showNonRef="showNonRef = $event" @update:showDirectChain="showDirectChain = $event" @update:viewMode="viewMode = $event"
-                      :orderType="priceOrder" />
+                      @update:showNonRef="showNonRef = $event" @update:showDirectChain="showDirectChain = $event"
+                      @update:viewMode="viewMode = $event" :orderType="priceOrder" />
                   </v-col>
                 </v-row>
                 <!-- FILTROS -->
@@ -166,17 +164,21 @@
                     </div>
                   </v-col>
                 </v-row>
-                <v-row class="mt-3" justify="center" v-if="getRoomResults(room.Id).length == 0 && !loadingAvail && !isReceiving">
-                  <v-col cols="12" class="text-center">
-                    <h3>En este momento no hay habitaciones disponibles</h3>
+                <v-row class="mt-3" justify="center"
+                  v-if="getRoomResults(room.Id).length == 0 && !loadingAvail && !isReceiving">
+                  <v-col cols="12">
+                    <h3 class="text-center">En este momento no hay habitaciones disponibles</h3>
                     <v-img src="/base/img/services/no_avail.png" width="280" class="my-6 mx-auto"></v-img>
-                    <h4 class="body-1 semi text-secondary_text  mt-5">Pruebe buscando con otra fecha o en hoteles
-                      cercanos
+                    <h4 class="body-1 semi text-secondary_text text-center  mt-5">
+                      Pruebe buscando con otra fecha o en un hotel cercano
                     </h4>
                     <stays-search-card :compact="true" :noplaces="true" :noresults="true" class="mx-auto mt-2" />
+                    <StaysNearPropertiesGrid :items="nearProperties" :principal="property" v-if="property" />
                   </v-col>
                 </v-row>
-                <StaysFinishSearchBottomSheet v-model="finishSearch" v-if="!isReceiving && avail.length > 0" :results="avail.length" :rooms="rooms.length" @close="finishSearch = false" @orderResults="orderAsc(); finishSearch = false"/>
+                <StaysFinishSearchBottomSheet v-model="finishSearch" v-if="!isReceiving && avail.length > 0"
+                  :results="avail.length" :rooms="rooms.length" @close="finishSearch = false"
+                  @orderResults="orderAsc(); finishSearch = false" />
               </v-container>
             </v-window-item>
           </v-window>
@@ -320,6 +322,8 @@
 //MOBILE
 const isMobile = useMobile()
 
+//PERMISOS
+const { can } = usePermissions();
 //COUNTDOWN
 
 const countdownTime = ref(900);
@@ -341,7 +345,7 @@ function startCountdown() {
         seconds.value = 59;
       } else {
         clearInterval(countdownInterval);
-        timeoutDialog.value = true
+        timeoutDialog.value = false
       }
     }
   }, 1000);
@@ -470,6 +474,9 @@ async function getAvail() {
     useNuxtApp().$toast.info('Buscando los mejores precios', { autoClose: nuxtConfig.public.searchTime, icon: "🚀", hideProgressBar: false, toastId: 'searchingToast', closeButton: false });
     avail.value = store.getAvail
     rooms.value = store.getRooms
+    if (avail.value.length == 0 && property.value) {
+      fetchNearProperties()
+    }
   } catch (error) {
     console.log(error);
   } finally {
@@ -530,7 +537,6 @@ function getRoomResults(roomId) {
       ))
     )
   }
-
   if (!showNonRef.value) {
     filteredResults = filteredResults.filter(result => {
       const isNonRefundable = result.NonRefundable;
@@ -539,7 +545,6 @@ function getRoomResults(roomId) {
       return !(isNonRefundable || isBeforeThreshold);
     });
   }
-
   if (showDirectChain.value) {
     filteredResults = filteredResults.filter(result => {
       const isDirectChain = result.DirectChain;
@@ -547,9 +552,6 @@ function getRoomResults(roomId) {
       return isDirectChain;
     });
   }
-
-
-
   return filteredResults;
 };
 
@@ -645,6 +647,7 @@ function isSelected(itemId) {
 
 const nearProperties = ref([])
 const loadingNear = ref(false)
+
 async function fetchNearProperties() {
   let payload = {
     lat: property.value.Location.Latitude.toString(),

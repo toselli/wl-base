@@ -175,8 +175,6 @@
                       $capitalize($t('get_book')) }}
                   </v-btn>
                 </div>
-
-
               </div>
             </div>
           </v-col>
