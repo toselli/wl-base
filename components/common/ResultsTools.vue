@@ -6,7 +6,7 @@
             :placeholder="`Escriba ${prompt.toLowerCase()} y presione la tecla Enter`" v-if="!showMap"></v-text-field>
         <v-btn variant="flat" color="secondary" rounded="md" size="small"
             @click="showMap = true; $emit('showMapResults'); showMap = true" v-show="!showMap"
-            v-if="serviceType == 'stays'" class="mr-2" :disabled="loading">
+            v-if="serviceType == 'stays'" class="mr-2" >
             <v-icon start icon="mdi-map"></v-icon>
             Mostrar mapa</v-btn>
         <v-btn variant="flat" color="secondary" rounded="md" size="small"

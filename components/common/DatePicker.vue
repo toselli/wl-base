@@ -1,52 +1,62 @@
 <template>
     <v-no-ssr>
         <VueDatePicker class="search-datepicker" :class="compact ? '' : 'mt-2'" ref="dp" v-model="date"
-            :range="multiple" :auto-position="false" :multi-calendars="multiple" :teleport="true"
+            @internal-model-change="handleInternal" :range="multiple" :auto-position="false" :multi-calendars="multiple"
+            :teleport="true"
             :menu-class-name="isMobile ? (multiple ? 'search-datepicker-mobile search-datepicker-multiple' : 'search-datepicker-mobile') : (multiple ? 'search-datepicker-menu search-datepicker-multiple' : 'search-datepicker-menu')"
             :hide-offset-dates="true" :alt-position="isMobile ? mobilePosition : null" :enable-time-picker="false"
             :auto-apply="!multiple" :clearable="false" locale="es" month-name-format="long" :min-date="minDate"
             :dark="theme.name != 'ThemeLight'">
             <template #top-extra="{ value }" v-if="multiple">
-          
-                <div class="search-datepicker-multiple-bar d-flex justify-space-between" v-if="isMobile"><span class="pa-2 text-primary_text body-1 semi">Seleccionar fechas</span>
+
+                <div class="search-datepicker-multiple-bar d-flex justify-space-between" v-if="isMobile"><span
+                        class="pa-2 text-primary_text body-1 semi">Seleccionar fechas</span>
                     <button @click="closeMenu" class="body-1 semi text-secondary bg-foreground rounded-md px-3 py-1">
-                    X</button> </div>
-                <div class="search-datepicker-multiple-header d-flex mb-2">                    
+                        X</button>
+                </div>
+                <div class="search-datepicker-multiple-header d-flex mb-2">
                     <div class="pa-2 rounded-md v-col v-col-4 mr-1"
                         :class="value && value.length > 0 ? 'bg-secondary' : 'v-card--variant-outlined secondary'">
-                        <p class="body-2 mb-0" :class="value && value.length > 0 ? 'text-shade_light' : 'text-secondary_text'">
+                        <p class="body-2 mb-0"
+                            :class="value && value.length > 0 ? 'text-shade_light' : 'text-secondary_text'">
                             {{ $t("from") }}</p>
-                        <h4 class="text-h6 semi  mb-0 text-shade_light" v-if="value && value.length > 0">
+                        <h4 class="text-h6 semi  mb-0 mt-2 text-shade_light" v-if="value && value.length > 0">
                             {{ $dayjs(value[0]).format('ddd D, MMM') }}
                         </h4>
-                        <h5 class="body-3 mb-0 text-secondary_text" v-else>
+                        <h5 class="body-3 mb-0 mt-1 text-secondary_text" v-else>
                             {{ $t("select_date") }}
                         </h5>
                     </div>
                     <div class="pa-2 rounded-md v-col v-col-4 mr-1"
                         :class="value && value.length > 1 ? 'bg-secondary' : 'v-card--variant-outlined secondary'">
-                        <p class="body-2 mb-0" :class="value && value.length > 1 ? 'text-shade_light' : 'text-secondary_text'">
+                        <p class="body-2 mb-0"
+                            :class="value && value.length > 1 ? 'text-shade_light' : 'text-secondary_text'">
                             {{ labelDays }}</p>
-                        <h4 class="text-h6 semi mb-0 text-shade_light" v-if="value && value.length > 1">
+                        <h4 class="text-h6 semi mb-0 mt-2 text-shade_light" v-if="value && value.length > 1">
                             {{ $dayjs(value[1]).diff($dayjs(value[0]), "day") }}
                         </h4>
-                        <h5 class="body-2 mb-0 text-secondary_text" v-else>
-                            ----
+                        <!-- <div v-if="value && value.length == 1">
+                            <input type="number" v-model="selectDays" class="pa-2 rounded-sm body-3"
+                                :placeholder="'Ingrese ' + labelDays" />
+                        </div> -->
+                        <h5 class="body-3 mb-0 mt-1 text-secondary_text" v-else>
+                           ----
                         </h5>
                     </div>
                     <div class="pa-2 rounded-md v-col v-col-4"
                         :class="value && value.length > 1 ? 'bg-secondary' : 'v-card--variant-outlined secondary'">
-                        <p class="body-2 mb-0" :class="value && value.length > 1 ? 'text-shade_light' : 'text-secondary_text'">
+                        <p class="body-2 mb-0"
+                            :class="value && value.length > 1 ? 'text-shade_light' : 'text-secondary_text'">
                             {{ $t("to") }}</p>
-                        <h4 class="text-h6 semi mb-0 text-shade_light" v-if="value && value.length > 1">
+                        <h4 class="text-h6 semi mb-0 mt-2 text-shade_light" v-if="value && value.length > 1">
                             {{ $dayjs(value[1]).format('ddd D, MMM') }}
                         </h4>
-                        <h5 class="body-3 mb-0 text-secondary_text" v-else>
+                        <h5 class="body-3 mb-0 mt-1 text-secondary_text" v-else>
                             {{ $t("select_date") }}
                         </h5>
                     </div>
                 </div>
-                
+
             </template>
             <template #top-extra="{ value }" v-else>
                 <h4 class="body-1 text-center py-2">Seleccione una fecha</h4>
@@ -99,6 +109,7 @@ const dp = ref();
 
 const selectDate = () => {
     dp.value.selectDate();
+    console.log(dp.value.selectDate())
     emit('update:selectedDate', date.value);
 };
 
@@ -112,17 +123,29 @@ watchEffect(() => {
         date.value = props.searchedDate;
     }
 });
-// watch(() => props.searchedDate, (newDate, oldDate) => {
-//     if (props.multiple) {
-//         if (newDate && newDate.length > 0) {
-//             date.value = props.searchedDate;
-//         }
-//     } else {
-//         if (newDate) {
-//             date.value = props.searchedDate;
-//         }
-//     }
-// }, { deep: true });
+
+const selectDays = ref(null)
+const startDate = ref()
+
+const handleInternal = (date) => {
+    if (date && date.length == 1) {
+        startDate.value = date
+    }
+}
+
+watch(() => selectDays.value, () => {
+    if (props.multiple && selectDays.value !== null && dp && startDate.value) {
+        const newDate = dayjs(startDate.value).add(selectDays.value, 'day');
+        const formattedStartDate = dayjs(startDate.value).format('YYYY-MM-DD');
+        const formattedNewDate = newDate.format('YYYY-MM-DD');
+        alert(formattedNewDate)
+
+        dp.value.updateInternalModelValue([startDate.value, formattedNewDate]);
+        console.log(formattedStartDate + ' y ' + formattedNewDate);
+        window.scrollTo(0, 0); // Restaurar la posición del scroll
+    }
+});
+
 
 watch(() => date.value, () => {
     if (!props.multiple && date.value) {

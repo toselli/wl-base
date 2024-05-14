@@ -9,11 +9,11 @@
           <v-btn class="mr-1 px-3 my-1"
             v-if="item.GroupName != 'feature.propertyName' && item.GroupName !== 'feature.price'" :density="compact ? 'compact' : 'comfortable'" :elevation="compact? 2 : 0"
             :variant="checkFeatureChecked(item) ? 'tonal' : (compact ? 'default' : 'outlined')" rounded="sm" v-bind="props"
-            :class="checkFeatureChecked(item) ? 'text-secondary bg-secondary_lighten' : (compact ? 'bg-foreground text-secondary_text' : 'bg-foreground text-secondary_text')">
+            :class="checkFeatureChecked(item) ? 'text-secondary bg-secondary_lighten' : (compact ? 'bg-foreground border-secondary_lighten text-secondary_text' : 'bg-foreground  border-secondary_lighten text-secondary_text')">
             <v-icon size="16" class="mr-1" :icon="getIcon(item.GroupName)"></v-icon>
             {{ $t(item.GroupName) }}
-            <v-icon v-if="!checkFeatureChecked(item)" size="16" class="ml-1" icon="mdi-chevron-down"></v-icon>
-                        <v-icon v-else icon="md:cancel" size="16" class="ml-1"></v-icon>
+            <v-icon v-if="!checkFeatureChecked(item)" size="16" class="ml-1" icon="mdi-chevron-down">
+            </v-icon>
           </v-btn>
         </template>
         <v-list flat rounded="lg" v-if="item.FeatureInput == 0" class=" pa-2">

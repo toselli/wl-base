@@ -7,7 +7,6 @@
           :class="mode == 'list' ? '' : 'mb-1'"></v-img>
       </v-col>
       <v-col :class="mode == 'list' ? 'pa-4' : 'px-4'">
-      <span v-if="item.isHotelCollect">Collect</span>
         <v-rating :model-value="item.Rating" density="compact" size="small" color="orange" v-if="item.Rating" readonly
           half-increments></v-rating>
         <h3 :class="!item.Rating ? 'mt-2' : ''">

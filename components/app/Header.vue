@@ -19,6 +19,9 @@
             </div>
           </v-col>
           <v-col class="text-right" v-if="getLoggedUser == null" :class="isMobile ? 'pr-2' : ''">
+            <!-- <v-btn rounded variant="outlined" color="primary" class="mr-2" @click="openRegisterDialog()">
+              {{ $capitalize($t("sign_up")) }}
+            </v-btn> -->
             <v-btn rounded="md" color="secondary" variant="outlined" @click="openLoginDialog()">
               {{ $capitalize($t("log_in")) }}
             </v-btn>

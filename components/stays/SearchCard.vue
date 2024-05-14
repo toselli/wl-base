@@ -14,7 +14,7 @@
                 :searchedPlace="selectedPlace" @update:selectedPlace="handleSelectedPlace" />
             </v-col>
             <!-- <v-divider vertical class=" my-3" :color="divider" v-if="!noplaces"></v-divider> -->
-            <v-col cols="12" :sm="noplaces ? '8' : '4'" :class="isMobile ? 'mt-3' : 'pr-2'">
+            <v-col cols="12" :sm="noplaces ? '7' : '4'" :class="isMobile ? 'mt-3' : 'pr-2'">
               <v-avatar color="secondary_text" size="x-small" class="mr-2" v-if="!compact">
                 <v-icon icon="mdi-calendar-today" color="foreground" size="x-small"></v-icon> </v-avatar><span
                 class="body-1 semi" v-if="!compact">Check-in - Check-out</span>
@@ -22,7 +22,7 @@
               <CommonDatePicker :compact="compact" :searchedDate="selectedDate" :multiple="true" :minDate="new Date()" :labelDays="$t('nights')" @update:selectedDate="handleSelectedDate" />
             </v-col>
             <!-- <v-divider vertical class="my-3" :color="divider" v-if="!isMobile"></v-divider> -->
-            <v-col cols="12" :sm="noplaces ? '4' : '2'" :class="isMobile ? 'mt-3' : 'pr-2'">
+            <v-col cols="12" :sm="noplaces ? '5' : '2'" :class="isMobile ? 'mt-3' : 'pr-2'">
               <CommonOccupancies @update:rooms="setOccupancies" :compact="compact" :themed="themed" serviceType="stays"
                 :multiple="true">
               </CommonOccupancies>
@@ -31,7 +31,7 @@
 
         </v-card>
       </v-col>
-      <v-col cols="12" sm="2" class="text-center" :class="isMobile ? 'mt-1' : ''">
+      <v-col cols="12" sm="2" :class="noplaces ? '' : 'text-center'" class="mt-1 mt-md-0">
         <v-btn rounded="md" color="primary" :variant="compact ? 'tonal' : 'flat'"
           :class="compact ? 'semi mt-0' : 'semi mt-2'" v-if="noplaces" :block="isMobile"
           :size="compact ? 'large' : 'x-large'" prepend-icon="mdi-magnify" @click="searchResults"
@@ -169,6 +169,10 @@ async function searchResults() {
           id: query.id,
           place: query.place,
           occupancies: roomsString,
+        },
+        external: true,
+        open: {
+          target: '_blank'
         }
       })
     }

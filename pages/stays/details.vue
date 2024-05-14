@@ -170,7 +170,7 @@
                     <h3 class="text-center">En este momento no hay habitaciones disponibles</h3>
                     <v-img src="/base/img/services/no_avail.png" width="280" class="my-6 mx-auto"></v-img>
                     <h4 class="body-1 semi text-secondary_text text-center  mt-5">
-                      Pruebe buscando con otra fecha o en un hotel cercano
+                      Pruebe modificando las fechas o buscando en hoteles cercanos
                     </h4>
                     <stays-search-card :compact="true" :noplaces="true" :noresults="true" class="mx-auto mt-2" />
                     <StaysNearPropertiesGrid :items="nearProperties" :principal="property" v-if="property" />

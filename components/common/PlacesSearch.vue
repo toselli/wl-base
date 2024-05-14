@@ -1,15 +1,16 @@
 <template>
     <v-menu :close-on-content-click="isMobile ? true : false" origin="overlap" v-model="menuSearch"
-    :location="isMobile ? 'top' : 'bottom'" 
-    :max-height="isMobile ? '' : '450'" :min-height="isMobile ? '750' : ''"
-    :max-width="isMobile ? '360' : '380'" :min-width="isMobile ? '360' : '380'"> 
+        :location="isMobile ? 'top' : 'bottom'" :max-height="isMobile ? '' : '450'" :min-height="isMobile ? '750' : ''"
+        :max-width="isMobile ? '360' : '380'" :min-width="isMobile ? '360' : '380'">
         <template v-slot:activator="{ props }">
-            <v-btn class="btn-search-places" :class="!compact ? 'mt-2' : ''" variant="tonal" v-bind="props" block>
+            <v-btn class="btn-search-places" :class="!compact ? 'mt-2' : ''" variant="tonal" v-bind="props">
                 <span class="text-primary_text" v-if="searchedPlace">
-                    {{ substringPlaceName(searchedPlace.Name) }}
+                    <v-icon :icon="usePlaceIcon(searchedPlace?.SmartSearchEnum)" size="sm">
+                    </v-icon> {{ substringPlaceName(searchedPlace.Name) }}
                 </span>
                 <span class="text-primary_text" v-else-if="selectedPlace">
-                    {{ substringPlaceName(selectedPlace.Name) }}
+                    <v-icon :icon="usePlaceIcon(selectedPlace?.SmartSearchEnum)" size="sm">
+                    </v-icon> {{ substringPlaceName(selectedPlace.Name) }}
                 </span>
                 <span class="text-secondary_text" v-else>{{ label }}</span>
             </v-btn>
@@ -116,7 +117,7 @@ watch(search, (newSearch) => {
 const searchField = ref(null);
 
 watchEffect(() => {
-    if (menuSearch.value) { 
+    if (menuSearch.value) {
         nextTick().then(() => {
             setTimeout(() => {
                 searchField.value.focus();

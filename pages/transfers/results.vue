@@ -41,9 +41,9 @@
                     filteredResults?.transfersOut?.length }})</span></v-tab>
             </v-tabs>
             <v-window v-model="resultTabs">
-                <v-window-item :value="1" v-if="results?.transfersIn?.length > 1">
+                <v-window-item :value="1">
                     <v-container class="content-container" fluid >
-                        <v-row dense>
+                        <v-row dense  v-if="results?.transfersIn?.length > 1">
                             <v-col cols="12">
                                 <v-row dense justify="center">
                                     <v-col :lg="viewMode == 'list' ? 12 : 4" cols="12"
@@ -76,16 +76,16 @@
                         <v-row class="mt-3" justify="center" v-if="filteredResults?.transfersIn?.length == 0 && !loading">
                             <v-col cols="12" class="text-center">
                                 <h3>No hemos podido encontrar traslados con los parámetros de tu búsqueda</h3>
-                                <v-img src="/base/img/no_results_transfers.png" width="280" class="my-10 mx-auto"></v-img>
+                                <v-img src="/base/img/services/no_results_transfers.png" width="280" class="my-10 mx-auto"></v-img>
                                 <h4 class="body-1 semi text-secondary_text  mt-5">Pruebe realizando otra búsqueda</h4>
                                 <transfers-search-card :compact="true" :noresults="true" class="mx-auto mt-2" />
                             </v-col>
                         </v-row>
                     </v-container>
                 </v-window-item>
-                <v-window-item :value="2" v-if="filteredResults?.transfersOut?.length > 1">
+                <v-window-item :value="2">
                     <v-container class="content-container" fluid>
-                        <v-row dense>
+                        <v-row dense  v-if="filteredResults?.transfersOut?.length > 1">
                             <v-col cols="12">
                                 <v-row dense justify="center">
                                     <v-col :lg="viewMode == 'list' ? 12 : 4" cols="12"

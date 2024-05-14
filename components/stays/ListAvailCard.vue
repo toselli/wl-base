@@ -188,7 +188,6 @@
 //MOBILE
 const isMobile = useMobile()
 const { can } = usePermissions();
-
 const props = defineProps(["item", "mode", "multiple", "selected"]);
 
 const emit = defineEmits(['select', 'unselect','hide'])

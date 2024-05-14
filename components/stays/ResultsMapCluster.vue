@@ -794,7 +794,7 @@ watch(isFullscreen, (newValue) => {
   z-index: 10000;
 }
 
-@media (min-width: 360px) {
+@media (max-width: 420px) {
   .floating-tools {
   width: 190px;
   right: auto;

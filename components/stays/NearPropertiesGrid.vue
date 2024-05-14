@@ -1,7 +1,7 @@
 <template>
   <v-card flat class="mb-3 bg-secondary_lighten" rounded="xl">
     <v-card-text class="pa-6">
-      <h4 class="text-h6 mb-5 text-center">Aquí te mostramos alojamientos cercanos</h4>
+      <h4 class="text-h6 mb-5 text-center">Te pueden interesar estos hoteles cercanos</h4>
       <v-row>
         <v-col cols="3" v-for="item in nearProperties.slice(0,4)">
           <stays-list-near-properties-card :location="principal.Location" mode="grid" :item="item" class="mb-3" @goTo="goToDetails(item)"
