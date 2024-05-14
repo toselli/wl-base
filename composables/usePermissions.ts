@@ -1,3 +1,6 @@
+import { ref } from 'vue';
+import { usePermissionsStore } from './usePermissionsStore';
+
 export const usePermissions = () => {
   const { getMyPermissions } = usePermissionsStore();
   const permissions = ref([]);
@@ -5,7 +8,7 @@ export const usePermissions = () => {
   const fetchPermissions = async () => {
     if (permissions.value.length === 0) {
       try {
-        permissions.value = await getMyPermissions.value();
+        permissions.value = await getMyPermissions;
       } catch (err) {
         console.error(err);
       }
