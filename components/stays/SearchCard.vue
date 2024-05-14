@@ -169,10 +169,6 @@ async function searchResults() {
           id: query.id,
           place: query.place,
           occupancies: roomsString,
-        },
-        external: true,
-        open: {
-          target: '_blank'
         }
       })
     }
