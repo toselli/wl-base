@@ -43,7 +43,7 @@
       <v-col cols="12" md="3">
         <v-hover v-slot="{ isHovering, props }">
           <v-card flat rounded="lg" @click="imageGallery = true">
-            <v-img :src="property.Thumb" v-bind="props">
+            <v-img :src="property.Thumb" v-bind="props" height="180px" cover>
               <v-expand-transition>
                 <div v-if="isHovering"
                   class="d-flex transition-fast-in-fast-out justify-center align-center v-card--reveal"
