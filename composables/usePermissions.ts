@@ -1,6 +1,3 @@
-import { ref } from 'vue';
-import { usePermissionsStore } from './usePermissionsStore';
-
 export const usePermissions = () => {
   const { getMyPermissions } = usePermissionsStore();
   const permissions = ref([]);
