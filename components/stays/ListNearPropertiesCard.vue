@@ -19,7 +19,7 @@
         </p>
         <p class="body-2 semi mt-2">
           <v-icon icon="mdi-car" class="mr-1" size="small"></v-icon>
-          Distancia del hotel: {{ distance.toFixed(2) }} km.
+          Distancia del hotel: {{ distance.toFixed(2) }} km
         </p>
       </v-col>
     </v-row>
