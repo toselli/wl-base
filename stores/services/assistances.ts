@@ -1,5 +1,5 @@
 
-import json from '~/assets/ass-countries.json'
+import countries from '@/stores/data/ass-countries.json'
 export const useAssStore = defineStore("assistances", () => {
     //state
     const results = ref([])
@@ -8,10 +8,9 @@ export const useAssStore = defineStore("assistances", () => {
     const basketId = ref('')
     const preBooking = ref({})
     const destinations = ref([])
-    const origins = ref(json)
+    const origins = ref(countries)
     const isLoadingPlaces = ref(false);
     const totalServices = ref(null)
-
     //getters
     const getResults = computed(() => results.value)
     const getFeatures = computed(() => features.value)
@@ -22,7 +21,7 @@ export const useAssStore = defineStore("assistances", () => {
     //actions
 
     function setOrigins(query?: string) {
-        origins.value = query ? json.filter(x => x.es.startsWith(query)) : json
+        origins.value = query ? countries.filter(x => x.es.startsWith(query)) : countries
     }
 
     function fetchDestinations() {
