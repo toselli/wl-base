@@ -1,6 +1,5 @@
 import { LoginResponse } from "~~/interfaces/identity/LoginResponse";
 import { LoginRequest } from "~~/interfaces/identity/LoginRequest";
-import { useCloudMessaging } from "../../composables/useCloudMessaging";
 
 export const useLoginStore = defineStore("login", () => {
     //state
