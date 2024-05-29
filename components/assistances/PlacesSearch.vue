@@ -1,13 +1,12 @@
 <template>
-   <v-menu :close-on-content-click="isMobile ? true : false" origin="overlap" v-model="menuSearch"
-    :location="isMobile ? 'top' : 'bottom'" 
-    :max-height="isMobile ? '' : '450'" :min-height="isMobile ? '750' : ''"
-    :max-width="isMobile ? '360' : '380'" :min-width="isMobile ? '360' : '380'"> 
+    <v-menu :close-on-content-click="isMobile ? true : false" origin="overlap" v-model="menuSearch"
+        :location="isMobile ? 'top' : 'bottom'" :max-height="isMobile ? '' : '450'" :min-height="isMobile ? '750' : ''"
+        :max-width="isMobile ? '360' : '380'" :min-width="isMobile ? '360' : '380'">
         <template v-slot:activator="{ props }">
             <v-btn class="btn-search-places" :class="!compact ? 'mt-2' : ''" variant="tonal" v-bind="props">
                 <span class="text-primary_text" v-if="origin && selectedPlace">
                     <country-flag :country='selectedPlace?.code.toLowerCase()' size='small' />
-                    {{ selectedPlace.es }}
+                    <span class="mt-n1"> {{ selectedPlace.es }}</span>
                 </span>
                 <span class="text-primary_text" v-else-if="!origin && selectedPlace">
                     <v-icon size="small" icon="mdi-map-marker"></v-icon>
@@ -29,27 +28,28 @@
                     :placeholder="selectedPlace ? selectedPlace.Name : $capitalize($t('destination_place'))"
                     hide-details class="body-2"></v-text-field>
             </v-card-title>
+            <v-skeleton-loader :loading="store.isLoadingPlaces" type="list-item-two-line, list-item-two-line" v-if="origin">
             <v-card-text class="pa-0" v-if="origin">
                 <v-list>
                     <v-list-item class="search-list-item" v-for="place in filteredOrigins" :key="place.id"
                         @click="selectPlace(place)">
-                        <h4 class="body-1 semi text-primary_text">
+                        <h4 class="body-2 semi text-primary_text">
                             <country-flag :country='place.code.toLowerCase()' size='small' />
-                            {{ place.es }}
+                           <span>{{ place.es }}</span> 
                         </h4>
                     </v-list-item>
                 </v-list>
             </v-card-text>
+        </v-skeleton-loader>
             <v-skeleton-loader :loading="store.isLoadingPlaces" type="list-item-two-line, list-item-two-line" v-else>
                 <v-card-text class="pa-0">
                     <v-list>
                         <v-list-item class="search-list-item" v-for="place in filteredDestinations" :key="place.Id"
                             @click="selectPlace(place)">
-                            <h4 class="body-1 semi text-primary_text">
+                            <h4 class="body-2 semi text-primary_text">
                                 <v-icon size="x-small" icon="mdi-map-marker"></v-icon>
                                 {{ place.Name }}
                             </h4>
-
                         </v-list-item>
                     </v-list>
                 </v-card-text>
@@ -66,7 +66,6 @@ const searchField = ref(null);
 const menuSearch = ref(false);
 const searchOrigin = ref('');
 const searchDestination = ref('');
-const selectedPlace = ref(null);
 const store = useAssStore();
 
 
@@ -125,7 +124,6 @@ onMounted(() => {
 })
 
 function selectPlace(place) {
-    selectedPlace.value = place;
     emit('update:selectedPlace', place);
     menuSearch.value = false;
 }

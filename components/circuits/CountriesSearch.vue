@@ -4,10 +4,10 @@
     :max-height="isMobile ? '' : '450'" :min-height="isMobile ? '750' : ''"
     :max-width="isMobile ? '360' : '380'" :min-width="isMobile ? '360' : '380'"> 
         <template v-slot:activator="{ props }">
-            <v-btn class="btn-search-places" :class="!compact ? 'mt-2' : ''" variant="tonal" v-bind="props">
+            <v-btn class="btn-search-places btn-search-countries" :class="!compact ? 'mt-2' : ''" variant="tonal" v-bind="props">
                 <template v-if="selectedCountries.length > 0">
                     <v-chip v-for="item in selectedCountries" size="small" closable class="mr-1"
-                        @click:close="removeCountry(item)">
+                        @click:close="removeCountry(item)" :key="updateKey">
                         {{ item.Name }}
                     </v-chip>
                 </template>
@@ -105,13 +105,16 @@ function selectCountry(country) {
 function selectCountries(countries) {
     selectedCountries.value = countries
 }
-
+const updateKey = ref(0)
 const removeCountry = (country) => {
     const index = selectedCountries.value.indexOf(country)
 
     if (index > -1) {
         selectedCountries.value.splice(index, 1)
     }
+    nextTick().then(() => {
+            updateKey.value ++
+        });
 }
 
 function debounce(func, wait) {

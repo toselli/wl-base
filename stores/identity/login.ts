@@ -1,5 +1,6 @@
 import { LoginResponse } from "~~/interfaces/identity/LoginResponse";
 import { LoginRequest } from "~~/interfaces/identity/LoginRequest";
+import { useCloudMessaging } from "../../composables/useCloudMessaging";
 
 export const useLoginStore = defineStore("login", () => {
     //state
@@ -25,7 +26,6 @@ export const useLoginStore = defineStore("login", () => {
     
             const refreshTokenCookie = useCookie('refreshToken');
             refreshTokenCookie.value = res.RefreshToken;
-            console.log(res)
             return res;
         } catch (error) {
             logout();

@@ -1,10 +1,10 @@
 <template>
   <v-card color="background" rounded="lg" class="pa-3 mb-2" flat v-for="(booking, index) in services">
     <v-row dense>
-      <v-col cols="12" lg="4" class="pa-1 bg-white rounded-lg d-flex align-center">
+      <v-col cols="12" md="4" class="pa-1 bg-white rounded-lg d-flex align-center">
         <v-img :src="booking.Transfer.VehicleInfo.UrlImage"></v-img>
       </v-col>
-      <v-col cols="12" lg="8">
+      <v-col cols="12" md="8">
       <div v-if="services.length > 1" class="body-2 float-right">
         <span v-if="index == 0">IDA</span>
         <span v-else>VUELTA</span>

@@ -1,12 +1,12 @@
 <template>
     <v-card color="background" rounded="lg" class="pa-3 mb-2" flat v-for="(booking, index) in services">
         <v-row dense class="bg-white rounded-lg mx-1">
-            <v-col cols="4" lg="4" class="pa-1 bg-white rounded-lg d-flex align-center">
+            <v-col cols="4" md="4" class="pa-1 bg-white rounded-lg d-flex align-center">
                 <v-img
                     :src="'https://th.bing.com/th/id/R.06311a969a32d201cac59cca66853da4?rik=oTHWlCv0SO%2f%2bZQ&riu=http%3a%2f%2fwww.pngmart.com%2ffiles%2f10%2fWhite-Toyota-Camry-PNG-Photo.png&ehk=q3oIAV9juV847DXjEow9Qceo0OUAXCqjwMqja6cBdLo%3d&risl=&pid=ImgRaw&r=0'"></v-img>
 
             </v-col>
-            <v-col cols="8" lg="8">
+            <v-col cols="8" md="8">
                 <v-sheet class="bg-foreground mt-n1"  rounded="lg">
                     <v-list class="bg-transparent body-2 text-secondary_text">
                         <v-list-item class="bg-midground d-flex flex-row justify-content-around">

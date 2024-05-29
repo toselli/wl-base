@@ -45,16 +45,12 @@
               </v-alert>
             </v-col>
           </v-row>
-          <v-row v-if="false">
-            <v-col>
-              <h4 class="text-h6 semi mb-4">Grupo</h4>
-              <v-radio-group v-model="group" inline>
-                <v-radio label="Nuevo grupo" value="radio-1" class="body-1"></v-radio>
-                <v-radio label="Grupo existente" value="radio-2" class="body-1"></v-radio>
-                <v-text-field label="Escriba nombre de grupo al cual crear"></v-text-field>
+              <h4 class="text-h6 semi mb-4">Grupo de compra</h4>
+              <v-radio-group v-model="purchaseGroup" inline density="compact" color="secondary">
+                <v-radio label="Nuevo grupo" :value="0" class="body-1"></v-radio>
+                <v-radio label="Grupo existente" :value="1" class="body-1"></v-radio>
               </v-radio-group>
-            </v-col>
-          </v-row>
+              <v-text-field  density="compact" type="number" width="300" class="body-2" variant="outlined" v-if="purchaseGroup == 1" label="Escriba el código del grupo existente" v-model="purchaseGroupId"></v-text-field>
           <!-- SELECCIONAR AGENTE -->
           <v-skeleton-loader v-if="loading" type="card"></v-skeleton-loader>
           <checkout-select-agent-card :client-selected="clientSelected" :sellerSelected="sellerSelected"
@@ -76,7 +72,7 @@
         <!-- PETICIONES ESPECIALES -->
         <checkout-comments :comments="comments" @update:comments="comments = $event" />
       </v-col>
-      <v-col v-if="prebooking?.Services">
+      <v-col  cols="12" md="5" v-if="prebooking?.Services">
         <!-- DETALLES -->
         <v-card rounded="lg" variant="outlined" class="pa-3 bg-foreground card-content-elevation mb-5">
           <checkout-details-card :booking="prebooking" :serviceType="serviceType" />
@@ -218,7 +214,15 @@ const { getLoggedUser } = storeToRefs(usersStore);
 
 //CHECKOUT DATA
 
-const group = ref(null)
+const purchaseGroup = ref(0)
+const purchaseGroupId = ref(null)
+
+watch(() => purchaseGroup.value, (newValue, oldValue) => {
+  if (purchaseGroup.value == 0 ) {
+    purchaseGroupId.value = null
+  }
+}, { deep: true });
+
 const details = ref({})
 
 const loading = ref(false);
@@ -377,86 +381,31 @@ const notAvailableCard = ref(false)
 const comments = ref('')
 const successBookingDialog = ref(false)
 const errorBookingDialog = ref(false)
-const paymentProcessor = ref('')
+const paymentProcessor = ref('RSTAFF')
 
-import { useAbility } from "@casl/vue";
 const { can } = usePermissions();
 const confirmBookingOnCancellationPoliciesDialog = ref(false)
 
 async function finishBookingOnCancellation() {
   confirmBookingOnCancellationPoliciesDialog.value = true
 }
+const dayjs = useDayjs()
 
-import dayjs from "dayjs";
 
 async function finishBooking() {
-  if (prebooking.value.Services[0].NonRefundable == true || dayjs(prebooking.value.Services[0].LastDayToCharge).isBefore(dayjs().add(1, 'day'), 'day')) {
-    paymentProcessor.value = 'RSTAFF'
-  }
-  else if (can('Sellers', 'Division')) {
-    paymentProcessor.value = 'RSTAFF'
-  } else {
-    paymentProcessor.value = 'RAGE'
+  // if (prebooking.value.Services[0].NonRefundable == true || dayjs(prebooking.value.Services[0].LastDayToCharge).isBefore(dayjs().add(1, 'day'), 'day')) {
+  //   paymentProcessor.value = 'RSTAFF'
+  // }
+  // else if (can('Sellers', 'Division')) {
+  //   paymentProcessor.value = 'RSTAFF'
+  // } else {
+  //   paymentProcessor.value = 'RAGE'
 
-  }
+  // }
   loading.value = true
   errorBookingDialog.value = false
-  const passengersReduce = prebooking.value.Services.reduce((acc, pax) => {
-    return acc.concat(pax.Passengers);
-  }, []);
+  const payload = createPayload()
   try {
-    let payload = {}
-    if (serviceType == 'stays') {
-      payload = {
-        BasketId: route.query.id,
-        BedTypes: [],
-        Comments: [],
-        Customer: {
-          DocumentType: "DNI",
-          CustomerType: "FISICA",
-          FiscalResponsability: "Consumidor Final",
-          Nationality: "AR",
-          Address: {}
-        },
-        House: false,
-        Passengers: passengersReduce,
-        PaymentProcessorId: paymentProcessor.value,
-        PurchaseGroupId: null,
-        Reference: '',
-        SellerRef: sellerSelected.value,
-      }
-    }
-    if (serviceType == 'transfers') {
-      payload = {
-        BasketId: route.query.id,
-        TransferInDetailsFrom: prebooking.value.TransferInDetailsFrom,
-        TransferInDetailsTo: prebooking.value.TransferInDetailsTo,
-        TransferOutDetailsFrom: prebooking.value.TransferOutDetailsFrom,
-        TransferOutDetailsTo: prebooking.value.TransferOutDetailsTo,
-        Comments: [],
-        Customer: {
-          DocumentType: "DNI",
-          CustomerType: "FISICA",
-          FiscalResponsability: "Consumidor Final",
-          Nationality: "AR",
-          Address: {}
-        },
-        Passengers: passengersReduce,
-        PaymentProcessorId: paymentProcessor.value,
-        PurchaseGroupId: null,
-        Reference: '',
-        SellerRef: sellerSelected.value,
-      }
-    }
-    if (can('Sellers', 'Division')) {
-      payload.SellerRef = {
-        Key: getLoggedUser.value.LegacyId,
-        Value: getLoggedUser.value.FullName,
-      }
-    }
-    if (comments.value != '') {
-      payload.Comments.push(comments.value)
-    }
     let bookingsToPay = []
     await useNuxtApp().$toast.promise(store.updateServices(payload), {
       pending: "Preparando datos de la reserva",
@@ -487,9 +436,55 @@ async function finishBooking() {
   }
 }
 
+const createPayload = () => {
+    const passengersReduce = prebooking.value.Services.reduce((acc, pax) => {
+      return acc.concat(pax.Passengers);
+    }, []);
+
+    let payload = {
+      BasketId: route.query.id,
+      Comments: [],
+      Customer: {
+        DocumentType: "DNI",
+        CustomerType: "FISICA",
+        FiscalResponsability: "Consumidor Final",
+        Nationality: "AR",
+        Address: {}
+      },
+      Passengers: passengersReduce,
+      PaymentProcessorId: paymentProcessor.value,
+      PurchaseGroupId: purchaseGroupId.value,
+      Reference: '',
+      SellerRef: sellerSelected.value,
+    }
+
+    if (serviceType == 'stays') {
+      payload.BedTypes = []
+      payload.House = false
+    } else if (serviceType == 'transfers') {
+      payload.TransferInDetailsFrom = prebooking.value.TransferInDetailsFrom
+      payload.TransferInDetailsTo = prebooking.value.TransferInDetailsTo
+      payload.TransferOutDetailsFrom = prebooking.value.TransferOutDetailsFrom
+      payload.TransferOutDetailsTo = prebooking.value.TransferOutDetailsTo
+    }
+
+    if (getLoggedUser.value && can('Sellers', 'Division')) {
+      payload.SellerRef = {
+        Key: getLoggedUser.value.LegacyId,
+        Value: getLoggedUser.value.FullName,
+      }
+    }
+
+    if (comments.value != '') {
+      payload.Comments.push(comments.value)
+    }
+
+    return payload
+  }
+
 
 watch(sellerSelected, (newValue, oldValue) => {
-  if (newValue.Key !== oldValue.Key)
+  if (newValue?.Key !== oldValue?.Key)
     updatePrice()
 })
 
@@ -517,10 +512,13 @@ const updatePrice = async () => {
   }
 }
 
+const commonStore = useCommonServicesStore();
+
 async function processPayment(payload) {
-  await useNuxtApp().$toast.promise(store.processPayment(payload)
+  await useNuxtApp().$toast.promise(commonStore.processPayment(payload)
     .then((res) => {
       callProvider(res);
+      console.log(res)
     }), {
     pending: "Enviando datos al proveedor",
   })
@@ -556,7 +554,7 @@ async function getBookingByTransaction(transaction) {
     currency: 'USD'
   }
   waitingProvider.value = true
-  await useNuxtApp().$toast.promise(store.getBookingByTransaction(payload), {
+  await useNuxtApp().$toast.promise(commonStore.getBookingByTransaction(payload), {
     pending: "Consultando estado de reserva en proveedor",
     success: "Datos obtenidos"
   }).then((res) => {
@@ -579,8 +577,5 @@ onMounted(() => {
   startCountdown()
   toTop()
 });
-
-
-
 
 </script>

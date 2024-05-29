@@ -36,7 +36,7 @@
               </v-col>
               <v-col cols="12" sm="2">
                 <div>
-                  <CommonOccupancies @update:rooms="setOccupancies" :compact="compact" :themed="themed">
+                  <CommonOccupancies @update:rooms="setOccupancies" :compact="compact" :adultsAgeRequired="true" :themed="themed">
                   </CommonOccupancies>
                 </div>
               </v-col>
@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import dayjs from "dayjs";
+const dayjs = useDayjs()
 const isMobile = useMobile()
 const props = defineProps(["compact", "noresults", "nologo", "themed", "divider"]);
 
@@ -68,7 +68,7 @@ const handleSelectedDate = (date) => {
 
 //#region PLACES
 
-const selectedOrigin = ref(null)
+const selectedOrigin = ref({ "es": "Argentina", "en": "Argentina", "code": "AR" })
 const selectedDestination = ref(null)
 
 //#region SEARCH

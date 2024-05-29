@@ -1,12 +1,12 @@
 <template>
     <v-row dense :justify="!isMobile ? 'end' : 'start'" align="center" no-gutters>
-        <v-checkbox label="Mostrar ofertas (con cargos)" hide-details density="compact" v-model="showNonRef"
+        <v-checkbox label="Mostrar tarifas con gastos" hide-details density="compact" v-model="showNonRef"
             class="body-2 v-col-lg-3"></v-checkbox>
         <v-checkbox label="Mostrar solo cadena directa" hide-details density="compact" v-model="showDirectChain"
             class="body-2 v-col-lg-3"></v-checkbox>
         <v-text-field variant="outlined" hide-details density="compact" label="Buscar" v-model="searchPromptModel"
             class="small-text-field pt-0 mx-2" ref="prompRef"
-            placeholder="Escriba el nombre de una habitación"></v-text-field>
+            placeholder="Escriba un término para filtrar"></v-text-field>
         <v-btn variant="tonal" density="comfortable" color="secondary" class="mr-2"
             @click="$emit('orderDes'); priceOrder = 'desc'" rounded="md" v-if="priceOrder == 'asc'"> <v-icon
                 icon="mdi-arrow-down"></v-icon> Precio

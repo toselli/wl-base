@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import dayjs from 'dayjs';
+const dayjs = useDayjs()
 const props = defineProps(['services'])
 const service = props.services[0]
 const mode = 'list'

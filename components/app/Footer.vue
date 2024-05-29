@@ -59,20 +59,20 @@
           </v-col>
         </v-row>
         <v-row dense align="center">
-          <v-col cols="12" lg="4">
+          <v-col cols="12" md="4">
             <p class="body-2 text-center mt-4">
               SANTA CATALINA VIAJES S.R.L. - Legajo Nro. 3148
 
             </p>
           </v-col>
-          <v-col cols="12" lg="4">
+          <v-col cols="12" md="4">
 
             <p class="body-2 text-center mt-4 d-flex align-center justify-center">
               Developed by
               <TplusDLogo width="100" height="14" :dark="true" class="mx-3" />
             </p>
           </v-col>
-          <v-col cols="12" lg="4" class="text-center d-flex justify-center">
+          <v-col cols="12" md="4" class="text-center d-flex justify-center">
             <a href="http://qr.afip.gob.ar/?qr=OcIegXo7eSHm909lu0vAHg,," target="_blank">
               <v-img src="https://afip.gob.ar/images/f960/DATAWEB.jpg" width="40px"></v-img>
             </a>

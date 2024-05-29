@@ -25,7 +25,6 @@
 </template>
 
 <script setup>
-import dayjs from "dayjs";
 const isMobile = useMobile()
 
 const props = defineProps(["compact", "searchedTime"]);

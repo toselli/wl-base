@@ -13,7 +13,7 @@
                 </a>
             </h3>
             <v-row class="mb-5">
-                <v-col cols="12" lg="6" v-for="tour in tourType[0].Tours">
+                <v-col cols="12" md="6" v-for="tour in tourType[0].Tours">
                     <a :href="buildTourLink(tour)" target="_blank">
                         <v-card rounded="lg">
                             <v-img cover :src="toImg(tour)"></v-img>

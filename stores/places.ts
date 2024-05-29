@@ -1,4 +1,4 @@
-import top from '~/custom/top-places.json'
+import top from '~/assets/top-places.json'
 export const usePlacesStore = defineStore('places', () => {
   const places = ref([]);
   const countries = ref([]);

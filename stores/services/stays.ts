@@ -2,8 +2,11 @@ import type { Ref } from "nuxt/dist/app/compat/capi";
 export const useStaysStore = defineStore("stays", () => {
   const nuxtConfig = useRuntimeConfig()
   const { startConnection, invokeServerMethod, subscribeToEvent, unsubscribeFromEvent } = useSignalR(nuxtConfig.public.ebookingWs, handleDisconnect);
+  const accessToken = useCookie('accessToken').value
+  const bearer = `Bearer ${accessToken}`
   //state
   const results = ref([])
+  const resultsHotelCollect = ref([])
   const features = ref([])
   const searchToken = ref('')
   const connectionIdSignalR = ref(null)
@@ -11,6 +14,7 @@ export const useStaysStore = defineStore("stays", () => {
   const details = ref([])
   const rooms = ref([])
   const avail = ref([])
+  const availHotelCollect = ref([])
   const basketId = ref('')
   const preBooking: Ref<any> = ref({})
   const nearProperties = ref([])
@@ -18,11 +22,13 @@ export const useStaysStore = defineStore("stays", () => {
   //getters
   const getReceiving = computed(() => isReceiving.value)
   const getResults = computed(() => results.value)
+  const getResultsHotelCollect = computed(() => resultsHotelCollect.value)
   const getFeatures = computed(() => features.value)
   const getResultsMap = computed(() => resultsMap.value)
-  const getFeaturesMap = computed(() => featuresMap.value)  
+  const getFeaturesMap = computed(() => featuresMap.value)
   const getDetails = computed(() => details.value)
   const getAvail = computed(() => avail.value)
+  const getAvailHotelCollect = computed(() => availHotelCollect.value)
   const getRooms = computed(() => rooms.value)
   const getNearProperties = computed(() => nearProperties.value)
   const getGuestReviews = computed(() => guestReviews.value)
@@ -40,14 +46,14 @@ export const useStaysStore = defineStore("stays", () => {
   async function handleUnsubscribeResults() {
     unsubscribeFromEvent('NewResultProperty', null)
     unsubscribeFromEvent('Features', null)
-    useEbooking5.get('propertyService/stopSearch', null,{connectionId: connectionIdSignalR.value})
+    useEbooking5.get('propertyService/stopSearch', null, { connectionId: connectionIdSignalR.value })
     //invokeServerMethod('stopSearch');
   }
 
   async function handleUnsubscribeAvail() {
     unsubscribeFromEvent('NewAvailProperty', null)
     unsubscribeFromEvent('NewCancellationPolicies', null)
-    useEbooking5.get('propertyService/stopSearch', null,{connectionId: connectionIdSignalR.value})
+    useEbooking5.get('propertyService/stopSearch', null, { connectionId: connectionIdSignalR.value })
     //invokeServerMethod('stopSearch');
   }
 
@@ -55,10 +61,11 @@ export const useStaysStore = defineStore("stays", () => {
     AgencyId: nuxtConfig.public.agencyId,
     OwnerId: nuxtConfig.public.ownerId,
     WebSiteId: nuxtConfig.public.websiteId
-    }
+  }
 
   async function suscribeSearch() {
     results.value = []
+    resultsHotelCollect.value = []
     try {
       await startConnection();
       const connectionId = await invokeServerMethod('getConnectionId');
@@ -66,17 +73,32 @@ export const useStaysStore = defineStore("stays", () => {
       isReceiving.value = true
 
       subscribeToEvent('NewResultProperty', (newItem) => {
-        const existingItemIndex = results.value.findIndex(item => item.Id === newItem.Id);
-        if (existingItemIndex !== -1) {
-          const existingItem = results.value[existingItemIndex];
-          if (newItem.Total != existingItem.Total) {
-            existingItem.previousPrice = existingItem.previousPrice || [];
-            existingItem.previousPrice.push(existingItem.Total);
-            existingItem.Total = newItem.Total;
-            results.value[existingItemIndex] = existingItem;
+        if (!newItem.IsHotelCollect) {
+          const existingItemIndex = results.value.findIndex(item => item.Id === newItem.Id);
+          if (existingItemIndex !== -1) {
+            const existingItem = results.value[existingItemIndex];
+            if (newItem.Total != existingItem.Total) {
+              existingItem.previousPrice = existingItem.previousPrice || [];
+              existingItem.previousPrice.push(existingItem.Total);
+              existingItem.Total = newItem.Total;
+              results.value[existingItemIndex] = existingItem;
+            }
+          } else {
+            results.value.push(newItem);
           }
         } else {
-          results.value.push(newItem);
+          const existingItemIndex = resultsHotelCollect.value.findIndex(item => item.Id === newItem.Id);
+          if (existingItemIndex !== -1) {
+            const existingItem = resultsHotelCollect.value[existingItemIndex];
+            if (newItem.Total != existingItem.Total) {
+              existingItem.previousPrice = existingItem.previousPrice || [];
+              existingItem.previousPrice.push(existingItem.Total);
+              existingItem.Total = newItem.Total;
+              resultsHotelCollect.value[existingItemIndex] = existingItem;
+            }
+          } else {
+            resultsHotelCollect.value.push(newItem);
+          }
         }
       });
 
@@ -112,9 +134,10 @@ export const useStaysStore = defineStore("stays", () => {
   async function fetchResults(payload: Object) {
     payload.ConnectionId = connectionIdSignalR.value;
     payload = { ...payload, ...headersApi };
-    payload.securityToken  = useCookie("SECURITYTOKEN").value
+    payload.securityToken = useCookie("SECURITYTOKEN").value
+    payload.authorization = bearer
     //useEbooking5.post('propertyService/search', null, payload)
-    invokeServerMethod('PropertySearch',payload);
+    invokeServerMethod('PropertySearch', payload);
   };
 
   async function suscribeAvail() {
@@ -128,14 +151,26 @@ export const useStaysStore = defineStore("stays", () => {
 
       subscribeToEvent('NewAvailProperty', (newItem) => {
         if (avail.value.length < 9000) {
-          const existingItemIndex = avail.value.findIndex(item => item.Id === newItem.Id);
-          if (existingItemIndex !== -1) {
-            const existingItem = { ...avail.value[existingItemIndex] };
-            existingItem.previousPrice.push(existingItem.Total);
-            existingItem.Total = newItem.Total;
-            avail.value[existingItemIndex] = existingItem;
+          if (!newItem.IsHotelCollect) {
+            const existingItemIndex = avail.value.findIndex(item => item.Id === newItem.Id);
+            if (existingItemIndex !== -1) {
+              const existingItem = { ...avail.value[existingItemIndex] };
+              existingItem.previousPrice.push(existingItem.Total);
+              existingItem.Total = newItem.Total;
+              avail.value[existingItemIndex] = existingItem;
+            } else {
+              avail.value.push(newItem);
+            }
           } else {
-            avail.value.push(newItem);
+            const existingItemIndex = avail.value.findIndex(item => item.Id === newItem.Id);
+            if (existingItemIndex !== -1) {
+              const existingItem = { ...availHotelCollect.value[existingItemIndex] };
+              existingItem.previousPrice.push(existingItem.Total);
+              existingItem.Total = newItem.Total;
+              availHotelCollect.value[existingItemIndex] = existingItem;
+            } else {
+              availHotelCollect.value.push(newItem);
+            }
           }
         }
       });
@@ -166,10 +201,11 @@ export const useStaysStore = defineStore("stays", () => {
   async function fetchAvail(payload: Object) {
     payload.ConnectionId = connectionIdSignalR.value;
     payload = { ...payload, ...headersApi };
-    payload.securityToken  = useCookie("SECURITYTOKEN").value
-    invokeServerMethod('PropertyAvail',payload);
-   // useEbooking5.post('propertyService/avail', null, payload).then((res: any) => { })
-   
+    payload.securityToken = useCookie("SECURITYTOKEN").value
+    payload.authorization = bearer
+    invokeServerMethod('PropertyAvail', payload);
+    // useEbooking5.post('propertyService/avail', null, payload).then((res: any) => { })
+
   };
 
   function fetchDetails(payload: string) {
@@ -255,7 +291,7 @@ export const useStaysStore = defineStore("stays", () => {
       useEbooking.get('bookings/getBookingsByTransactionId', null, payload)
         .then((res: any) => {
           console.log(res)
-            resolve(res)
+          resolve(res)
         })
         .catch((error) => {
           console.log(error)
@@ -300,6 +336,6 @@ export const useStaysStore = defineStore("stays", () => {
     })
   };
 
-  return { updateServices, processPayment, getBookingByTransaction, getBasket, addService, suscribeAvail, fetchAvail, fetchDetails, suscribeSearch, fetchResults, handleDisconnect, handleUnsubscribeResults, handleUnsubscribeAvail, searchByArea, fetchNearProperties, fetchGuestReviewsById, getCancellationPolicies, getResults, getResultsMap, getFeatures, getFeaturesMap, getPrebooking, getDetails, getAvail, getRooms, searchToken, avail, results, rooms, features, resultsMap, featuresMap, details, basketId, preBooking, getNearProperties, getGuestReviews, connectionIdSignalR, getReceiving }
+  return { updateServices, processPayment, getBookingByTransaction, getBasket, addService, suscribeAvail, fetchAvail, fetchDetails, suscribeSearch, fetchResults, handleDisconnect, handleUnsubscribeResults, handleUnsubscribeAvail, searchByArea, fetchNearProperties, fetchGuestReviewsById, getCancellationPolicies, getResults, getResultsHotelCollect, getResultsMap, getFeatures, getFeaturesMap, getPrebooking, getDetails, getAvail, getAvailHotelCollect, getRooms, searchToken, avail, availHotelCollect, results, resultsHotelCollect, rooms, features, resultsMap, featuresMap, details, basketId, preBooking, getNearProperties, getGuestReviews, connectionIdSignalR, getReceiving }
 
 })

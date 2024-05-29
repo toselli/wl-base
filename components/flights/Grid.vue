@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import dayjs from 'dayjs';
+const dayjs = useDayjs()
 const model = defineModel();
 const selected = defineModel('selected')
 const average = ref(0)

@@ -53,7 +53,6 @@
         </v-row>
       </v-col>
     </v-row>
-
     <v-row dense>
       <v-col cols="12" :sm="compact ? '10' : '12'" id="col_search_card">
         <v-card rounded="md" class="search-card" flat :class="compact ? 'mb-1 bg-transparent' : 'pa-4 bg-foreground'"
@@ -66,9 +65,9 @@
                   <v-col cols="12" :class="compact ? 'px-2' : ''" v-if="mode == Modes.Multiple">
                     <h5 class="fw-bold">Tramo {{ index + 1 }}</h5>
                   </v-col>
-                <v-col cols="12" sm="9" :class="compact ? 'px-2' : 'pr-2'">
+                <v-col cols="12" sm="9" :class="compact ? '' : 'pr-2'">
                 <v-row dense no-gutters>
-                  <v-col cols="12" sm="6" :class="compact ? 'px-2' : 'pr-2'">
+                  <v-col cols="12" sm="6" :class="compact ? '' : 'pr-2'">
                     <v-avatar color="secondary_text" size="x-small" class="mr-2" v-if="!compact">
                       <v-icon icon="md:location_on" color="foreground" size="16"></v-icon> </v-avatar><span
                       class="body-1 semi" v-if="!compact">{{ $capitalize($t("origin")) }}</span>
@@ -85,7 +84,7 @@
                       @update:selectedPlace="place => handleDestinationPlace(index, place)" />
                   </v-col></v-row>
               </v-col>                 
-                  <v-col cols="12" :sm="mode == Modes.Multiple && segments.length > 1 ? '2' : '3'" :class="compact ? 'pr-2' : 'pr-2'">
+                  <v-col cols="12" :sm="mode == Modes.Multiple && segments.length > 1 ? '2' : '3'" :class="(mode === Modes.Multiple && segments.length > 1) ? '' : (compact ? 'pr-2' : 'pr-2')">
                     <v-avatar color="secondary_text" size="x-small" class="mr-2" v-if="!compact">
                       <v-icon icon="mdi-calendar-today" color="foreground" size="x-small"></v-icon> </v-avatar>
                     <span class="body-1 semi " v-if="!compact">Fecha{{ mode == Modes.Roundtrip ? 's' : '' }}
@@ -93,8 +92,8 @@
                     <CommonDatePicker v-if="mode != Modes.Roundtrip" :compact="compact" :searchedDate="segment.departureDate" :minDate="new Date()"  @update:selectedDate="handleDepartureDate($event, segment)" />
                     <CommonDatePicker v-else :compact="compact" :searchedDate="segment.dates" :multiple="true" :minDate="new Date()" :labelDays="$t('days')" @update:selectedDate="handleRoundDate($event, segment)" />
                     
-                   <v-switch v-model="flexMode" label="Fecha flexible (solo GDS)" density="compact" color="secondary"
-                    class="body-2 mt-n1" hide-details></v-switch>
+                   <v-switch v-model="flexMode" inset label="Fecha flexible (solo GDS)" density="compact" color="secondary"
+                    class="body-3 mt-n1" hide-details></v-switch>
                   </v-col>
                   <v-col cols="12" sm="1" v-if="mode == Modes.Multiple && segments.length > 1">
                     <div class="d-flex align-items-bottom mt-">
@@ -128,7 +127,7 @@
       </v-col>
       <v-col class="d-flex justify-center pa-2 " :class="compact ? 'text-end' : 'text-center'">
         <div class="d-flex text-center">
-          <v-btn rounded="md" color="primary" variant="flat" :class="compact ? 'semi' : 'semi  '" :block="isMobile"
+          <v-btn rounded="md" color="primary" :variant="compact ? 'tonal' : 'flat'" :class="compact ? 'semi' : 'semi  '" :block="isMobile"
             :disabled="!valid" :size="compact ? 'large' : 'x-large'" prepend-icon="mdi-magnify" @click="searchResults">
             {{ $capitalize($t("search")) }}
           </v-btn>
@@ -140,7 +139,7 @@
 </template>
 
 <script setup lang="ts">
-import dayjs from "dayjs";
+const dayjs = useDayjs()
 const isMobile = useMobile()
 const props = defineProps(["compact", "noresults", "nologo", "themed", "divider"]);
 const store = useFlightsStore()

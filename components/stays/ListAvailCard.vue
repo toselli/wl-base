@@ -11,8 +11,9 @@
           <p class="mt-1 body-2" v-for="bedType in item.Room.BedTypes" v-html="bedType.Value">
           </p>
         </div>
+        <span v-if="item.IsHotelCollect" class="body-3 text-success">Pago directo</span>
         <span class="text-success body-3 mt-1" v-if="item.ProviderRef">
-          ({{ item.ProviderRef?.Value }})
+          ({{ item.ProviderRef?.Key }})
         </span>
         <!-- <v-alert class="bg-info" v-if="item.DebugInfo"
                       v-html="item.DebugInfo">
@@ -75,7 +76,7 @@
         <!-- POLITICAS CONSULTADAS -->
         <div v-else>
           <v-chip size="small" variant="outlined" color="error" class="my-1 mx-1"
-            v-if="!item.NonRefundable && $dayjs(item.LastDayToCharge).isBefore($dayjs(), 'day')">
+            v-if="!item.NonRefundable && $dayjs(item.LastDayToCharge).isBefore($dayjs().add(1, 'day'), 'day')">
             Cancelación con cargo
           </v-chip>
           <v-chip size="small" variant="outlined" color="success" class="my-1 mx-1" v-else-if="!item.NonRefundable">

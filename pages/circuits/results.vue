@@ -3,7 +3,7 @@
         <CommonSearch :compact="true" />
         <circuits-filters :filters="store.features" @apply="getFilteredResults" @clear="clearFilters"
             v-if="getLoggedUser && filteredResults.length > 0"></circuits-filters>
-        <v-row class="py-2" v-if="getLoggedUser">
+        <v-row dense v-if="getLoggedUser">
             <v-col cols="12" md="5">
                 <div>
                     <h5>Resultados de la búsqueda</h5>
@@ -35,7 +35,7 @@
                     </CircuitsListResultCard>
                 </v-col>
                 <v-col cols="12" class="text-center" v-if="!loading && filteredResults.length < totalServices">
-                    <v-btn variant="outlined" rounded="xl" @click="limitResults += 25" :loading="loadingMore">
+                    <v-btn variant="outlined" rounded="xl" @click="limitResults += 24" :loading="loadingMore">
                         Mostrar más resultados
                     </v-btn>
                 </v-col>
@@ -95,16 +95,17 @@ const activeOrderInfo = ref({
     direction: 'asc' // Dirección inicial
 });
 
-// Ajustamos filteredResults para que considere el ordenamiento
 const filteredResults = computed(() => {
     const results = [...getResults.value]; // Hacemos una copia para no modificar el original
     const { field, direction } = activeOrderInfo.value;
-    return results.sort((a, b) => {
+    const filtered = results.filter(item => item.Name.toLowerCase().includes(catalogNameSearch.value.toLowerCase()));
+    return filtered.sort((a, b) => {
         const aValue = a[field];
         const bValue = b[field];
         return direction === 'asc' ? aValue - bValue : bValue - aValue;
     });
 });
+
 
 const order = (orderInfo) => {
     activeOrderInfo.value = { ...orderInfo };  // Asegurarse de que se actualiza
@@ -132,14 +133,14 @@ watch(filteredResults, () => {
     renderKey.value++;
 })
 
-const limitResults = ref(25)
+const limitResults = ref(24)
 watch(limitResults, (newValue, oldValue) => {
     if (newValue > oldValue) {
         searchResults();
     }
 })
 const pageNumber = computed(() => {
-    return limitResults.value / 25
+    return limitResults.value / 24
 })
 
 const searchResults = async (route?) => {
@@ -157,11 +158,12 @@ const searchResults = async (route?) => {
             Residence: "AR",
             Language: "es"
         },
-        Paging: { Page: pageNumber.value, PageSize: 25 },
+        Paging: { Page: pageNumber.value, PageSize: 24 },
         Sorting: {
             PropertyName: "Total",
             Direction: "asc"
-        }
+        },
+        Features: filters.value
     }
 
     payload.Search.cities = route.query.cities ? route.query.cities.split(',') : []
@@ -192,12 +194,15 @@ onBeforeRouteUpdate((to, from) => {
 
 const router = useRouter();
 const goToAvail = (catalogId) => {
+    let route = useRoute()
     router.push({
         path: "/circuits/details",
         query: {
             catalogId: catalogId,
             basketId: store.basketId,
-            currency: 'USD'
+            currency: 'USD',
+            cities: route.query.cities,
+            countries: route.query.countries
         }
     });
 }

@@ -12,7 +12,7 @@ export const useFlightsStore = defineStore("flights", () => {
     //getters
     const getResults = computed(() => results.value)
     const getGrouped = computed(() => {
-    const groups = Object.groupBy(results.value, ({ RouteId }) => RouteId)
+        const groups = Object.groupBy(results.value, ({ RouteId }) => RouteId)
         return groups
     })
 
@@ -63,13 +63,50 @@ export const useFlightsStore = defineStore("flights", () => {
 
     function search(payload, flex) {
         return new Promise((resolve, reject) => {
-            if(flex) {
+            if (flex) {
                 useEbooking.post('flightService/searchFlex', null, payload)
+                    .then((res: any) => {
+                        results.value.push(...res.Services) 
+                        basketId.value = res.Token
+                        features.value = res.Features
+                        matrix.value = res.Matrix
+                        resolve(res)
+                        // useEbooking.post('flightService/searchNdc', null, payload)
+                        //     .then((ndc: any) => {
+                        //         results.value.push(...ndc.Services) 
+                        //         features.value = ndc.Features
+                        //         matrix.value = ndc.Matrix 
+                        //         resolve(ndc)
+                        //     }) 
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        reject()
+                    })
+            } else {
+                matrix.value = []
+                useEbooking.post('flightService/search', null, payload)
+                    .then((res: any) => {
+                        results.value.push(...res.Services) 
+                        basketId.value = res.Token
+                        features.value = res.Features
+                        resolve(res)
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        reject()
+                    })
+            }
+        })
+    };
+    function searchNdc(payload) {
+        return new Promise((resolve, reject) => {
+            useEbooking.post('flightService/searchNdc', null, payload)
                 .then((res: any) => {
-                    results.value = res.Services
+                    results.value.push(...res.Services) 
                     basketId.value = res.Token
                     features.value = res.Features
-                    matrix.value = res.Matrix
+                    matrix.value = []
                     resolve(res)
                     // useEbooking.post('flightService/searchNdc', null, payload)
                     //     .then((ndc: any) => {
@@ -83,25 +120,7 @@ export const useFlightsStore = defineStore("flights", () => {
                     console.log(error)
                     reject()
                 })
-            } else {
-                useEbooking.post('flightService/search', null, payload)
-                .then((res: any) => {
-                    results.value = res.Services
-                    basketId.value = res.Token
-                    features.value = res.Features
-                    useEbooking.post('flightService/searchNdc', null, payload)
-                        .then((ndc: any) => {
-                            results.value.push(...ndc.Services) 
-                            features.value = ndc.Features
-                            resolve(ndc)
-                        }) 
-                })
-                .catch((error) => {
-                    console.log(error)
-                    reject()
-                })
-            }
-        })
+            })
     };
     function addService(payload: any) {
         return new Promise((resolve, reject) => {
@@ -171,6 +190,6 @@ export const useFlightsStore = defineStore("flights", () => {
     }
 
 
-    return { clearAirports, updateServices, processPayment, getBasket, addService, search, getCancellationPolicies, fetchAirports, getAirport, getAirports, getGrouped, getResults, getFeatures, getMatrix, getPrebooking, searchToken, results, features, basketId, preBooking }
+    return { clearAirports, updateServices, processPayment, getBasket, addService, search, searchNdc, getCancellationPolicies, fetchAirports, getAirport, getAirports, getGrouped, getResults, getFeatures, getMatrix, getPrebooking, searchToken, results, features, basketId, preBooking }
 
 })

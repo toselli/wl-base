@@ -5,7 +5,7 @@
         Inicia sesión para continuar
       </h4>
       <v-img src="/base/img/no_login.png" width="280" class="mx-auto"></v-img>
-      <v-btn variant="flat" color="primary" rounded="xl" @click="openLoginDialog">
+      <v-btn variant="flat" color="primary" rounded="md" @click="openLoginDialog">
         Iniciar sesión
       </v-btn>
     </v-card-text>

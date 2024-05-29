@@ -1,4 +1,5 @@
 export const useUsersStore = defineStore("users", () => {
+    const { initializeUserConfig } = useUserConfig(); 
     //state
     const loggedUser = ref(null)
     const users = ref([])
@@ -14,6 +15,7 @@ export const useUsersStore = defineStore("users", () => {
                 .then((res: any) => {                    
                     loggedUser.value = res
                     if(!isLoggedIn.value) return reject(res);
+                    initializeUserConfig(loggedUser.value.IdString)
                     resolve(res)
                 }, err => {
                     reject(err)
@@ -68,6 +70,19 @@ export const useUsersStore = defineStore("users", () => {
         })
     }
 
+    function fetchSellersFlights(payload: object) {
+        return new Promise((resolve, reject) => {
+            useEbooking.get("users/getSellersByAgency", null,  payload)
+                .then((res) => {
+                    users.value = res
+                   resolve(res)
+                })
+                .catch((err) => {
+                    reject(err)
+                })
+        })
+    }
+
     function changePassword(payload: object) {
         return new Promise((resolve, reject) => {
             useIdentity.put(`v1/users/${payload.UserId}/reset-password`, null ,payload)
@@ -94,5 +109,5 @@ export const useUsersStore = defineStore("users", () => {
         })
     }
 
-    return  { loggedUser, getLoggedUser, isLoggedIn, getUsers, fetchLoggedUser, getUsersByRole, fetchSellers, changePassword, validateEmailforReset }
+    return  { loggedUser, getLoggedUser, isLoggedIn, getUsers, fetchLoggedUser, getUsersByRole, fetchSellers, fetchSellersFlights, changePassword, validateEmailforReset }
 })

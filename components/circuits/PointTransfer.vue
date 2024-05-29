@@ -50,7 +50,6 @@
 </template>
 
 <script setup>
-import VueDatePicker from "@vuepic/vue-datepicker";
 const { requiredRules } = useFormRules()
 const model = defineModel();
 const valid = defineModel('valid')

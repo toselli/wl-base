@@ -67,7 +67,7 @@
                 </div>
             </template>
             <template #action-buttons="{ value }" v-if="multiple">
-                <div :set="nights = $dayjs(value[1]).diff($dayjs(value[0]), 'day')"></div>
+                <div :set="$dayjs(value[1]) ? nights = $dayjs(value[1]).diff($dayjs(value[0]), 'day') : ''"></div>
                 <v-btn variant="flat" rounded="md" color="secondary" :block="isMobile" size="large" @click="selectDate"
                     :disabled="value[0] == undefined || value[1] == undefined || nights == 0">
                     {{ $capitalize($t("confirm")) }}</v-btn>
@@ -92,7 +92,7 @@
 </template>
 
 <script setup>
-import dayjs from "dayjs";
+ const dayjs = useDayjs()
 const isMobile = useMobile()
 
 const props = defineProps(["compact", "multiple", "searchedDate", "labelDays", "minDate"]);

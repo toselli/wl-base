@@ -12,6 +12,7 @@
         <span class="text-primary_text" v-else-if="selectedOffice">
           {{ formatOfficeHeader(selectedOffice.Name) }}
         </span>
+        <span class="text-secondary_text" v-else-if="noOffices">No hay oficinas en la ciudad seleccionada</span>
         <span class="text-secondary_text" v-else>{{ label }}</span>
       </v-btn>
     </template>
@@ -55,7 +56,7 @@ const menuSearch = ref(false);
 const search = ref('');
 const selectedOffice = ref(null);
 const store = useCarsStore();
-
+const noOffices = ref(false)
 const pickupOffices = ref([])
 const returnOffices = ref([])
 
@@ -83,6 +84,10 @@ async function fetchOffices(type) {
       selectOffice(pickupOffices.value[0])
     } else if (type == 'return' && returnOffices.value.length > 0) {
       selectOffice(returnOffices.value[0])
+    } else if (pickupOffices.value.length == 0 || returnOffices.value.length == 0) {
+      selectedOffice.value = null
+      emit('update:selectedOffice', null);
+      noOffices.value = true
     }
 
   } catch (error) {

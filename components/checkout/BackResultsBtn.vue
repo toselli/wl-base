@@ -1,5 +1,6 @@
 <template>
-  <v-btn prepend-icon="mdi-chevron-left" rounded="xl" variant="outlined" density="comfortable" 
+  <v-btn prepend-icon="mdi-chevron-left" rounded="sm" variant="outlined" density="comfortable" 
     @click="useBackButton">
-  Volver</v-btn>  
+    Volver a los resultados
+    </v-btn>  
 </template>

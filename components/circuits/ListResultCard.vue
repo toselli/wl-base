@@ -1,30 +1,30 @@
 <template>
-    <v-card rounded="lg" class="list-result-card fill-height" flat>
+    <v-card rounded="lg" class="list-result-card fill-height" flat >
         <v-container fluid class="pa-0" :class="mode == 'list' ? '' : 'full-height'">
             <v-row dense no-gutters :class="mode == 'list' ? '' : 'full-height'">
                 <v-col cols="12" :md="mode == 'list' ? '3' : '12'">
-                    <v-img class="fill-height" :src="service.Thumbnail" height="204px" width="408px" cover
-                        position="0 0" lazy-src="/base/img/services/circuits_no_image.png"></v-img>
+                    <v-img class="fill-height" :src="service.Thumbnail" height="204px" width="408px" contain style="cursor:pointer"
+                        position="0 0" lazy-src="/base/img/services/circuits_no_image.png"  @click="$emit('selected', service.CatalogId)"></v-img>
                 </v-col>
                 <v-col cols="12" :md="mode == 'list' ? '6' : '12'" class="pa-3">
-                    <h3 class="semi ">{{ service.Name }}</h3>
-                    <p class="body-2 semi my-1"><v-icon icon="md:date_range"></v-icon> {{ service.Duration }} días
+                    <h3 class="semi" style="cursor:pointer"  @click="$emit('selected', service.CatalogId)">{{ service.Name }}</h3>
+                    <p class="body-2 mb-2 text-success">({{service.ProviderName}})</p>
+                    <p class="body-2 semi my-1">
+                    <v-icon icon="mdi-calendar" size="small"></v-icon> {{ service.Duration }} días
                     </p>
-                    <p class="body-2 semi my-1">Visitando: <span class="semi text-secondary_text">{{
+                    <p class="body-2 semi my-1">Visitando: <span class="semi text-secondary_text" style="text-transform: capitalize;">{{
             service.Cities.map(x =>
-                x.Value).join(',') }}</span></p>
-                    <p class="body-2 semi mb-2">Pernoctando en: <span class="semi text-secondary_text">{{
-            formatNightlyCities(service.NightlyCities) }}</span></p>
-
+                x.Value.toLocaleLowerCase()).join(',') }}</span></p>
+                    <p class="body-2 semi mb-2">Pernoctando en: <span class="semi text-secondary_text" style="text-transform: capitalize;">{{
+            formatNightlyCities(service.NightlyCities.toLocaleLowerCase()) }}</span></p>
                     <p class="body-2 semi mb-0">Salidas en:</p>
                     <span class="body-2 text-secondary_text semi">
                         {{ formattedMonths }}
                     </span>
                     <v-btn class="ma-1" color="secondary" rounded="md" variant="tonal" size="small"
-                        @click="departuresDialog = true" v-if="departuresList.length > 2">
+                        @click.prevent="departuresDialog = true" v-if="departuresList.length > 2">
                         <span class="body-3 semi"> {{ service.Departures ? 'Ver todas' : 'No hay salidas' }}</span>
                     </v-btn>
-
                 </v-col>
                 <v-col cols="12" :md="mode == 'list' ? '3' : '12'" :class="mode == 'list' ? 'text-right pa-3' : 'pa-3'">
                     <v-row dense :class="mode == 'list' ? 'flex-column' : 'full-height align-end'">
@@ -67,7 +67,7 @@
                         <v-list class="bg-foreground px-3" rounded="lg">
                             <v-list-item rounded="sm" :class="i % 2 == 0 ? 'bg-foreground' : 'bg-background'"
                                 v-for="(departure, i) in departuresList">
-                                <li class="body-1 text-secondary_text" v-html="departure"></li>
+                              <p v-html="departure"></p> 
                             </v-list-item>
                         </v-list>
                     </v-card-text>

@@ -3,7 +3,7 @@
         <CommonSearch :compact="true" />
         <assistances-filters :filters="store.features"  v-if="store.features && getLoggedUser" @apply="getFilteredResults"
                     @clear="clearFilters"></assistances-filters>
-        <v-row class="py-2" v-if="getLoggedUser">
+        <v-row dense  v-if="getLoggedUser">
             <v-col cols="12" md="5">
                 <h5 class="mt-2">Resultados de la búsqueda</h5>
                 <p class="body-2 text-secondary_text" v-if="loading">
@@ -31,7 +31,7 @@
                             @add-to-cart="goToCheckout"></assistances-list-result-card>
                     </v-col>
                     <v-col cols="12" class="text-center" v-if="!loading && totalServices > filteredResults.length">
-                        <v-btn variant="outlined" rounded="xl" @click="limitResults += 25" :loading="loadingMore">Mostrar
+                        <v-btn variant="outlined" rounded="xl" @click="limitResults += 50" :loading="loadingMore">Mostrar
                             más
                             resultados</v-btn>
                     </v-col>
@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import dayjs from "dayjs";
+const dayjs = useDayjs()
 
 //MOBILEs
 const isMobile = useMobile()
@@ -69,13 +69,13 @@ const filterSearch = ref('')
 const sorting = [
     {
         name: 'Precio',
-icon: 'md:arrow_upward',
+        icon: 'mdi-sort-ascending',
         field: 'Total',
         direction: 'asc'
     },
     {
         name: 'Precio',
-icon: 'md:arrow_downward',
+        icon: 'mdi-sort-descending',
         field: 'Total',
         direction: 'desc'
     }]
@@ -101,7 +101,7 @@ function order($event) {
 }
 
 const results = ref([])
-const limitResults = ref(25)
+const limitResults = ref(50)
 const loadingMore: Ref<boolean> = ref(false);
 const totalServices = ref(null)
 
@@ -111,7 +111,7 @@ watch(limitResults, (newValue, oldValue) => {
     }
 })
 const pageNumber = computed(() => {
-    return limitResults.value / 25
+    return limitResults.value / 50
 })
 
 
@@ -132,7 +132,7 @@ const getResults = async () => {
     }
     const payload = {
         Search: query,
-        Paging: { Page: pageNumber.value, PageSize: 25 },
+        Paging: { Page: pageNumber.value, PageSize: 50 },
         Sorting: { PropertyName: "Total", Direction: "asc" },
     }
     try {

@@ -1,4 +1,4 @@
-import serviceTypes from '~/custom/service-types.json'
+import serviceTypes from '~/assets/service-types.json'
 export const useWebStore = defineStore("web", () => {
     const getServiceTypeFromUrl = () => {
         const route = useRoute();

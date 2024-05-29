@@ -52,6 +52,19 @@
                                 </h6>
                             </v-list-item>
                         </v-list>
+                        <v-list v-if="userPlacesSearched.length > 0 && serviceType == '0' || serviceType == '2'">
+                            <h4 class="mb-4 px-3">Búsquedas anteriores</h4>
+                            <v-list-item v-for="places in userPlacesSearched" @click="selectPlace(places)">
+                                <h4 class="body-1 semi text-primary_text">
+                                    <v-icon class="mr-1" :icon="usePlaceIcon(places.SmartSearchEnum)" size="sm">
+                                    </v-icon>
+                                    {{ places.Name.split(', ')[0] }}
+                                </h4>
+                                <h6 class="body-3 ml-5 text-secondary_text">
+                                    {{ places.Name.split(',').slice(1).join(',') }}
+                                </h6>
+                            </v-list-item>
+                        </v-list>
                         <v-list v-if="serviceType == '0' || serviceType == '2'">
                             <h4 class="mb-4 px-3">Top destinos</h4>
                             <v-list-item v-for="top in store.topPlaces" @click="selectPlace(top)">
@@ -126,12 +139,31 @@ watchEffect(() => {
     }
 });
 
-function selectPlace(place) {
+const { updateUserConfig } = useUserConfig()
+const configStore = useConfigStore()
+const usersStore = useUsersStore();
+const { getLoggedUser } = storeToRefs(usersStore);
+const userPlacesSearched = computed(() => configStore.getConfig?.lastPlacesSearched || []);
+
+async function selectPlace(place) {
     selectedPlace.value = place;
     emit('update:selectedPlace', place);
-    menuSearch.value = false
-    search.value = ''
+    menuSearch.value = false;
+    search.value = '';
+    if (getLoggedUser.value) {
+        const filteredPlaces = userPlacesSearched.value.filter(p => p.Id !== place.Id);
+        
+        const updatedPlaces = [place, ...filteredPlaces];
+        
+        const placesLimited = updatedPlaces.slice(0, 5);
+        
+        userPlacesSearched.value = placesLimited;
+        
+        await updateUserConfig(getLoggedUser.value.IdString, { lastPlacesSearched: placesLimited });
+    }
 }
+
+
 
 function debounce(func, wait) {
     let timeout;

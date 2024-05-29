@@ -21,7 +21,7 @@
               :variant="compact ? 'default' : 'default'">
               <v-row class="align-start" dense :no-gutters="compact">
                 <!-- INPUT PLACES -->
-                <v-col cols="12" :md="compact ? '7' : '7'" :class="compact ? 'pr-2' : ''">
+                <v-col cols="12" :md="compact ? '8' : '7'" :class="compact ? 'pr-2' : ''">
                   <v-row class="align-center" dense>
                     <v-col cols="12" sm="6" :class="compact ? '' : 'pr-2'">
                       <v-avatar color="secondary_text" size="x-small" class="mr-2" v-if="!compact">
@@ -52,7 +52,7 @@
                 </v-col>
                 <!-- <v-divider vertical v-if="!compact" class="my-4" :color="divider"></v-divider> -->
                 <!-- INPUT FECHA-->
-                <v-col cols="12" :md="compact ? '4' : '3'" :class="compact ? 'py-2 py-sm-0' : ''">
+                <v-col cols="12" :md="compact ? '3' : '3'" :class="compact ? 'py-2 py-sm-0 pr-2' : ''">
                       <v-avatar color="secondary_text" size="x-small" class="mr-2" v-if="!compact">
                         <v-icon icon="mdi-calendar-today" color="foreground" size="x-small"></v-icon> </v-avatar><span
                         class="body-1 semi" v-if="!compact">{{ $capitalize($t("date")) }} <span
@@ -80,8 +80,8 @@
                   </CommonOccupancies>
                 </v-col>
                 <!-- IDA Y VUELTA -->
-                <v-col cols="12" :md="compact ? '4' : '3'" :offset-md="compact ? '7' : '7'" v-if="transferMode == 1"
-                  :class="compact ? 'mt-1' : 'mt-1 px-2'">
+                <v-col cols="12" :md="compact ? '3' : '3'" :offset-md="compact ? '8' : '7'" v-if="transferMode == 1"
+                  :class="compact ? 'mt-1 pr-2' : 'mt-1 px-2'">
                   <p v-if="compact" class="body-2 semi pa-1">Fecha regreso:</p>
 
                       <v-avatar color="secondary_text" size="x-small" class="mr-2" v-if="!compact">
@@ -117,9 +117,7 @@ const theme = ref(useTheme())
 const props = defineProps(["noplaces", "compact", "noresults", "nologo", "themed", "divider"]);
 const route = useRoute();
 
-import dayjs from "dayjs";
-import VueDatePicker from "@vuepic/vue-datepicker";
-import "@vuepic/vue-datepicker/dist/main.css";
+const dayjs = useDayjs()
 //DESIGN
 
 const transferMode = ref(0)

@@ -22,7 +22,7 @@
               <CommonDatePicker :compact="compact" :searchedDate="selectedDate" :multiple="true" :minDate="new Date()" :labelDays="$t('nights')" @update:selectedDate="handleSelectedDate" />
             </v-col>
             <!-- <v-divider vertical class="my-3" :color="divider" v-if="!isMobile"></v-divider> -->
-            <v-col cols="12" :sm="noplaces ? '5' : '2'" :class="isMobile ? 'mt-3' : 'pr-2'">
+            <v-col cols="12" :sm="noplaces ? '5' : '2'" :class="isMobile ? 'mt-3' : ''">
               <CommonOccupancies @update:rooms="setOccupancies" :compact="compact" :themed="themed" serviceType="stays"
                 :multiple="true">
               </CommonOccupancies>
@@ -33,16 +33,17 @@
       </v-col>
       <v-col cols="12" sm="2" :class="noplaces ? '' : 'text-center'" class="mt-1 mt-md-0">
         <v-btn rounded="md" color="primary" :variant="compact ? 'tonal' : 'flat'"
-          :class="compact ? 'semi mt-0' : 'semi mt-2'" v-if="noplaces" :block="isMobile"
+          :class="compact ? 'semi mt-0 ml-2' : 'semi mt-2'" v-if="noplaces" :block="isMobile"
           :size="compact ? 'large' : 'x-large'" prepend-icon="mdi-magnify" @click="searchResults"
-          :disabled="selectedDate == []">
+          :disabled="selectedDate.length == 0">
           {{ $capitalize($t("search")) }}
         </v-btn>
         <v-btn rounded="md" color="primary" :variant="compact ? 'tonal' : 'flat'"
           :class="compact ? 'semi' : 'semi mt-2'" v-else :block="isMobile" :size="compact ? 'large' : 'x-large'"
-          prepend-icon="mdi-magnify" @click="searchResults" :disabled="selectedPlace == null || selectedDate == []">
+          prepend-icon="mdi-magnify" @click="searchResults" :disabled="selectedPlace == null || selectedDate.length == 0">
           {{ $capitalize($t("search")) }}
         </v-btn>
+
         <CommonSearchBy v-if="!compact && !nologo" />
       </v-col>
     </v-row>
@@ -55,7 +56,7 @@ const isMobile = useMobile()
 const props = defineProps(["noplaces", "compact", "noresults", "nologo", "themed"]);
 const route = useRoute();
 
-import dayjs from "dayjs";
+const dayjs = useDayjs()
 
 //DESIGN
 

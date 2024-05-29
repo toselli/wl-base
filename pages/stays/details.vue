@@ -2,8 +2,8 @@
   <v-container class="content-container">
     <v-row dense>
       <v-col>
-        <v-btn prepend-icon="mdi-chevron-left" rounded="xl" variant="outlined" density="comfortable"
-          v-if="route.query.place" @click="backToResults"> Volver</v-btn>
+        <v-btn prepend-icon="mdi-chevron-left" rounded="sm" variant="outlined" density="comfortable"
+          @click="backToResults"> Volver a los resultados</v-btn>
       </v-col>
     </v-row>
     <v-row dense class="mt-md-1">
@@ -133,12 +133,25 @@
             <v-window-item :value="index" v-for="room, index in rooms">
               <v-container v-if="avail">
                 <v-row dense class="mb-2">
-                  <v-col cols="12" md="4" v-if="!loadingAvail">
-                    <p class="body-2 pt-1"> Encontramos {{ getRoomResults(room.Id).length }} opciones disponibles</p>
+                  <v-col cols="12" md="4">
+                    <v-btn-toggle v-model="availMode" density="compact" mandatory color="midground"
+                      class="btn-toggle-large bg-secondary_lighten" variant="flat" rounded="md"
+                      selected-class="btn-toggle-large-selected" v-if="activeHotelCollect == 'true'">
+                      <v-btn class="my-1 mx-1 body-2 text-primary_text bg-midground" rounded="md">
+                        Pago por agencia ({{ filteredAvail(room.Id).length }})
+                      </v-btn>
+                      <v-btn class="my-1 mx-1 body-2 text-primary_text bg-midground" rounded="md"
+                        :disabled="filteredAvailHotelCollect(room.Id).length == 0">
+                        Pago directo al hotel ({{ filteredAvailHotelCollect(room.Id).length }})
+                      </v-btn>
+                    </v-btn-toggle>
+                    <h5 class="mt-3" v-else>
+                      Encontramos <span class="text-primary">{{ filteredAvail(room.Id).length }}</span> resultados
+                    </h5>
                   </v-col>
                   <v-col cols="12" md="8" :class="!isMobile ? 'text-right' : ''">
-                    <stays-details-tools :viewMode="viewMode" :loading="loading" @orderDes="orderDes(room.Id)"
-                      @orderAsc="orderAsc(room.Id)" @update:prompt="searchPrompt = $event; roomNumber = room.Id"
+                    <stays-details-tools :viewMode="viewMode" :loading="loading" @orderDes="orderDes()"
+                      @orderAsc="orderAsc()" @update:prompt="searchPrompt = $event; roomNumber = room.Id"
                       @update:showNonRef="showNonRef = $event" @update:showDirectChain="showDirectChain = $event"
                       @update:viewMode="viewMode = $event" :orderType="priceOrder" />
                   </v-col>
@@ -146,16 +159,16 @@
                 <!-- FILTROS -->
                 <!-- RESULTS -->
                 <v-row dense v-if="!loadingAvail && avail.length > 0">
-                  <v-col :lg="viewMode == 'list' ? 12 : 4" cols="12"
+                  <v-col :md="viewMode == 'list' ? 12 : 4" cols="12"
                     :class="viewMode == 'list' ? 'pa-0 d-flex flex-column' : ''"
-                    v-for="result in getRoomResults(room.Id).slice(0, limitAvail)">
+                    v-for="result in currentAvail(room.Id).slice(0, limitAvail)">
                     <stays-list-avail-card :item="result" :mode="viewMode" @book="goToCheckoutSingle(result, property)"
                       :multiple="rooms.length > 1 ? true : false" @select="selectRoom(room.Id, result.Id)"
                       @unselect="unselectRoom(result.Id)" :selected.sync="isSelected(result.Id)"
                       :class="hasId(result.Id) ? 'list-avail-card-selected mb-2' : 'mb-2'">
                     </stays-list-avail-card>
                   </v-col>
-                  <v-col cols="12" v-if="getRoomResults(room.Id).length > limitAvail">
+                  <v-col cols="12" v-if="currentAvail(room.Id).length > limitAvail">
                     <v-skeleton-loader type="list-item-avatar-three-line" class="rounded-lg list-result-card">
                     </v-skeleton-loader>
                   </v-col>
@@ -165,7 +178,7 @@
                   </v-col>
                 </v-row>
                 <v-row class="mt-3" justify="center"
-                  v-if="getRoomResults(room.Id).length == 0 && !loadingAvail && !isReceiving">
+                  v-if="availHotelCollect.length == 0 && avail.length == 0 && !loadingAvail && !isReceiving">
                   <v-col cols="12">
                     <h3 class="text-center">En este momento no hay habitaciones disponibles</h3>
                     <v-img src="/base/img/services/no_avail.png" width="280" class="my-6 mx-auto"></v-img>
@@ -176,7 +189,17 @@
                     <StaysNearPropertiesGrid :items="nearProperties" :principal="property" v-if="property" />
                   </v-col>
                 </v-row>
-                <StaysFinishSearchBottomSheet v-model="finishSearch" v-if="!isReceiving && avail.length > 0"
+                <v-row class="mt-3" justify="center"
+                  v-if="currentAvail(room.Id).length == 0 && searchPrompt">
+                  <v-col cols="12">
+                    <h3 class="text-center">No hay habitaciones con su filtro de búsqueda</h3>
+                    <v-img src="/base/img/services/no_avail.png" width="280" class="my-6 mx-auto"></v-img>
+                    <h4 class="body-1 semi text-secondary_text text-center  mt-5">
+                      Pruebe modificando sus filtros
+                    </h4>
+                  </v-col>
+                </v-row>
+                <StaysFinishSearchBottomSheet v-model="finishSearch" v-if="!isReceiving && avail.length > 0 && !configStore.getConfig.autoOrderbyPrice"
                   :results="avail.length" :rooms="rooms.length" @close="finishSearch = false"
                   @orderResults="orderAsc(); finishSearch = false" />
               </v-container>
@@ -287,13 +310,13 @@
         </v-skeleton-loader>
         <v-container v-else-if="nearProperties && nearProperties.length > 0">
           <v-row>
-            <v-col>
+            <v-col cols="12" md="6">
               <StaysNearPropertiesMap :items="nearProperties" :principal="property" v-if="property"
                 @goTo="goToDetails" />
             </v-col>
-            <v-col>
+            <v-col cols="12" md="6">
               <StaysNearPropertiesList :items="nearProperties" :principal="property" v-if="property"
-                @goToTab="detailsTabs = 1" />
+                @goToTab="goToDetails" />
             </v-col>
           </v-row>
         </v-container>
@@ -345,7 +368,7 @@ function startCountdown() {
         seconds.value = 59;
       } else {
         clearInterval(countdownInterval);
-        timeoutDialog.value = false
+        timeoutDialog.value = true
       }
     }
   }, 1000);
@@ -363,19 +386,21 @@ function reloadAvail() {
 
 const usersStore = useUsersStore();
 const { getLoggedUser } = storeToRefs(usersStore);
+const loadingLoggedUser = ref(false)
 
 //LOGIN
-const occupancies = ref([])
 
 onMounted(() => {
+  loadingLoggedUser.value = true
   const loggedUser = getLoggedUser.value;
   occupancies.value = useOccupancies.parse(route.query.occupancies)
   if (loggedUser != null) {
+    getDetails();
     getAvail();
     startCountdown();
-    getDetails();
-
+    loadingLoggedUser.value = false
   } else {
+    loadingLoggedUser.value = false
     // Esperar a que el usuario se loguee
     const unwatch = watch(getLoggedUser, (newValue, oldValue) => {
       if (newValue != null) {
@@ -392,6 +417,7 @@ onMounted(() => {
 });
 
 //GET DATA
+const occupancies = ref([])
 const property = ref({})
 const detailsTabs = ref(1)
 const route = useRoute();
@@ -450,6 +476,7 @@ function handleImageError(index) {
 
 //AVAIL
 const avail = ref([])
+const availHotelCollect = ref([])
 const loadingAvail = ref(false);
 const rooms = ref([])
 const nuxtConfig = useRuntimeConfig()
@@ -467,15 +494,25 @@ async function getAvail() {
     Residence: "AR",
     PropertyId: propertyId.value,
   }
+  if (activeHotelCollect == 'false') {
+    searchAvail.IsOnlyHotelCollect = null
+  } else if (activeHotelCollect == 'tue') {
+    searchAvail.IsOnlyHotelCollect = false
+  }
   try {
     loadingAvail.value = true
     await store.suscribeAvail();
     await store.fetchAvail(searchAvail);
     useNuxtApp().$toast.info('Buscando los mejores precios', { autoClose: nuxtConfig.public.searchTime, icon: "🚀", hideProgressBar: false, toastId: 'searchingToast', closeButton: false });
     avail.value = store.getAvail
+    availHotelCollect.value = store.getAvailHotelCollect
     rooms.value = store.getRooms
+    while (avail.value.length === 0 && property.value) {
+      // Esperar 1 segundo antes de volver a comprobar
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
     if (avail.value.length == 0 && property.value) {
-      fetchNearProperties()
+      fetchNearProperties();
     }
   } catch (error) {
     console.log(error);
@@ -499,62 +536,111 @@ watch(isReceiving, (newValue, oldValue) => {
 
 
 //RESULTS
-const searchPrompt = ref('')
+const searchPrompt = ref(null)
 const roomNumber = ref(null)
 const viewMode = ref('list')
 const showNonRef = ref(true)
 const showDirectChain = ref(false)
 const priceOrder = ref("asc");
 const roomsTabs = ref(0)
+const dayjs = useDayjs()
 
-function orderAsc(roomId) {
+function orderAsc() {
   avail.value = avail.value.sort((a, b) => a.Price.PVP.Total - b.Price.PVP.Total);
   priceOrder.value = 'asc'
 }
 
-function orderDes(roomId) {
+function orderDes() {
   avail.value = avail.value.sort((a, b) => b.Price.PVP.Total - a.Price.PVP.Total);
   priceOrder.value = 'des'
 }
 
-import dayjs from 'dayjs';
+const configStore = useConfigStore();
 
-function getRoomResults(roomId) {
-  let filteredResults = avail.value.filter(result => result.RoomId === roomId);
+watch(() => configStore.getConfig, (newConfig) => {
+    if (newConfig && newConfig.autoOrderbyPrice) {
+      orderAsc()
+    }
+}, { immediate: true });
+
+watch(avail, () => {
+    if (priceOrder.value == 'asc') {
+      orderAsc();
+    }
+}, { deep: true });
+
+const filteredAvail = computed(() => roomId => {
+  let results = avail.value.filter(result => result.RoomId === roomId);
 
   if (searchPrompt.value) {
     const lowerCaseRoomName = searchPrompt.value.toLowerCase();
-
-    filteredResults = filteredResults.filter(result =>
-    (result.Room.Description.toLowerCase().includes(lowerCaseRoomName) ||
-
+    results = results.filter(result =>
+      result.Room.Description.toLowerCase().includes(lowerCaseRoomName) ||
       result.Price.PVP.IncludedSupplements.some(supplement =>
         supplement.Description.toLowerCase().includes(lowerCaseRoomName)
       ) ||
-
       result.Price.PVP.Boards.some(board =>
         board.Description.toLowerCase().includes(lowerCaseRoomName)
-      ))
-    )
+      ) ||
+      result.ProviderRef.Key.toLowerCase().includes(lowerCaseRoomName)
+    );
   }
+
   if (!showNonRef.value) {
-    filteredResults = filteredResults.filter(result => {
+    results = results.filter(result => {
       const isNonRefundable = result.NonRefundable;
       const isBeforeThreshold = !dayjs(result.LastDayToCharge).isAfter(dayjs(), 'day');
-
       return !(isNonRefundable || isBeforeThreshold);
     });
   }
-  if (showDirectChain.value) {
-    filteredResults = filteredResults.filter(result => {
-      const isDirectChain = result.DirectChain;
 
-      return isDirectChain;
+  if (showDirectChain.value) {
+    results = results.filter(result => result.DirectChain);
+  }
+
+  return results;
+});
+
+const filteredAvailHotelCollect = computed(() => roomId => {
+  let results = availHotelCollect.value.filter(result => result.RoomId === roomId);
+
+  if (searchPrompt.value) {
+    const lowerCaseRoomName = searchPrompt.value.toLowerCase();
+    results = results.filter(result =>
+      result.Room.Description.toLowerCase().includes(lowerCaseRoomName) ||
+      result.Price.PVP.IncludedSupplements.some(supplement =>
+        supplement.Description.toLowerCase().includes(lowerCaseRoomName)
+      ) ||
+      result.Price.PVP.Boards.some(board =>
+        board.Description.toLowerCase().includes(lowerCaseRoomName)
+      ) ||
+      result.ProviderRef.Key.toLowerCase().includes(lowerCaseRoomName)
+    );
+  }
+
+  if (!showNonRef.value) {
+    results = results.filter(result => {
+      const isNonRefundable = result.NonRefundable;
+      const isBeforeThreshold = !dayjs(result.LastDayToCharge).isAfter(dayjs(), 'day');
+      return !(isNonRefundable || isBeforeThreshold);
     });
   }
-  return filteredResults;
-};
 
+  if (showDirectChain.value) {
+    results = results.filter(result => result.DirectChain);
+  }
+
+  return results;
+});
+
+//HOTEL COLLECT
+
+const activeHotelCollect = nuxtConfig.public.activeHotelCollect
+
+const availMode = ref(0);
+
+// Computed property para seleccionar el array correcto
+const currentAvail = computed(() => roomId => availMode.value == 1 ? filteredAvailHotelCollect.value(roomId) : filteredAvail.value(roomId));
 
 const limitAvail = ref(25)
 
@@ -591,7 +677,8 @@ onBeforeRouteUpdate(async (to, from) => {
     roomsSelected.value = []
     nearProperties.value = []
     guestReviews.value = []
-    getAvail();
+    getDetails()
+    getAvail()
     startCountdown()
     toTop()
   }
@@ -675,10 +762,10 @@ watchEffect(() => {
 
 const router = useRouter();
 
-function goToDetails(item) {
-  store.handleUnsubscribeAvail()
+async function goToDetails(item) {
+  await store.handleUnsubscribeAvail()
   detailsTabs.value = 1
-  router.push({
+  navigateTo({
     path: "/stays/details",
     query: {
       id: item.Id,
