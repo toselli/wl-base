@@ -249,9 +249,10 @@ export default {
         cardMonth: this.cardMonth,
         cardYear:this.cardYear,
         cardCvv: this.cardCvv,
-        cardType: this.getCardType()
+        cardType: this.getCardType
       }
-      this.$emit("confirmCardData",payload)           
+      this.$emit("confirmCardData",payload)  
+      console.log(payload)         
     },
     flipCard(status) {
       this.isCardFlipped = status;

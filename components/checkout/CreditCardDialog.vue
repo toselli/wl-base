@@ -27,6 +27,8 @@ watch(show, (newValue, oldValue) => {
 const emit = defineEmits(['update:modelValue','close','save']);
 
 function saveCard(data){
+  alert('si')
   emit('update:selectedPayment', data);
+  show.value = false
 }
 </script>

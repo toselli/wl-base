@@ -13,10 +13,10 @@
       </v-btn-toggle>
     </v-col>
     <v-col cols="12" :md="compact ? '10' : '12'">
-      <v-card rounded="md" class="search-card" flat :class="compact ? 'mb-1 bg-transparent' : ' pa-4 bg-foreground'">
+      <v-card rounded="lg" class="search-card" flat :class="compact ? 'mb-1 bg-transparent' : ' pa-4 bg-foreground'">
         <v-row dense no-gutters :class="noresults ? 'justify-center' : ''">
           <v-col cols="12">
-            <v-card :rounded="compact ? 'md' : ''" flat
+            <v-card :rounded="compact ? 'lg' : ''" flat
               :class="compact ? 'pa-1 mb-2 border-secondary bg-foreground' : ''"
               :variant="compact ? 'default' : 'default'">
               <v-row class="align-start" dense :no-gutters="compact">

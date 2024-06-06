@@ -36,6 +36,11 @@
             </div>
           </li>
         </ul> -->
+        <!-- <div v-if="item.Price.PVP.Supplements.length > 0" class="body-2">
+          <p v-for="supplement in item.Price.PVP.Supplements">
+            {{ supplement.Description }}
+          </p>
+        </div> -->
         <div v-if="item.Price.PVP.IncludedSupplements.length > 0" class="body-2">
           <strong>Incluye:</strong>
           <p v-for="supplement in item.Price.PVP.IncludedSupplements">

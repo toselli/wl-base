@@ -1,7 +1,6 @@
 <template>
     <v-container fluid     
-    :class="compact ? (alignTabs == 'center' ? 'search-container-compact pa-0 text-center' : 'search-container-compact pa-0') : (alignTabs == 'center' ? 'search-container  py-0 text-center' : 'search-container py-0')"
-    >
+    :class="compact ? (alignTabs == 'center' ? 'search-container-compact pa-0 text-center' : 'search-container-compact pa-0') : (alignTabs == 'center' ? 'search-container  py-0 text-center' : 'search-container py-0')">
         <v-sheet v-if="!compact" rounded="lg" class="service-tab-container bg-midground ease" :class="isMobile ? '' : 'd-inline-block'">
             <v-tabs v-model="serviceType" grow class="text-secondary_text " color="secondary" 
                 :stacked="!compact" hide-slider  :density="compact ? 'compact' : 'default'" >

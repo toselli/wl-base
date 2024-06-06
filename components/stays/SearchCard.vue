@@ -1,8 +1,8 @@
 <template>
-  <v-card rounded="md" class="search-card" flat :class="compact ? 'mb-1 bg-transparent' : ' pa-4 bg-foreground'">
+  <v-card rounded="lg" class="search-card" flat :class="compact ? 'mb-1 bg-transparent' : ' pa-4 bg-foreground'">
     <v-row dense no-gutters :class="noresults ? 'justify-center' : ''">
       <v-col cols="12" :sm="compact && noplaces ? '4' : (compact ? '8' : '10')">
-        <v-card :rounded="compact ? 'md' : ''"
+        <v-card :rounded="compact ? 'lg' : ''"
           :class="compact ? 'pa-2 pa-md-1 mb-2 border-secondary bg-foreground' : 'bg-foreground'" flat>
           <v-row class="align-center justify-space-between" dense>
             <v-col cols="12" sm="6" v-if="!noplaces" class="pr-2">

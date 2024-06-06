@@ -1,11 +1,11 @@
 <template>
   <v-row dense>
     <v-col cols="12" :sm="compact ? '10' : '12'" id="col_search_card">
-      <v-card rounded="md" class="search-card" flat :class="compact ? 'mb-1 bg-transparent' : ' pa-4 bg-foreground'"
+      <v-card rounded="lg" class="search-card" flat :class="compact ? 'mb-1 bg-transparent' : ' pa-4 bg-foreground'"
         id="search_card">
         <v-row dense no-gutters :class="noresults ? 'justify-center' : ''">
           <v-col cols="12">
-            <v-card :rounded="compact ? 'md' : ''" flat
+            <v-card :rounded="compact ? 'lg' : ''" flat
               :class="compact ? 'pa-1 mb-2 border-secondary bg-foreground' : 'bg-foreground'">
               <v-row class="align-center" dense :no-gutters="compact">
                 <!-- INPUT CIUDADES RETIRO -->
