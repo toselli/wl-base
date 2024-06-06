@@ -114,28 +114,6 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
     cursor: pointer !important;
 }
 
-.rounded-0 {
-    border-radius: 0 !important;
-}
-
-.rounded-sm {
-    border-radius: 8px !important;
-}
-
-.rounded-md {
-    border-radius: 12px !important;
-}
-
-.rounded-lg,
-.rounded-lg .v-bottom-sheet__content {
-    border-radius: 16px !important;
-}
-
-.rounded-xl,
-.rounded-xl .v-bottom-sheet__content {
-    border-radius: 24px !important;
-}
-
 .footer {
     border-bottom-right-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
