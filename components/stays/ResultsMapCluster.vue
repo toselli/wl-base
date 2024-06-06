@@ -50,8 +50,7 @@
               </div>
             </div>
           </v-card>
-          </div>
-       
+          </div>       
           <div :class="docked ? 'floating-search-docked' : 'floating-search'" v-if="!loadingArea">
             <v-text-field variant="solo" rounded="lg" hide-details density="compact" label="Filtrar por nombre"
               v-model="searchPromptModel" class="pt-0 mr-2" clearable
@@ -759,6 +758,7 @@ watch(isFullscreen, (newValue) => {
 
 .label-cluster-level-1 {
   border: 1px solid  rgb(30,130,231) !important;
+  background-color:  rgb(var(--v-theme-foreground)) !important;
   color:  rgb(var(--v-theme-primary_text));
   padding: 6px 12px !important;
   border-radius: 18px !important;
@@ -766,6 +766,7 @@ watch(isFullscreen, (newValue) => {
 
 .label-cluster-level-2 {
   border: 1px solid rgb(14,99,241) !important;
+  background-color:  rgb(var(--v-theme-foreground)) !important;
   color:  rgb(var(--v-theme-primary_text));
   padding: 6px 12px !important;
   border-radius: 18px !important;
@@ -773,6 +774,7 @@ watch(isFullscreen, (newValue) => {
 
 .label-cluster-level-3 {
   border: 1px solid  rgb(10,35,255) !important;
+  background-color:  rgb(var(--v-theme-foreground)) !important;
   color:  rgb(var(--v-theme-primary_text));
   padding: 6px 12px !important;
   border-radius: 18px !important;

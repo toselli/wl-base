@@ -67,9 +67,11 @@
                 </div>
             </template>
             <template #action-buttons="{ value }" v-if="multiple">
-                <div :set="$dayjs(value[1]) ? nights = $dayjs(value[1]).diff($dayjs(value[0]), 'day') : ''"></div>
+                <div v-if="Array.isArray(value) && value.length >= 2">
+                    <div :set="$dayjs(value[1]) ? nights = $dayjs(value[1]).diff($dayjs(value[0]), 'day') : ''"></div>
+                </div>
                 <v-btn variant="flat" rounded="md" color="secondary" :block="isMobile" size="large" @click="selectDate"
-                    :disabled="value[0] == undefined || value[1] == undefined || nights == 0">
+                :disabled="!Array.isArray(value) || value.length < 2 || value[0] == undefined || value[1] == undefined || nights == 0">
                     {{ $capitalize($t("confirm")) }}</v-btn>
             </template>
             <template #dp-input="{ }">
@@ -92,7 +94,7 @@
 </template>
 
 <script setup>
- const dayjs = useDayjs()
+const dayjs = useDayjs()
 const isMobile = useMobile()
 
 const props = defineProps(["compact", "multiple", "searchedDate", "labelDays", "minDate"]);
@@ -109,7 +111,6 @@ const dp = ref();
 
 const selectDate = () => {
     dp.value.selectDate();
-    console.log(dp.value.selectDate())
     emit('update:selectedDate', date.value);
 };
 
@@ -141,7 +142,6 @@ watch(() => selectDays.value, () => {
         alert(formattedNewDate)
 
         dp.value.updateInternalModelValue([startDate.value, formattedNewDate]);
-        console.log(formattedStartDate + ' y ' + formattedNewDate);
         window.scrollTo(0, 0); // Restaurar la posición del scroll
     }
 });

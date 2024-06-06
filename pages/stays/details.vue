@@ -104,7 +104,7 @@
     <v-window v-model="detailsTabs" class="bg-midground rounded-lg mt-1">
       <v-window-item :value="1">
         <v-row dense justify="center">
-          <v-col v-if="property && loadingAvail && rooms.length == 0" class="mt-12 d-flex justify-center flex-column">
+          <v-col v-if="property && rooms.length == 0" class="mt-12 d-flex justify-center flex-column">
             <v-progress-circular indeterminate color="primary" size="50" class="mx-auto"></v-progress-circular>
             <h3 class="text-center">
               Buscando las mejores habitaciones en
@@ -136,17 +136,17 @@
                   <v-col cols="12" md="4">
                     <v-btn-toggle v-model="availMode" density="compact" mandatory color="midground"
                       class="btn-toggle-large bg-secondary_lighten" variant="flat" rounded="md"
-                      selected-class="btn-toggle-large-selected" v-if="activeHotelCollect == 'true'">
-                      <v-btn class="my-1 mx-1 body-2 text-primary_text bg-midground" rounded="md">
+                      selected-class="btn-toggle-large-selected" v-if="activeHotelCollect">
+                      <v-btn class="my-1 mx-1 body-2 text-primary_text bg-background" rounded="md">
                         Pago por agencia ({{ filteredAvail(room.Id).length }})
                       </v-btn>
-                      <v-btn class="my-1 mx-1 body-2 text-primary_text bg-midground" rounded="md"
+                      <v-btn class="my-1 mx-1 body-2 text-primary_text bg-background" rounded="md"
                         :disabled="filteredAvailHotelCollect(room.Id).length == 0">
                         Pago directo al hotel ({{ filteredAvailHotelCollect(room.Id).length }})
                       </v-btn>
                     </v-btn-toggle>
                     <h5 class="mt-3" v-else>
-                      Encontramos <span class="text-primary">{{ filteredAvail(room.Id).length }}</span> resultados
+                      Encontramos <span class="text-primary">{{ currentAvail(room.Id).length }}</span> resultados
                     </h5>
                   </v-col>
                   <v-col cols="12" md="8" :class="!isMobile ? 'text-right' : ''">
@@ -158,7 +158,7 @@
                 </v-row>
                 <!-- FILTROS -->
                 <!-- RESULTS -->
-                <v-row dense v-if="!loadingAvail && avail.length > 0">
+                <v-row dense v-if="currentAvail(room.Id).length > 0">
                   <v-col :md="viewMode == 'list' ? 12 : 4" cols="12"
                     :class="viewMode == 'list' ? 'pa-0 d-flex flex-column' : ''"
                     v-for="result in currentAvail(room.Id).slice(0, limitAvail)">
@@ -178,7 +178,7 @@
                   </v-col>
                 </v-row>
                 <v-row class="mt-3" justify="center"
-                  v-if="availHotelCollect.length == 0 && avail.length == 0 && !loadingAvail && !isReceiving">
+                  v-if="currentAvail(room.Id).length == 0 && !isReceiving">
                   <v-col cols="12">
                     <h3 class="text-center">En este momento no hay habitaciones disponibles</h3>
                     <v-img src="/base/img/services/no_avail.png" width="280" class="my-6 mx-auto"></v-img>
@@ -477,9 +477,8 @@ function handleImageError(index) {
 //AVAIL
 const avail = ref([])
 const availHotelCollect = ref([])
-const loadingAvail = ref(false);
 const rooms = ref([])
-const nuxtConfig = useRuntimeConfig()
+const runtimeConfig = useRuntimeConfig()
 
 async function getAvail() {
   roomsSelected.value = []
@@ -494,16 +493,15 @@ async function getAvail() {
     Residence: "AR",
     PropertyId: propertyId.value,
   }
-  if (activeHotelCollect == 'false') {
+  if (!activeHotelCollect) {
     searchAvail.IsOnlyHotelCollect = null
-  } else if (activeHotelCollect == 'tue') {
+  } else if (activeHotelCollect) {
     searchAvail.IsOnlyHotelCollect = false
   }
   try {
-    loadingAvail.value = true
     await store.suscribeAvail();
     await store.fetchAvail(searchAvail);
-    useNuxtApp().$toast.info('Buscando los mejores precios', { autoClose: nuxtConfig.public.searchTime, icon: "🚀", hideProgressBar: false, toastId: 'searchingToast', closeButton: false });
+    useNuxtApp().$toast.info('Buscando los mejores precios', { autoClose: runtimeConfig.public.searchTime, icon: "🚀", hideProgressBar: false, toastId: 'searchingToast', closeButton: false });
     avail.value = store.getAvail
     availHotelCollect.value = store.getAvailHotelCollect
     rooms.value = store.getRooms
@@ -517,7 +515,6 @@ async function getAvail() {
   } catch (error) {
     console.log(error);
   } finally {
-    loadingAvail.value = false;
   }
 }
 
@@ -635,7 +632,7 @@ const filteredAvailHotelCollect = computed(() => roomId => {
 
 //HOTEL COLLECT
 
-const activeHotelCollect = nuxtConfig.public.activeHotelCollect
+const activeHotelCollect = runtimeConfig.public.activeHotelCollect === 'true'
 
 const availMode = ref(0);
 
@@ -835,10 +832,10 @@ function backToResults() {
   });
 }
 
-const runtimeConfig = useRuntimeConfig()
 // GO TO CHECKOUT
 
 async function goToCheckoutSingle(item) {
+  console.log(item)
   store.handleUnsubscribeAvail()
   try {
     let payload = {
@@ -848,6 +845,7 @@ async function goToCheckoutSingle(item) {
       selectedPropertyServices: item.Id,
       selectedBoards: null
     }
+    let isHotelCollect = item.IsHotelCollect
     await useNuxtApp().$toast.promise(store.addService(payload), {
       pending: 'Preparando todo para su reserva',
       error: 'Error al crear la reserva'
@@ -862,7 +860,8 @@ async function goToCheckoutSingle(item) {
         checkOut: route.query.checkOut,
         occupancies: route.query.occupancies,
         placeid: route.query.placeid,
-        place: route.query.place
+        place: route.query.place,
+        isHotelCollect: isHotelCollect
       },
     });
   } catch (error) {

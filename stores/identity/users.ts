@@ -1,20 +1,22 @@
 export const useUsersStore = defineStore("users", () => {
-    const { initializeUserConfig } = useUserConfig(); 
+    const { initializeUserConfig } = useUserConfig();
     //state
     const loggedUser = ref(null)
+    const anonymousUser = ref(null)
     const users = ref([])
     //getters
     const getLoggedUser = computed(() => loggedUser.value)
     const isLoggedIn = computed(() => loggedUser.value != null)
-    
+    const getAnonymousUser = computed(() => anonymousUser.value)
+
     const getUsers = computed(() => users.value)
     //actions
     function fetchLoggedUser() {
         return new Promise((resolve, reject) => {
             useIdentity.get('v1/users/me')
-                .then((res: any) => {                    
+                .then((res: any) => {
                     loggedUser.value = res
-                    if(!isLoggedIn.value) return reject(res);
+                    if (!isLoggedIn.value) return reject(res);
                     initializeUserConfig(loggedUser.value.IdString)
                     resolve(res)
                 }, err => {
@@ -25,20 +27,39 @@ export const useUsersStore = defineStore("users", () => {
                 })
         })
     }
-    function getUsersByRole() {
-            return new Promise((resolve, reject) => {
-                useIdentity.get("v1/users", null, {
-                        Page: 1,
-                        PageSize: 50,
+    function fetchAnonymousUser() {
+        const anonymousToken = useCookie('anonymousToken').value
+        return new Promise((resolve, reject) => {
+            let header = {
+                Authorization: 'Bearer ' +anonymousToken
+            }
+            useIdentity.get('v1/users/me', header)
+                .then((res: any) => {
+                    anonymousUser.value = res
+                    if (!isLoggedIn.value) return reject(res);
+                    resolve(res)
+                }, err => {
+                    reject(err)
                 })
-                    .then((res) => {
-                        users.value = res
-                       resolve(res)
-                    })
-                    .catch((err) => {
-                        reject(err)
-                    })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+    }
+    function getUsersByRole() {
+        return new Promise((resolve, reject) => {
+            useIdentity.get("v1/users", null, {
+                Page: 1,
+                PageSize: 50,
             })
+                .then((res) => {
+                    users.value = res
+                    resolve(res)
+                })
+                .catch((err) => {
+                    reject(err)
+                })
+        })
     }
     // function getSellers() {
     //     return new Promise((resolve, reject) => {
@@ -59,10 +80,10 @@ export const useUsersStore = defineStore("users", () => {
 
     function fetchSellers(payload: object) {
         return new Promise((resolve, reject) => {
-            useEbooking.get("users/getSellersByAgency", null,  payload)
+            useEbooking.get("users/getSellersByAgency", null, payload)
                 .then((res) => {
                     users.value = res
-                   resolve(res)
+                    resolve(res)
                 })
                 .catch((err) => {
                     reject(err)
@@ -72,10 +93,10 @@ export const useUsersStore = defineStore("users", () => {
 
     function fetchSellersFlights(payload: object) {
         return new Promise((resolve, reject) => {
-            useEbooking.get("users/getSellersByAgency", null,  payload)
+            useEbooking.get("users/getSellersByAgency", null, payload)
                 .then((res) => {
                     users.value = res
-                   resolve(res)
+                    resolve(res)
                 })
                 .catch((err) => {
                     reject(err)
@@ -85,7 +106,7 @@ export const useUsersStore = defineStore("users", () => {
 
     function changePassword(payload: object) {
         return new Promise((resolve, reject) => {
-            useIdentity.put(`v1/users/${payload.UserId}/reset-password`, null ,payload)
+            useIdentity.put(`v1/users/${payload.UserId}/reset-password`, null, payload)
                 .then((res: any) => {
                     resolve(res)
                 }, err => {
@@ -100,8 +121,8 @@ export const useUsersStore = defineStore("users", () => {
     function validateEmailforReset(payload: string) {
         return new Promise((resolve, reject) => {
             useIdentity.get(`v1/users/${payload}/validity-email`)
-                .then((res: any)  => {
-                        resolve(res)
+                .then((res: any) => {
+                    resolve(res)
                 })
                 .catch(err => {
                     reject(err)
@@ -109,5 +130,5 @@ export const useUsersStore = defineStore("users", () => {
         })
     }
 
-    return  { loggedUser, getLoggedUser, isLoggedIn, getUsers, fetchLoggedUser, getUsersByRole, fetchSellers, fetchSellersFlights, changePassword, validateEmailforReset }
+    return { loggedUser, getLoggedUser, getAnonymousUser, isLoggedIn, getUsers, fetchLoggedUser, fetchAnonymousUser, getUsersByRole, fetchSellers, fetchSellersFlights, changePassword, validateEmailforReset }
 })

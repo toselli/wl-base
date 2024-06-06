@@ -1,5 +1,5 @@
 <template>
-    <v-card rounded="lg" class="pa-2 pa-md-5 bg-foreground card-content-elevation mb-5" v-if="serviceType == 'transfers'">
+    <v-card rounded="lg" class="card-checkout-forms-content pa-4 mb-4" v-if="serviceType == 'transfers'">
     <v-form v-model="valid">
         <h3 class="text-h6 semi mb-6 pa-3 pa-md-0">Información para traslados</h3>
         <v-row dense>

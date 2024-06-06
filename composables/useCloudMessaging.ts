@@ -2,8 +2,8 @@ import useQueryBuilder from "./useQueryBuilder"
 
 export const useCloudMessaging = {
     async post<T>(endpoint: string, headers: any = null, body: any = null): Promise<T> {
-        const nuxtConfig = useRuntimeConfig()
-        const result = await $fetch(`${nuxtConfig.public.cloudMessagingApi}${endpoint}`, {
+        const runtimeConfig = useRuntimeConfig()
+        const result = await $fetch(`${runtimeConfig.public.cloudMessagingApi}${endpoint}`, {
             method: 'POST',
             body: body,
             headers: headers
@@ -11,8 +11,8 @@ export const useCloudMessaging = {
         return <T>result;
     },
     async get(endpoint: string, headers: any = null, params: any = null) {
-        const nuxtConfig = useRuntimeConfig()
-        let query: string = useQueryBuilder(nuxtConfig.public.cloudMessagingApi, endpoint, params);
+        const runtimeConfig = useRuntimeConfig()
+        let query: string = useQueryBuilder(runtimeConfig.public.cloudMessagingApi, endpoint, params);
         try {
             const result = await $fetch(query, {
                 headers: headers,

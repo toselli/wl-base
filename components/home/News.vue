@@ -16,7 +16,7 @@
                                 Descubrí lo nuevo
                             </v-btn>
                             <div class="logo-container">
-                                <v-img height="30px" width="74px" :src="logo"></v-img>
+                                <v-img height="30px" width="74px" src="/base/img/juan_toselli.png"></v-img>
                             </div>
                         </v-card-actions>
                     </v-col>
@@ -27,12 +27,12 @@
 </template>
 
 <script setup>
-import logo from '@/assets/images/juan_toselli.png'
+
 </script>
 
 <style scoped>
 .card-gradient {
-    background: url('@/assets/images/home/news.png'), linear-gradient(0deg, #121F3D 0%, #173782 100%);
+    background: url('/base/img/news.png'), linear-gradient(0deg, #121F3D 0%, #173782 100%);
     background-repeat: no-repeat;
     background-position: 100%;
 }

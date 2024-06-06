@@ -1,19 +1,19 @@
 const _cookieName = "SECURITYTOKEN";
 export const useEbooking = {
     async post(endpoint: string, headers: any, body: any) {
-        const nuxtConfig = useRuntimeConfig()
+        const runtimeConfig = useRuntimeConfig()
         const securityToken = useCookie(_cookieName).value
         headers = Object.assign({
             'Accept': 'application/json',
-            'AgencyId': nuxtConfig.public.agencyId,
-            'OwnerId': nuxtConfig.public.ownerId,
-            'WebSiteId': nuxtConfig.public.websiteId
+            'AgencyId': runtimeConfig.public.agencyId,
+            'OwnerId': runtimeConfig.public.ownerId,
+            'WebSiteId': runtimeConfig.public.websiteId
         }, headers)
         if (securityToken) {
             headers = Object.assign({ 'SECURITYTOKEN': securityToken }, headers)
         }
         
-        const result = await $fetch(useQueryBuilder(nuxtConfig.public.ebookingApi, endpoint), {
+        const result = await $fetch(useQueryBuilder(runtimeConfig.public.ebookingApi, endpoint), {
             method: 'POST',
             body: body,
             headers: headers,
@@ -32,20 +32,20 @@ export const useEbooking = {
         return result;
     },
     async get<T>(endpoint: string, headers: any, params: any) {
-        const nuxtConfig = useRuntimeConfig()
+        const runtimeConfig = useRuntimeConfig()
         const securityToken = useCookie("SECURITYTOKEN").value
         headers = Object.assign({
             'Accept': 'application/json',
-            'AgencyId': nuxtConfig.public.agencyId,
-            'OwnerId': nuxtConfig.public.ownerId,
-            'WebSiteId': nuxtConfig.public.websiteId
+            'AgencyId': runtimeConfig.public.agencyId,
+            'OwnerId': runtimeConfig.public.ownerId,
+            'WebSiteId': runtimeConfig.public.websiteId
         }, headers)
         if (securityToken) {
             headers = Object.assign({ 'SECURITYTOKEN': securityToken }, headers)
         }
         
 
-        let query: string = useQueryBuilder(nuxtConfig.public.ebookingApi, endpoint);
+        let query: string = useQueryBuilder(runtimeConfig.public.ebookingApi, endpoint);
         return await $fetch<T>(query, {
             headers: headers,
             params: params,

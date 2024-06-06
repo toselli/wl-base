@@ -1,7 +1,7 @@
 import type { Ref } from "nuxt/dist/app/compat/capi";
 export const useStaysStore = defineStore("stays", () => {
-  const nuxtConfig = useRuntimeConfig()
-  const { startConnection, invokeServerMethod, subscribeToEvent, unsubscribeFromEvent } = useSignalR(nuxtConfig.public.ebookingWs, handleDisconnect);
+  const runtimeConfig = useRuntimeConfig()
+  const { startConnection, invokeServerMethod, subscribeToEvent, unsubscribeFromEvent } = useSignalR(runtimeConfig.public.ebookingWs, handleDisconnect);
   const accessToken = useCookie('accessToken').value
   const bearer = `Bearer ${accessToken}`
   //state
@@ -58,9 +58,9 @@ export const useStaysStore = defineStore("stays", () => {
   }
 
   const headersApi = {
-    AgencyId: nuxtConfig.public.agencyId,
-    OwnerId: nuxtConfig.public.ownerId,
-    WebSiteId: nuxtConfig.public.websiteId
+    AgencyId: runtimeConfig.public.agencyId,
+    OwnerId: runtimeConfig.public.ownerId,
+    WebSiteId: runtimeConfig.public.websiteId
   }
 
   async function suscribeSearch() {

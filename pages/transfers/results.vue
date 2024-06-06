@@ -394,13 +394,11 @@ onBeforeRouteUpdate((to, from) => {
 
 //CHECKOUT
 
-const nuxtConfig = useRuntimeConfig()
-
 async function goToCheckoutIn(payload) {
     try {
         let services = {
             basketId: store.basketId,
-            websiteId: nuxtConfig.public.websiteId,
+            websiteId: runtimeConfig.public.websiteId,
             availUrl: window.location.href,
             selectedServices: payload.service,
             selectedSupplements: payload.supplements

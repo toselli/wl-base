@@ -11,7 +11,6 @@
         </div>
         <v-alert size="large" class="text-center mb-5" color="success" variant="tonal" border="start"
           v-if="!waitingProvider && bookingConfirmed">
-          {{bookingConfirmed}}
           <div v-if="bookingConfirmed[0].Status?.Key == 'CF'">
             <h4 class="text-h4 text-primary_text" >¡La reserva ha sido confirmada!
             </h4>

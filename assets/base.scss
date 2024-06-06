@@ -1,6 +1,6 @@
 
 
-@import url('custom.scss') ;
+@import url('../custom/custom.scss') ;
 
 html, body, p, h1, h2, h3, h4, h5, h6 {
     scroll-behavior: smooth;
@@ -55,8 +55,8 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
 
 .text-h5 {
     font-weight: 400 !important;
-    font-size: 1.125rem !important;
-    line-height: 1.25rem !important;
+    font-size: 1rem !important;
+    line-height: 1.10rem !important;
 }
 
 .text-h6 {
@@ -112,6 +112,10 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
 
 .cursor-pointer {
     cursor: pointer !important;
+}
+
+.rounded-0 {
+    border-radius: 0 !important;
 }
 
 .rounded-sm {
@@ -215,19 +219,23 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
 
 //TABS
 
-.v-tab.v-tab--selected .v-btn__underlay {
+.service-tab-container .v-tab.v-tab--selected .v-btn__underlay {
     background: rgb(var(--v-theme-secondary_lighten)) !important;
     border-radius: 12px !important;
     z-index: -1;
     color: rgb(var(--v-theme-secondary_darken)) !important;
 }
 
-.v-tab {
+.service-tab-container .v-tab {
     border-radius: 12px !important;
 }
 
-.v-slide-group-item--active .v-btn__content {
+.service-tab-container .v-slide-group-item--active .v-btn__content {
     font-weight: 600 !important;
+}
+
+.v-tabs--vertical .v-tab {
+    border-radius: 0 12px 12px 0 !important;
 }
 
 //FORMS
@@ -474,8 +482,8 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-toggle-large-selected {
-    color: rgb(var(--v-theme-foreground)) !important;
-    background-color: rgb(var(--v-theme-primary_text)) !important;
+    color: rgb(var(--v-theme-shade_light)) !important;
+    background-color: rgb(var(--v-theme-secondary)) !important;
 }
 
 
@@ -607,8 +615,9 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
     background-color: rgb(var(--v-theme-foreground)) !important;
 }
 
-.list-avail-card {
-    background-color: rgb(var(--v-theme-midground)) !important;
+.list-avail-card.v-card--variant-outlined {
+    background-color: rgb(var(--v-theme-foreground)) !important;
+    border-color:  rgb(var(--v-theme-secondary_lighten_hover)) !important;
 }
 
 .list-avail-card-selected {
@@ -624,9 +633,23 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
     box-shadow: 0px 0 24px rgba(32, 57, 96, 0.15) !important;
 }
 
-.contact-card {
-    background: #E3EDFD !important;
-    border: 6px solid rgb(var(--v-theme-primary_text)) !important;
+.card-checkout-forms {
+    background-color: rgb(var(--v-theme-midground)) !important;
+    box-shadow: 0px 4px 14px rgba(32, 57, 96, 0.2) !important;
+    padding: 16px !important;
+}
+
+.card-checkout-forms-content {
+    background-color: rgb(var(--v-theme-foreground)) !important;
+    box-shadow: none !important;
+    border: 1px solid rgb(var(--v-theme-secondary_lighten)) !important;
+}
+
+
+.card-checkout-details {
+    background-color: rgb(var(--v-theme-foreground)) !important;
+    box-shadow: 0px 4px 14px rgba(32, 57, 96, 0.2) !important;
+    padding: 16px !important;
 }
 
 //SKELETON LOADER 
@@ -676,6 +699,11 @@ html, body, p, h1, h2, h3, h4, h5, h6 {
     font-family: 'Manrope', sans-serif !important;
     font-weight: 600 !important;
 }
+
+.v-btn__overlay {
+    background-color: rgba(var(--v-theme-background)) !important;
+ }
+
 
 .dp__btn.dp__month_year_select {
     font-weight: 500;

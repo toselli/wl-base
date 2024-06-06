@@ -4,17 +4,18 @@
         <stays-filters :filters="features" v-if="features && getLoggedUser && !loadingResults"
             @apply="getFilteredResults" />
         <v-container fluid class="py-0 px-0">
-            <v-row class="pb-2" v-if="getLoggedUser">                
+            <v-row class="pb-2" v-if="getLoggedUser">
                 <v-col cols="12" md="4">
                     <v-btn-toggle v-model="resultsMode" density="compact" mandatory color="midground"
-                      class="btn-toggle-large bg-secondary_lighten" variant="flat" rounded="md"
-                      selected-class="btn-toggle-large-selected" v-if="activeHotelCollect == 'true'">
-                      <v-btn  class="my-1 mx-1 body-2 text-primary_text bg-midground" rounded="md">
-                        Pago por agencia ({{ filteredResults.length }})
-                      </v-btn>
-                      <v-btn  class="my-1 mx-1 body-2 text-primary_text bg-midground" rounded="md" :disabled="filteredResultsHotelCollect.length == 0">
-                        Pago directo al hotel ({{ filteredResultsHotelCollect.length }})
-                      </v-btn>
+                        class="btn-toggle-large bg-secondary_lighten" variant="flat" rounded="md"
+                        selected-class="btn-toggle-large-selected" v-if="activeHotelCollect && getLoggedUser">
+                        <v-btn class="my-1 mx-1 body-2 text-primary_text bg-background" rounded="md">
+                            Pago por agencia ({{ filteredResults.length }})
+                        </v-btn>
+                        <v-btn class="my-1 mx-1 body-2 text-primary_text bg-background" rounded="md"
+                            :disabled="filteredResultsHotelCollect.length == 0">
+                            Pago directo al hotel ({{ filteredResultsHotelCollect.length }})
+                        </v-btn>
                     </v-btn-toggle>
                     <h5 class="mt-3" v-else-if="filteredResults.length > 0">
                         Encontramos <span class="text-primary">{{ filteredResults.length }}</span> resultados
@@ -32,8 +33,8 @@
             </v-row>
         </v-container>
         <!-- FORZAR LOGIN -->
-        <auth-force-login-card v-if="!getLoggedUser && !loadingLoggedUser" />
-        <v-container fluid class="px-0" v-if="getLoggedUser">
+        <auth-force-login-card v-if="!getLoggedUser || !getAnonymousUser && !loadingLoggedUser" />
+        <v-container fluid class="px-0" v-if="getLoggedUser || getAnonymousUser">
             <!-- RESULTADOS -->
             <v-row dense>
                 <v-col :cols="showMap ? '7' : '12'" v-show="!expandedMap">
@@ -80,7 +81,9 @@
                     </div>
                 </v-col>
             </v-row>
-            <StaysFinishSearchBottomSheet v-model="finishSearch" v-if="!loadingResults && !isReceiving && currentResults.length > 0  &&  !configStore.getConfig.autoOrderbyPrice" :results="currentResults.length" @close="finishSearch = false" @orderResults="orderResults({
+            <StaysFinishSearchBottomSheet v-model="finishSearch"
+                v-if="!loadingResults && !isReceiving && currentResults.length > 0 && !configStore.getConfig.autoOrderbyPrice"
+                :results="currentResults.length" @close="finishSearch = false" @orderResults="orderResults({
             field: 'Total',
             name: 'Precio',
             icon: 'mdi-sort-ascending',
@@ -107,28 +110,43 @@ const isMobile = useMobile()
 //LOGGED USER
 
 const usersStore = useUsersStore();
-const { getLoggedUser } = storeToRefs(usersStore);
+const { getLoggedUser, getAnonymousUser } = storeToRefs(usersStore);
 const loadingLoggedUser = ref(false)
+const { anonymousLogin } = useAnonymousLogin()
 //LOGIN
 
 onMounted(() => {
-    loadingLoggedUser.value = true
-    const loggedUser = getLoggedUser.value;
-    if (loggedUser != null) {
-        getResults();
-        loadingLoggedUser.value = false
-    } else {
-        loadingLoggedUser.value = false
-        // Esperar a que el usuario se loguee
-        const unwatch = watch(getLoggedUser, (newValue, oldValue) => {
-            if (newValue != null) {
-                getResults();
-                unwatch(); // Deja de observar una vez que el usuario se ha logueado
-            }
-        });
-    }
-});
+    loadingLoggedUser.value = true;
 
+    const timeoutDuration = 3000; 
+    let timeoutId;
+
+    const triggerAnonymousLogin = () => {
+        if (activeHotelCollect && !getLoggedUser.value && !getAnonymousUser.value) {
+            anonymousLogin();
+        }
+    };
+
+    timeoutId = setTimeout(triggerAnonymousLogin, timeoutDuration);
+
+    const unwatchLoggedUser = watch(getLoggedUser, (newValue) => {
+        if (newValue != null) {
+            getResults();
+            clearTimeout(timeoutId);
+            unwatchLoggedUser();
+            unwatchAnonymousUser();
+        }
+    });
+
+    const unwatchAnonymousUser = watch(getAnonymousUser, (newValue) => {
+        if (newValue != null) {
+            getResults(true); 
+            clearTimeout(timeoutId);
+            unwatchLoggedUser();
+            unwatchAnonymousUser();
+        }
+    });
+});
 
 //RESULTS
 const results = ref([]);
@@ -202,13 +220,13 @@ const filteredResultsHotelCollect = computed(() => {
 
 //HOTEL COLLECT
 
-const nuxtConfig = useRuntimeConfig()
-const activeHotelCollect = nuxtConfig.public.activeHotelCollect
+const runtimeConfig = useRuntimeConfig()
+const activeHotelCollect = runtimeConfig.public.activeHotelCollect === 'true'
 
 const resultsMode = ref(0);
 
 const currentResults = computed(() => {
-  return resultsMode.value == 1 ? filteredResultsHotelCollect.value : filteredResults.value;
+    return resultsMode.value == 1 ? filteredResultsHotelCollect.value : filteredResults.value;
 });
 
 const intersecting = ref(false)
@@ -275,9 +293,9 @@ async function getResults() {
         Residence: "AR",
         Id: place.value,
     }
-    if (activeHotelCollect == 'false') {
+    if (!activeHotelCollect) {
         search.IsOnlyHotelCollect = null
-    } else if (activeHotelCollect == 'tue'){
+    } else if (activeHotelCollect) {
         search.IsOnlyHotelCollect = false
     }
     let payload = {
@@ -471,5 +489,4 @@ async function goToDetailsNewTab(item) {
     width: 100%;
     /* Asegura que la card tenga el ancho completo de la columna */
 }
-
 </style>

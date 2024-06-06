@@ -96,7 +96,7 @@
 const isMobile = useMobile()
 
 const usersStore = useUsersStore();
-const { getLoggedUser } = storeToRefs(usersStore);
+const { getLoggedUser, getAnonymousUser } = storeToRefs(usersStore);
 const loginStore = useLoginStore();
 const newIssueDialog = ref(false)
 

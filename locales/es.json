@@ -7,6 +7,7 @@
   "verify" : "Verificar",
   "confirm": "confirmar",
   "config" : "configuración",
+  "user_config" : "configuración de usuario",
   "cancel": "cancelar",
   "adult": "adulto",
   "adults": "adultos",
@@ -83,7 +84,7 @@
   "ok": "entendido",
   "request": "solicitar",
   "change": "Cambiar",
-  "change_theme" : "Cambiar tema",
+  "change_theme" : "Cambiar modo",
   "change_theme_to_light" : "Cambiar a claro",
   "change_theme_to_dark" : "Cambiar a oscuro",
   "flights": {

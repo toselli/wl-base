@@ -5,8 +5,8 @@ export const useClients = {
         const accessToken = useCookie('accessToken').value
         if(accessToken)
         headers = Object.assign({ 'accessToken': accessToken }, headers)
-        const nuxtConfig = useRuntimeConfig()
-        const result = await $fetch(`${nuxtConfig.public.clientsApi}${endpoint}`, {
+        const runtimeConfig = useRuntimeConfig()
+        const result = await $fetch(`${runtimeConfig.public.clientsApi}${endpoint}`, {
             method: 'POST',
             body: body,
             headers: headers
@@ -26,8 +26,8 @@ export const useClients = {
         } else {
             headers = { Authorization: '' }
         }
-        const nuxtConfig = useRuntimeConfig()
-        let query: string = useQueryBuilder(nuxtConfig.public.clientsApi, endpoint);
+        const runtimeConfig = useRuntimeConfig()
+        let query: string = useQueryBuilder(runtimeConfig.public.clientsApi, endpoint);
         try {
             const result = await $fetch(query, {
                 headers: headers,
