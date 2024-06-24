@@ -113,7 +113,6 @@ const usersStore = useUsersStore();
 const { getLoggedUser, getAnonymousUser } = storeToRefs(usersStore);
 const loadingLoggedUser = ref(false)
 const { anonymousLogin } = useAnonymousLogin()
-
 //LOGIN
 
 onMounted(() => {
