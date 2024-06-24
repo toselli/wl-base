@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+const dayjs = useDayjs()
 export default () => {
     const route = useRoute();
     const strSegments = route.query.segments  ? (route.query.segments as string)?.split('|')  : []

@@ -7,8 +7,9 @@
         <span v-if="serviceType == 'stays'">{{ occupancies.length }} Hab | </span>
         <v-icon class="mx-1">mdi-account</v-icon> {{
         totalAdults }}
-       <span v-if="totalChildren > 0"> + <v-icon size="small" class="mx-1">mdi-baby-face-outline</v-icon> {{ totalChildren }}</span>
- 
+        <span v-if="totalChildren > 0"> + <v-icon size="small" class="mx-1">mdi-baby-face-outline</v-icon> {{
+        totalChildren }}</span>
+
     </v-btn>
     <v-dialog v-model="paxDialog" width="450px" :scrim="false" :absolute="true" theme="ThemeLight">
         <v-card rounded="lg">
@@ -38,6 +39,12 @@
                                     <v-btn variant="tonal" size="small" @click="addAdult(i)" class="ml-3">+</v-btn>
                                 </v-col>
                             </v-row>
+                            <v-row justify="end" v-if="adultsAgeRequired">
+                                <v-col cols="3" class="text-right px-2" v-for="n in room.Adults">
+                                    <v-text-field hide-details density="compact" label="Edad" variant="outlined"
+                                        class="custom-text-field" v-model="room.AdultsAges[n - 1]"></v-text-field>
+                                </v-col>
+                            </v-row>
                             <v-row align="center">
                                 <v-col>
                                     <h4 class="semi">{{ $capitalize($t("children")) }}</h4>
@@ -49,13 +56,17 @@
                                     <v-btn variant="tonal" size="small" @click="addChild(i)" class="ml-3">+</v-btn>
                                 </v-col>
                             </v-row>
-                            <v-row justify="end">
-                                <v-col cols="6" class="text-right px-4" v-if="room.Children > 0"
-                                    v-for="n in room.Children">
+                            <v-row justify="end" v-if="room.Children    > 0">
+                                <v-col cols="6" class="text-right px-4" v-for="n in room.Children">
                                     <v-no-ssr>
-                                        <v-select :label="$capitalize($t('child_age'))" hide-details density="compact"
+                                        <v-autocomplete :label="$capitalize($t('child_age'))" hide-details density="compact"
                                             variant="outlined" class="custom-text-field" :items="childrenAges"
-                                            v-model="room.ChildrenAges[n - 1]"></v-select>
+                                            v-model="room.ChildrenAges[n - 1]">
+                                        
+                                        <template v-slot:no-data>
+                                           <span class="pa-2 body-3"> No puede ingresar esa edad.</span>
+                                        </template>
+                                    </v-autocomplete>
                                     </v-no-ssr>
                                 </v-col>
                             </v-row>
@@ -75,7 +86,7 @@
                     <v-col cols="5"><v-btn variant="flat" block rounded="md"
                             @click="cancelPaxDialog">Cancelar</v-btn></v-col>
                     <v-col><v-btn color="secondary" block variant="flat" rounded="md" @click="confirmPaxDialog">{{
-        $capitalize($t("confirm")) }}</v-btn></v-col>
+                            $capitalize($t("confirm")) }}</v-btn></v-col>
                 </v-row>
             </v-card-actions>
         </v-card>
@@ -83,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps(['compact', 'themed', 'multiple', 'serviceType'])
+const props = defineProps(['compact', 'themed', 'multiple', 'serviceType', 'adultsAgeRequired'])
 const isMobile = useMobile();
 const route = useRoute()
 
@@ -115,6 +126,7 @@ function addRoom() {
         Adults: 2,
         Children: 0,
         ChildrenAges: [],
+        AdultsAges: [30,30],
     });
 }
 
@@ -124,11 +136,13 @@ function removeRoom(index) {
 
 function addAdult(i) {
     occupancies.value[i].Adults++;
+    occupancies.value[i].AdultsAges.push('30');
 }
 
 function subsAdult(i) {
     if (occupancies.value[i].Adults > 1) {
         occupancies.value[i].Adults--;
+        occupancies.value[i].AdultsAges.splice(-1, 1);
     }
 
 }
@@ -166,29 +180,15 @@ function updateTotalPax() {
     emit('update:rooms', occupancies)
 }
 
-function parseRoomsString() {
-    const roomsArray = (route.query.occupancies as string).split('|').map(room => {
-        const [adults, childrenAgesStr] = room.split(';');
-        const [children, childrenAges] = childrenAgesStr ? childrenAgesStr.split('*') : ['', ''];
-
-        return {
-            Adults: parseInt(adults),
-            Children: parseInt(children),
-            ChildrenAges: childrenAges ? childrenAges.split(',') : [],
-        };
-    });
-
-    return roomsArray;
-}
-
 onMounted(() => {
     if (route.query.occupancies) {
-        occupancies.value = parseRoomsString();
+        occupancies.value = useOccupancies.parse(route.query.occupancies as string)
     } else {
         occupancies.value.push({
             Adults: 2,
             Children: 0,
             ChildrenAges: [],
+            AdultsAges: ['30', '30']
         })
     }
     updateTotalPax();

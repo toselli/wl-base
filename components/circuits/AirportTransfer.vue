@@ -140,7 +140,6 @@
 </template>
 
 <script setup>
-import VueDatePicker from '@vuepic/vue-datepicker'
 import { useTheme } from 'vuetify'
 const { requiredRules } = useFormRules();
 const model = defineModel()

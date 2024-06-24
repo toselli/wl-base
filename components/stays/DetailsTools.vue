@@ -1,12 +1,16 @@
 <template>
     <v-row dense :justify="!isMobile ? 'end' : 'start'" align="center" no-gutters>
-        <v-checkbox label="Mostrar ofertas (con cargos)" hide-details density="compact" v-model="showNonRef"
-            class="body-2 v-col-lg-3"></v-checkbox>
+
+        <v-checkbox label="Mostrar tarifas con gastos" hide-details density="compact" v-model="showNonRef"
+            class="body-2 v-col-lg-2"></v-checkbox>
         <v-checkbox label="Mostrar solo cadena directa" hide-details density="compact" v-model="showDirectChain"
-            class="body-2 v-col-lg-3"></v-checkbox>
+            class="body-2 v-col-lg-2"></v-checkbox>
         <v-text-field variant="outlined" hide-details density="compact" label="Buscar" v-model="searchPromptModel"
             class="small-text-field pt-0 mx-2" ref="prompRef"
-            placeholder="Escriba el nombre de una habitación"></v-text-field>
+            placeholder="Escriba un término para filtrar"></v-text-field>
+        <v-select variant="outlined" v-model="selectedSupplementGroup" :items="supplementOptions"
+            label="Filtrar por suplemento" hide-details density="compact" class="small-select pt-0 mx-2">
+        </v-select>
         <v-btn variant="tonal" density="comfortable" color="secondary" class="mr-2"
             @click="$emit('orderDes'); priceOrder = 'desc'" rounded="md" v-if="priceOrder == 'asc'"> <v-icon
                 icon="mdi-arrow-down"></v-icon> Precio
@@ -15,6 +19,7 @@
             @click="$emit('orderAsc'); priceOrder = 'asc'" rounded="md" v-else>
             <v-icon icon="mdi-arrow-up"></v-icon>Precio
         </v-btn>
+
         <v-btn-toggle v-model="viewModeModel" mandatory color="secondary" class="border-secondary" style="height: 28px;"
             density="comfortable" variant="tonal" rounded="md" v-if="!isMobile">
             <v-btn size="small" :class="viewMode == 'grid' ? 'bg-secondary text-white' : 'text-secondary'" class="px-4"
@@ -47,8 +52,9 @@ watch(viewModeModel, () => {
     emitViewMode(props.viewMode);
 });
 
+const { supplementOptions } = useSupplementFilter();
 
-const emit = defineEmits(['update:prompt', 'update:viewMode', 'update:showNonRef', 'update:showDirectChain'])
+const emit = defineEmits(['update:prompt', 'update:viewMode', 'update:showNonRef', 'update:showDirectChain', 'update:selectedSupplement'])
 
 const emitPrompt = (value: string) => {
     emit('update:prompt', value);
@@ -73,6 +79,12 @@ const showDirectChain = ref(false)
 
 watch(showDirectChain, (value) => {
     emit('update:showDirectChain', value);
+});
+
+const selectedSupplementGroup = ref(null);
+
+watch(selectedSupplementGroup, (value) => {
+    emit('update:selectedSupplement', value);
 });
 
 </script>

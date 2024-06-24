@@ -27,7 +27,7 @@
         <v-container v-if="getLoggedUser" fluid class="pa-0 pt-2">
             <!-- RESULTADOS -->
             <v-row dense justify="center" :key="renderKey" v-if="filteredResults.length > 0">
-                <v-col :lg="viewMode == 'list' ? 12 : 4" cols="12" :class="viewMode == 'list' ? 'pa-0' : ''"
+                <v-col :md="viewMode == 'list' ? 12 : 4" cols="12" :class="viewMode == 'list' ? 'pa-0' : ''"
                     class="mb-2" v-for="result in filteredResults">
                     <CarsListResultCard :item="result" :mode="viewMode" @goTo="goToCheckout"></CarsListResultCard>
                 </v-col>

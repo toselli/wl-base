@@ -2,9 +2,9 @@
   <v-form v-model="valid">
     <v-row dense>
       <v-col cols="12" :sm="compact ? '10' : '12'" id="col_search_card">
-        <v-card rounded="md" class="search-card" flat
+        <v-card rounded="lg" class="search-card" flat
           :class="compact ? 'mb-1 bg-transparent' : ' pa-4 bg-foreground'" id="search_card">
-          <v-card :rounded="compact ? 'md' : ''" flat
+          <v-card :rounded="compact ? 'lg' : ''" flat
             :class="compact ? 'pa-1 mb-2 border-secondary bg-foreground' : 'bg-foreground pr-lg-3'">
             <v-row dense no-gutters :class="noresults ? 'justify-center' : ''">
               <v-col cols="12" sm="10" :class="compact ? '' : 'pr-2'">
@@ -36,7 +36,7 @@
               </v-col>
               <v-col cols="12" sm="2">
                 <div>
-                  <CommonOccupancies @update:rooms="setOccupancies" :compact="compact" :themed="themed">
+                  <CommonOccupancies @update:rooms="setOccupancies" :compact="compact" :adultsAgeRequired="true" :themed="themed">
                   </CommonOccupancies>
                 </div>
               </v-col>
@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import dayjs from "dayjs";
+const dayjs = useDayjs()
 const isMobile = useMobile()
 const props = defineProps(["compact", "noresults", "nologo", "themed", "divider"]);
 
@@ -68,7 +68,7 @@ const handleSelectedDate = (date) => {
 
 //#region PLACES
 
-const selectedOrigin = ref(null)
+const selectedOrigin = ref({ "es": "Argentina", "en": "Argentina", "code": "AR" })
 const selectedDestination = ref(null)
 
 //#region SEARCH

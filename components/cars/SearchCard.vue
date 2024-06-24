@@ -1,11 +1,11 @@
 <template>
   <v-row dense>
     <v-col cols="12" :sm="compact ? '10' : '12'" id="col_search_card">
-      <v-card rounded="md" class="search-card" flat :class="compact ? 'mb-1 bg-transparent' : ' pa-4 bg-foreground'"
+      <v-card rounded="lg" class="search-card" flat :class="compact ? 'mb-1 bg-transparent' : ' pa-4 bg-foreground'"
         id="search_card">
         <v-row dense no-gutters :class="noresults ? 'justify-center' : ''">
           <v-col cols="12">
-            <v-card :rounded="compact ? 'md' : ''" flat
+            <v-card :rounded="compact ? 'lg' : ''" flat
               :class="compact ? 'pa-1 mb-2 border-secondary bg-foreground' : 'bg-foreground'">
               <v-row class="align-center" dense :no-gutters="compact">
                 <!-- INPUT CIUDADES RETIRO -->
@@ -56,10 +56,12 @@
                       :length="compact ? '85' : '85'" :searchedPlace="selectedReturnPlace"
                       @update:selectedPlace="handleSelectedReturnPlace" />
                   </div>
-                  <v-switch v-model="differentReturnPoint" color="secondary" density="compact" hide-details
-                    :label="$capitalize($t('return_another_office'))" class="body-2"
+                  <div>
+                  <v-switch v-model="differentReturnPoint" color="secondary" inset density="compact" hide-details
+                    :label="$capitalize($t('return_another_office'))" class="body-2" 
                     :class="compact ? 'ml-2' : 'ml-2 mt-2'" @click="toggle">
                   </v-switch>
+                  </div>
                 </v-col>
                 <!-- INPUT OFICINA DEVOLUCIÓN -->
                 <v-col cols="12" sm="3" :class="compact ? 'pr-2' : 'pr-2'" v-if="differentReturnPoint">
@@ -109,9 +111,7 @@
 
 //#region imports
 import { useTheme } from 'vuetify/framework';
-import dayjs from "dayjs";
-import VueDatePicker from "@vuepic/vue-datepicker";
-import "@vuepic/vue-datepicker/dist/main.css";
+const dayjs = useDayjs()
 
 //#endregion
 

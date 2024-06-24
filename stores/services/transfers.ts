@@ -75,8 +75,8 @@ export const useTransfersStore = defineStore("transfers", () => {
     return new Promise((resolve, reject) => {
       useEbooking.post('payments/paymentRequestUSD', null, payload)
         .then((res: any) => {
-          if(res && res.FormData) {
-            resolve(res.FormData)
+          if(res && res) {
+            resolve(res)
           }
         })
         .catch((error) => {

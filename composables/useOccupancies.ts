@@ -1,24 +1,25 @@
 export default {
     stringify(occupancies) {
-        return occupancies ? occupancies.map(occ => `${occ.Adults};${occ.Children}*${occ.ChildrenAges.join(',')}*`).join('|') : ''
+        return occupancies ? occupancies.map(occ => `${occ.Adults};${occ.Children};*${occ.ChildrenAges.join(',')}*;~${occ.AdultsAges.join(',')}~`).join('|') : ''
     },
 
-    parse(occStr:string) {
-        if(!occStr) return;
-        const array = occStr.split('|').map(room => {
-            const [adults, childrenAgesStr] = room.split(';');
-            const [children, childrenAges] = childrenAgesStr ? childrenAgesStr.split('*') : ['', ''];
+    parse(occupancies: string) {
+        if (!occupancies) return null;
 
-            return {
-                Adults: parseInt(adults),
-                Children: parseInt(children),
-                ChildrenAges: childrenAges ? childrenAges.split(',').map(x => parseInt(x)) : [],
-                Infants: 0,
-                Visible: true,
-                SeniorAges:  [],
-                AdultsAges: Array(parseInt(adults[0])).fill(30)
-            };
+        const rooms = occupancies.split('|');
+      
+        return rooms.map(room => {
+          const [adults, children, childrenAgesStr, adultsAgesStr] = room.split(';');
+      
+          const childrenAges = childrenAgesStr ? childrenAgesStr.substring(1, childrenAgesStr.length - 1).split(',').map(age => parseInt(age, 10)) : [];
+          const adultsAges = adultsAgesStr ? adultsAgesStr.substring(1, adultsAgesStr.length - 1).split(',').map(age => parseInt(age, 10)) : [];
+      
+          return {
+            Adults: parseInt(adults),
+            Children: parseInt(children),
+            ChildrenAges: parseInt(children) > 0 ? childrenAges : [],
+            AdultsAges: parseInt(adults) > 0 ? adultsAges : []
+          };
         });
-        return array;
     }
-}
+}              

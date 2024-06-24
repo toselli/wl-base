@@ -1,7 +1,7 @@
 import { LoginResponse } from "~~/interfaces/identity/LoginResponse";
 import { LoginRequest } from "~~/interfaces/identity/LoginRequest";
 import { AuthError } from "~~/interfaces/identity/AuthError";
-
+import { useUserConfig } from '@/composables/useUserConfig';
 
 export function useAuth() {
     const loginStore = useLoginStore();
@@ -19,6 +19,8 @@ export function useAuth() {
         loginStore.isExpired
     )
 
+    const { initializeUserConfig } = useUserConfig(); 
+
     async function login(payload: LoginRequest): Promise<void> {
         loading.value = true;
         errorMessage.value = '';
@@ -27,6 +29,7 @@ export function useAuth() {
             if (response.IsAuthorized) {
                 isAuthorized.value = true;
                 await usersStore.fetchLoggedUser();
+                await initializeUserConfig(usersStore.getLoggedUser.IdString)
             } else if (response.PhoneNumber) {
                 hasPhoneNumber.value = true;
                 phoneNumber.value = response.PhoneNumber

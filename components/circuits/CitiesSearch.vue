@@ -1,13 +1,13 @@
 <template>
     <v-menu :close-on-content-click="isMobile ? true : false" origin="overlap" v-model="menuSearch"
-    :location="isMobile ? 'top' : 'bottom'" 
-    :max-height="isMobile ? '' : '450'" :min-height="isMobile ? '750' : ''"
-    :max-width="isMobile ? '360' : '380'" :min-width="isMobile ? '360' : '380'"> 
+        :location="isMobile ? 'top' : 'bottom'" :max-height="isMobile ? '' : '450'" :min-height="isMobile ? '750' : ''"
+        :max-width="isMobile ? '360' : '380'" :min-width="isMobile ? '360' : '380'">
         <template v-slot:activator="{ props }">
-            <v-btn class="btn-search-places" :class="!compact ? 'mt-2' : ''" variant="tonal" v-bind="props">
+            <v-btn class="btn-search-places btn-search-cities" :class="!compact ? 'mt-2' : ''" variant="tonal"
+                v-bind="props">
                 <template v-if="selectedCities.length > 0">
-                    <v-chip v-for="item in selectedCities" size="x-small" closable class="mr-1"
-                        @click:close="removeCity(item)">
+                    <v-chip v-for="(item, i) in selectedCities" size="x-small" closable class="mr-1"
+                        @click:close="removeCity(i)" :key="updateKey">
                         {{ item.Name }}</v-chip>
                 </template>
                 <span class="text-secondary_text" v-else>{{ label }}</span>
@@ -107,13 +107,12 @@ function selectCity(place) {
 function selectCities(cities) {
     selectedCities.value = cities
 }
-
-const removeCity = (city) => {
-    const index = selectedCities.value.indexOf(city)
-
-    if (index > -1) {
-        selectedCities.value.splice(index, 1)
-    }
+const updateKey = ref(0)
+const removeCity = (index) => {
+    selectedCities.value.splice(index, 1)
+    nextTick().then(() => {
+        updateKey.value++
+    });
 }
 function debounce(func, wait) {
     let timeout;

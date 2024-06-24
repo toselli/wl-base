@@ -2,38 +2,12 @@
     <v-container class="content-container">
         <v-row dense>
             <v-col>
-                <v-btn prepend-icon="mdi-chevron-left" rounded="xl" variant="outlined" density="comfortable"
-                    @click="useBackButton"> Volver</v-btn>
-            </v-col>
-        </v-row>
-
-        <v-row v-if="getCatalog.Images">
-            <v-col class="bg-background">
-                <v-row dense>
-                    <v-col :cols="getCatalog.Images.length > 1 ? 7 : 12" class="bg-background">
-                        <v-card rounded="md" class="fill-height">
-                            <v-img cover class="fill-height" rounded="md" :src="getCatalog.Images[0]"></v-img>
-                        </v-card>
-                    </v-col>
-                    <v-col cols="5">
-                        <v-row dense>
-                            <v-col cols="12" v-if="getCatalog.Images.length > 1" class="bg-background">
-                                <v-card rounded="md" class="fill-height">
-                                    <v-img cover class="fill-height" rounded="md" :src="getCatalog.Images[1]"></v-img>
-                                </v-card>
-                            </v-col>
-                            <v-col cols="12" v-if="getCatalog.Images.length > 2" class="bg-background">
-                                <v-card rounded="md" class="fill-height">
-                                    <v-img cover class="fill-height" rounded="md" :src="getCatalog.Images[2]"></v-img>
-                                </v-card>
-                            </v-col>
-                        </v-row>
-                    </v-col>
-                </v-row>
+                <v-btn prepend-icon="mdi-chevron-left" rounded="sm" variant="outlined" density="comfortable"
+                    @click="backToResults"> Volver</v-btn>
             </v-col>
         </v-row>
         <v-row>
-            <v-col cols=8>
+            <v-col cols="12" md="8">
                 <v-card rounded="lg" class="bg-midground" flat>
                     <v-card-text>
                         <h1 class="semi text-primary_text">
@@ -42,27 +16,28 @@
                         <p class="body-1 my-3 d-flex">
                             <span class="body-1 semi"><v-icon icon="md:date_range" size="small"></v-icon> Duración:
                                 <span class="text-secondary_text" v-if="getCatalog.Durations"> {{
-                                    getCatalog.Durations[0].Value }}</span>
+                                getCatalog.Durations[0].Value }}</span>
 
                             </span>
                             <span class="ml-3" v-if="getCatalog && getCatalog.Cities">
                                 <v-icon icon="md:hotel" size="small" class="mr-1"></v-icon>
                                 <span class="semi">Pernoctando en: </span>
-                                <span class="text-secondary_text">{{ getCatalog.Cities.map(x => x.Value).join(',') }}</span>
+                                <span class="text-secondary_text">{{ getCatalog.Cities.map(x => x.Value).join(',')
+                                    }}</span>
                             </span>
                         </p>
                     </v-card-text>
                     <v-card-text>
-                        <v-btn-toggle mandatory v-model="tab" color="secondary" class="bg-foreground pa-1 mb-2"
-                        variant="flat" rounded="md">
-                            <v-btn rounded="lg">
+                        <v-btn-toggle mandatory v-model="tabInfo" color="secondary" class="bg-foreground pa-1 mb-2"
+                            variant="flat" rounded="md">
+                            <v-btn rounded="lg" class="mr-2">
                                 Información general
                             </v-btn>
-                            <v-btn rounded="lg">
+                            <v-btn rounded="lg" v-if="getCatalog.Itinerary">
                                 Itinerario
                             </v-btn>
                         </v-btn-toggle>
-                        <v-card class="bg-background pa-3" flat rounded="lg">
+                        <v-card class="bg-background pa-3" flat rounded="lg" v-if="tabInfo == 0">
                             <v-card rounded="lg" class="bg-foreground mb-3" flat v-if="getCatalog.Cities">
                                 <v-card-text>
                                     <h4 class="semi mb-2">Destinos</h4>
@@ -106,25 +81,59 @@
                                 </v-card-text>
                             </v-card>
                         </v-card>
+                        <v-card class="bg-background pa-3" flat rounded="lg"
+                            v-if="getCatalog.Itinerary && tabInfo == 1">
+                            <v-card rounded="lg" class="bg-foreground mb-3" flat
+                                v-for="(item, index) in getCatalog.Itinerary">
+                                <v-card-text>
+                                    <h4 class="semi mb-2">Día {{ index + 1 }} - {{ item.Tittle }}</h4>
+                                    <p class="mb-0">{{ item.Description }}</p>
+                                    <v-list class="ml-1" density="compact" v-if="item.Cities?.length > 1">
+                                        <v-list-item class="body-1 text-secondary_text" v-for="dest in item.Cities">
+                                            {{ dest.Value }}
+                                        </v-list-item>
+                                    </v-list>
+                                </v-card-text>
+                            </v-card>
+                        </v-card>
                     </v-card-text>
                 </v-card>
             </v-col>
-            <v-col>
+            <v-col cols="12" md="4">
+                <v-row dense>
+                    <v-col :cols="getCatalog.Images?.length > 1 ? 7 : 12" class="bg-background">
+                        <v-card rounded="md" class="fill-height">
+                            <v-img cover class="fill-height" rounded="md" :src="getCatalog.Images[0]"></v-img>
+                        </v-card>
+                    </v-col>
+                    <v-col cols="5">
+                        <v-row dense>
+                            <v-col cols="12" v-if="getCatalog.Images?.length > 1" class="bg-background">
+                                <v-card rounded="md" class="fill-height">
+                                    <v-img cover class="fill-height" rounded="md" :src="getCatalog.Images[1]"></v-img>
+                                </v-card>
+                            </v-col>
+                            <v-col cols="12" v-if="getCatalog.Images?.length > 2" class="bg-background">
+                                <v-card rounded="md" class="fill-height">
+                                    <v-img cover class="fill-height" rounded="md" :src="getCatalog.Images[2]"></v-img>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </v-col>
+                </v-row>
                 <v-card variant="outlined" class="border border-secondary bg-foreground pa-3" rounded="lg">
-                    <!-- chanchada -->
-                    <span class="border fill-height  ml-5" style="max-height:80%"></span>
                     <v-expansion-panels multiple :mandatory="true" v-model="openPanels">
-                        <v-expansion-panel rounded="lg" class="mb-3 bg-background border-secondary_lighten" elevation="0">
+                        <v-expansion-panel rounded="lg" class="mb-3 bg-background border-secondary_lighten"
+                            elevation="0">
                             <v-expansion-panel-title>
                                 <v-btn class="mr-2" icon rounded="md" size="small" flat
                                     color="secondary_lighten"><v-icon size="20" icon="md:timelapse"
                                         color="secondary"></v-icon></v-btn>
                                 <span class="body-1 semi">Duración</span>
                             </v-expansion-panel-title>
-
                             <v-expansion-panel-text>
                                 <v-select bg-color="foreground" base-color="secondary_text" density="compact"
-                                    v-model="durationSelected" label="Duración" :items="getCatalog.Durations"
+                                    v-model="durationSelected" :items="getCatalog.Durations"
                                     variant="outlined" rounded="md" item-name="Value">
                                     <template v-slot:item="{ props, item }">
                                         <span class="px-2 text-secondary_text" v-bind="props">
@@ -134,16 +143,14 @@
                                     <template v-slot:selection="{ item }">
                                         {{ item.raw?.Value }}
                                     </template>
-                                    <template v-slot:label>
-
-                                    </template>
                                 </v-select>
                             </v-expansion-panel-text>
                             <template v-slot:prepend-inner>
                                 <v-icon icon="md:timelapse" color="secondary"></v-icon>
                             </template>
                         </v-expansion-panel>
-                        <v-expansion-panel rounded="md" class="mb-3 bg-background border-secondary_lighten" elevation="0">
+                        <v-expansion-panel rounded="md" class="mb-3 bg-background border-secondary_lighten"
+                            elevation="0">
                             <v-expansion-panel-title>
                                 <v-btn class="mr-2" icon rounded="md" size="small" flat
                                     color="secondary_lighten"><v-icon icon="md:date_range" color="secondary"
@@ -154,73 +161,80 @@
                                 <div class="d-flex px-2 align-center mb-2">
                                     <div>
                                         <span class="body-2 semi text-secondary_text">
-                                            {{ indexDisplay + 1 }} fechas de {{ presetDates.length }}
+                                            {{ presetDates.length }} fechas disponibles
                                         </span>
                                     </div>
                                     <div class="ml-auto">
-                                        <v-btn name="prev" class=mr-1 rounded="sm" stacked size="32"
-                                            :disabled="indexDisplay == 0" variant="outlined" color=secondary
-                                            @click="indexDisplay--">
-                                            <v-icon size=16 icon=md:chevron_left></v-icon>
+                                        <v-btn name="prev" class="mr-1" rounded="sm" stacked size="32"
+                                            :disabled="indexDisplay === 0" variant="outlined" color="secondary"
+                                            @click="goToPreviousMonth">
+                                            <v-icon size="16" icon="md:chevron_left"></v-icon>
                                         </v-btn>
-                                        <v-btn name="next" class=ml-1 rounded="sm" stacked size="32"
-                                            :disabled="indexDisplay >= presetDates.length - 1" variant="outlined"
-                                            color=secondary @click="indexDisplay++">
-                                            <v-icon size=16 icon=md:chevron_right></v-icon>
+                                        <v-btn name="next" class="ml-1" rounded="sm" stacked size="32"
+                                            :disabled="indexDisplay >= allowedDepartures?.length - 1"
+                                            variant="outlined" color="secondary" @click="goToNextMonth">
+                                            <v-icon size="16" icon="md:chevron_right"></v-icon>
                                         </v-btn>
+                                        <!-- NO BORRAR ESTA LINEA MISTERY OF VUE -->
+                                       <span v-show="false">{{indexDisplay}}</span> 
                                     </div>
                                 </div>
                                 <div>
                                     <v-no-ssr>
-                                        <VueDatePicker inline v-model="displayDates" :dark="theme.name == 'ThemeDark'"
-                                            :loading="!durationSelected" auto-apply prevent-min-max-navigation :key="dpKey"
-                                            :hide-offset-dates="true" :enable-time-picker="false" range
-                                            style="display: inline;"
+                                        <VueDatePicker inline v-model="displayDates" focus-start-date :dark="theme.name == 'ThemeDark'"
+                                            :loading="!durationSelected" auto-apply prevent-min-max-navigation
+                                            :key="dpKey" :hide-offset-dates="true" :enable-time-picker="false" range
+                                            style="display: inline;" locale="es" :show-last-in-range="false"
                                             :auto-range="durationSelected ? durationSelected.Key - 1 : 0"
                                             :allowed-dates="allowedDepartures.map(x => new Date(x.Date))">
-
-                                            <template #month-year="{
-                                                month,
-                                                year
-                                            }">
+                                            <template #month-year="{ month, year }">
                                                 <v-row align="center">
                                                     <v-col class="text-center">
                                                         <span class="text-center body-1 text-secondary_text">{{
-                                                            $capitalize(dayjs(`${year}-${month
-                                                                + 1}-15`).format("MMMM YYYY")) }}
+                                $capitalize(dayjs(`${year}-${month
+                                    + 1}-15`).format("MMMM YYYY")) }}
                                                         </span>
                                                     </v-col>
                                                 </v-row>
                                             </template>
                                             <template #calendar-header="{ index, day }">
                                                 <div class="body-2 text-secondary_text">
-                                                    {{ week[index] }}
+                                                    {{ day }}
                                                 </div>
                                             </template>
                                             <template #day="{ day, date }">
                                                 <template
                                                     v-if="allowedDepartures.map(x => dayjs(x.Date).toISOString()).includes(dayjs(date).toISOString())">
                                                     <v-btn @click.prevent="selectDate(date)" rounded="sm"
-                                                        class="body-2 semi" block
+                                                        class="body-2 semi" block v-if="dayClass(date) != 'error'"
                                                         :variant="selectedDate.getTime() == date.getTime() ? 'flat' : 'outlined'"
                                                         :class="selectedDate.getTime() == date.getTime() ? 'bg-transparent' : 'bg-' + dayClass(date) + '_lighten'"
                                                         :color="selectedDate.getTime() == date.getTime() ? 'secondary' : dayClass(date)">
                                                         {{ day }}
                                                     </v-btn>
-
+                                                    <v-btn @click="showNoAvail('No hay disponibilidad en esta fecha')"
+                                                        rounded="sm" v-else class="body-2 semi error_lighten" block
+                                                        variant="outlined" color="error">
+                                                        {{ day }}
+                                                    </v-btn>
                                                 </template>
                                                 <template v-else><span class="body-2">{{ day }}</span></template>
                                             </template>
-
                                         </VueDatePicker>
                                     </v-no-ssr>
+                                    <p class="my-3 body-1 semi text-center">
+                                        <span class="body-2">Fechas seleccionadas:</span>
+                                        {{ dayjs(selectedDate).format('DD-MM-YYYY') }} al 
+                                        {{ dayjs(selectedDate).add(Number.parseInt(durationSelected.Key) - 1, 'days').format('DD-MM-YYYY') }}
+                                    </p>
                                 </div>
                                 <v-sheet class="price-sheet d-flex">
                                     <span class="fw-400">Desde</span>
                                     <span class="ml-auto">
                                         <span class="body-1 text-secondary_text mr-1">{{ departureSelected?.Currency ||
-                                            currency }}</span>
-                                        <span class="bold" v-if="departureSelected">{{ departureSelected.Amount }}</span>
+                                currency }}</span>
+                                        <span class="bold" v-if="departureSelected">{{ departureSelected.Amount
+                                            }}</span>
                                         <span class="bold" v-else>0</span>
                                     </span>
                                 </v-sheet>
@@ -230,16 +244,15 @@
                         <v-expansion-panel v-if="getCatalog.MealPlans && getCatalog.MealPlans.length > 0" rounded="md"
                             class="mb-3 bg-background border-secondary_lighten" elevation="0">
                             <v-expansion-panel-title>
-                                <v-btn class="mr-2" icon rounded="md" size="20" flat
-                                    color="secondary_lighten"><v-icon icon="md:restaurant"
-                                        color="secondary"></v-icon></v-btn>
+                                <v-btn class="mr-2" icon rounded="md" size="20" flat color="secondary_lighten"><v-icon
+                                        icon="md:restaurant" color="secondary"></v-icon></v-btn>
                                 <span class="body-1 semi">Plan comidas</span>
                             </v-expansion-panel-title>
                             <v-expansion-panel-text>
 
                                 <v-select bg-color="foreground" base-color="secondary_text" density="compact"
-                                    v-model="mealPlanSelected" :items="getCatalog.MealPlans" variant="outlined" rounded="md"
-                                    return-object>
+                                    v-model="mealPlanSelected" :items="getCatalog.MealPlans" variant="outlined"
+                                    rounded="md" return-object>
                                     <template v-slot:item="{ item, props }">
                                         <div class="pa-3 text-secondary_text" v-bind="props">
                                             {{ item.raw.Value }}
@@ -255,8 +268,8 @@
 
                             </v-expansion-panel-text>
                         </v-expansion-panel>
-                        <v-expansion-panel rounded="md" class="mb-3 bg-background border-secondary_lighten" elevation="0"
-                            value=10>
+                        <v-expansion-panel rounded="md" class="mb-3 bg-background border-secondary_lighten"
+                            elevation="0" value=10>
                             <v-expansion-panel-title>
                                 <v-btn class="mr-2" icon rounded="md" size="small" flat
                                     color="secondary_lighten"><v-icon icon="md:hotel" size="20"
@@ -264,8 +277,8 @@
                                 <span class="body-1 semi">Habitaciones</span>
                             </v-expansion-panel-title>
                             <v-expansion-panel-text>
-                                <CircuitsOccupanciesCard @update:rooms="setOccupancies" :compact="false" themed="default"
-                                    v-model:valid="valid" multiple="true" />
+                                <CircuitsOccupanciesCard @update:rooms="setOccupancies" :compact="false"
+                                    themed="default" v-model:valid="valid" multiple="true" />
                             </v-expansion-panel-text>
                         </v-expansion-panel>
                     </v-expansion-panels>
@@ -279,9 +292,7 @@
                     </v-row>
                 </v-card>
             </v-col>
-
         </v-row>
-
         <v-dialog width=897px v-model="stepperDialog" persistent>
             <v-card rounded="md" class="list-result-card" flat elevation="0">
                 <v-toolbar class="bg-foreground mb-n5">
@@ -308,19 +319,21 @@
                                 <span class="body-1"> Seleccione habitación</span>
                             </v-stepper-item>
                             <v-divider></v-divider>
-                            <v-stepper-item :rules="rules.startEndRules" :error-icon="steps == 1 ? 'md:edit' : 'md:lock'"
-                                value=1 class="text-left">
+                            <v-stepper-item :rules="rules.startEndRules"
+                                :error-icon="steps == 1 ? 'md:edit' : 'md:lock'" value=1 class="text-left">
                                 <span class="body-1"> Inicio y fin del circuito</span>
                             </v-stepper-item>
                             <v-divider></v-divider>
-                            <v-stepper-item :rules="rules.extraNightsRules" :disabled="!getPrebooking.CanSelectExtraNights"
+                            <v-stepper-item :rules="rules.extraNightsRules"
+                                :disabled="!getPrebooking.CanSelectExtraNights"
                                 :error-icon="steps == 2 ? 'md:edit' : 'md:lock'"
                                 :subtitle="getPrebooking.CanSelectExtraNights ? '' : steps > 0 ? 'No tiene' : 'Selecciona una habitación'"
                                 :color="steps == 3 ? 'primary' : 'secondary_lighten'" value=2 class="text-left">
                                 <span class="body-1"> Noches extra</span>
                             </v-stepper-item>
                             <v-divider></v-divider>
-                            <v-stepper-item :rules="rules.transferRules" :error-icon="steps == 3 ? 'md:edit' : 'md:lock'"
+                            <v-stepper-item :rules="rules.transferRules"
+                                :error-icon="steps == 3 ? 'md:edit' : 'md:lock'"
                                 :subtitle="getPrebooking.CanSelectTransfers ? '' : steps > 0 ? 'No tiene' : 'Selecciona una habitación'"
                                 :disabled="!getPrebooking.CanSelectTransfers" class="text-left"
                                 :color="steps == 3 ? 'primary' : 'secondary_lighten'" value=3>
@@ -345,13 +358,15 @@
                                             </v-col>
                                             <v-col>
                                                 <span class="text-secondary_text"> {{ room.Price.Currency }}</span>
-                                                <h3 class="semi d-inline ml-1">{{ room.Price.PVP.Amount.toFixed(2) }}</h3>
+                                                <h3 class="semi d-inline ml-1">{{ room.Price.PVP.Amount.toFixed(2) }}
+                                                </h3>
                                             </v-col>
                                             <v-col cols=2 class="d-flex">
                                                 <v-btn class="btn btn-primary ml-auto"
-                                                    :variant="roomSelected == room ? 'outlined' : 'flat'" color="primary"
-                                                    rounded="sm" @click="roomSelected = room">{{ roomSelected != room ?
-                                                        'Seleccionar' : 'Seleccionado' }}
+                                                    :variant="roomSelected == room ? 'outlined' : 'flat'"
+                                                    color="primary" rounded="sm" @click="roomSelected = room">{{
+                                roomSelected != room ?
+                                    'Seleccionar' : 'Seleccionado' }}
                                                     <template v-slot:prepend>
                                                         <v-icon size="20" v-if="roomSelected == room">
                                                             md:check_circle</v-icon>
@@ -375,8 +390,10 @@
                                                         <span class="bold" v-else-if="!endSelected">fin</span>
                                                         del circuito
                                                     </h4>
-                                                    <div class="text-warning body-2 mt-4 text-center align-items-center" v-else>
-                                                        <span> No hay incorporaciones ni salidas para este catálogo. Si cree que esto es
+                                                    <div class="text-warning body-2 mt-4 text-center align-items-center"
+                                                        v-else>
+                                                        <span> No hay incorporaciones ni salidas para este catálogo. Si
+                                                            cree que esto es
                                                             un error, contáctese con el administrador.
                                                         </span>
                                                     </div>
@@ -389,13 +406,15 @@
                                                         :class="city === startSelected || city === endSelected ? 'card-selected' : ''">
 
                                                         <v-row align=center justify=center>
-                                                            <v-col class="body-1 d-flex align-center justify-space-between"
+                                                            <v-col
+                                                                class="body-1 d-flex align-center justify-space-between"
                                                                 cols="12">
-                                                                <span class="text-secondary_text">Día {{ city.DayIndex + 1
-                                                                }}</span>
+                                                                <span class="text-secondary_text">Día {{ city.DayIndex +
+                                1
+                                                                    }}</span>
                                                                 <span class="text-secondary_text"> {{
-                                                                    dayjs(getPrebooking.Services[0].BeginService).add(city.Index
-                                                                        + 1, 'days').format('DD/MM/YYYY') }}
+                                dayjs(getPrebooking.Services[0].BeginService).add(city.Index
+                                    + 1, 'days').format('DD/MM/YYYY') }}
                                                                 </span>
 
 
@@ -403,7 +422,8 @@
                                                                 <span>
                                                                     <v-btn
                                                                         :variant="city === startSelected || city === endSelected ? 'outlined' : 'default'"
-                                                                        color=primary rounded="md" @click="selectCity(city)"
+                                                                        color=primary rounded="md"
+                                                                        @click="selectCity(city)"
                                                                         :disabled="isCityDisabled(city)">
                                                                         <template v-slot:prepend>
                                                                             <v-icon size="20"
@@ -436,7 +456,8 @@
                                                 </p>
                                                 <v-card-actions>
                                                     <v-row dense justify=center align=center>
-                                                        <v-col cols="5" class="d-flex justify-space-between align-center">
+                                                        <v-col cols="5"
+                                                            class="d-flex justify-space-between align-center">
                                                             <v-btn color="secondary" variant="flat" class="py-1" size=xs
                                                                 rounded="sm" @click="preNightsIndex--"
                                                                 :disabled="!preNightsIndex">
@@ -458,7 +479,8 @@
                                                 </p>
                                                 <v-card-actions>
                                                     <v-row dense justify=center align=center>
-                                                        <v-col cols="5" class="d-flex justify-space-between align-center">
+                                                        <v-col cols="5"
+                                                            class="d-flex justify-space-between align-center">
                                                             <v-btn color="secondary" variant="flat" class="py-1" size=xs
                                                                 rounded="sm" :disabled="!postNightsIndex"
                                                                 @click="postNightsIndex--">
@@ -480,7 +502,7 @@
                                     <v-row dense no-gutters>
                                         <v-col class="text-center">
                                             <span class="body-2 text-warning">Máximo: {{
-                                                service.Catalog.ExtraNightsInfo.MaxNights }} noches</span>
+                                service.Catalog.ExtraNightsInfo.MaxNights }} noches</span>
                                         </v-col>
                                     </v-row>
 
@@ -517,18 +539,17 @@
 </template>
 
 <script setup lang="ts">
-import dayjs from "dayjs";
-import VueDatePicker from "@vuepic/vue-datepicker";
+
 import { CircuitAvailRequest } from "~/interfaces/services/circuits/AvailRequest";
 import { useTheme } from 'vuetify/framework';
 import { FlightInfo, PointInfo, SetTransferDetailsRequest, TravelInfo } from "~/interfaces/services/circuits/SetTransferDetailsRequest";
-import { PhoneSingleFactorInfoOptions } from "firebase/auth";
+
 const theme = ref(useTheme())
 const route = useRoute()
 const store = useCircuitsStore();
 const { getCatalog, getAvail, getPrebooking } = storeToRefs(store)
 const { fetchCatalog, getAvailability } = store;
-const tab = ref(0)
+const tabInfo = ref(0)
 const openPanels = ref([1, 2, 3])
 const durationSelected = ref({})
 const mealPlanSelected = ref({})
@@ -550,6 +571,8 @@ const presetDates: Ref<{
 const highlightedDates = ref([])
 const roomSelected = ref(null)
 const valid = ref(false)
+
+const dayjs = useDayjs()
 
 const dayClass = (date: Date) => {
     let classTag = ''
@@ -582,80 +605,134 @@ const service = computed(() => {
     }
 })
 
+const { toTop } = useScroll();
+
 const allowedDepartures = ref([])
 onMounted(async () => {
     if (!route.query) return;
-    const catalogId = route.query.catalogId as string
-    store.basketId = route.query.basketId as string
+    const catalogId = route.query.catalogId as string;
+    store.basketId = route.query.basketId as string;
     currency.value = route.query.currency;
-    fetchCatalog({ catalogId: catalogId, currency: route.query.currency as string })
-        .then(() => {
-            durationSelected.value = getCatalog.value.Durations ? getCatalog.value.Durations[0] : null
-            mealPlanSelected.value = getCatalog.value.MealPlans ? getCatalog.value.MealPlans[0] : null
-            allowedDepartures.value = getCatalog.value.Departures.filter(x => dayjs(x.Date).toDate() >= new Date());
-            const dep = allowedDepartures.value[0]
-            startDate.value = dep.Date
-            selectDate(new Date(dep.Date))
-            isSelectedDateAvailable.value = dep.Availability < 2
-            for (let departure of allowedDepartures.value) {
-                const dur = Number.parseInt(durationSelected.value.Key);
-                let tag = 'avail'
-                switch (departure.Availability) {
-                    case 0: { tag = 'avail'; }; break;
-                    case 2: tag = 'noavail'; break;
-                    case 1: tag = 'onrq'; break;
-                }
-                const dateCopy = useDeepCopy(departure.Date)
-                const end = dayjs(dateCopy).add(dur - 1, 'days').toDate()
-                presetDates.value.push({
-                    label: dayjs(departure.Date).format('DD/MM'),
-                    value: [new Date(departure.Date), new Date(end)],
-                    slot: `${tag}`
-                })
 
+    try {
+        await fetchCatalog({ catalogId: catalogId, currency: route.query.currency as string });
 
+        durationSelected.value = getCatalog.value.Durations ? getCatalog.value.Durations[0] : null;
+        mealPlanSelected.value = getCatalog.value.MealPlans ? getCatalog.value.MealPlans[0] : null;
+
+        // Filtro modificado para Availability < 2
+        allowedDepartures.value = getCatalog.value.Departures.filter(x => x.Availability < 2 && dayjs(x.Date).toDate() >= new Date());
+
+        const dep = allowedDepartures.value[0];
+        startDate.value = dep.Date;
+        selectDate(new Date(dep.Date));
+        isSelectedDateAvailable.value = dep.Availability < 2;
+
+        for (let departure of allowedDepartures.value) {
+            const dur = Number.parseInt(durationSelected.value.Key);
+            let tag = 'avail';
+            switch (departure.Availability) {
+                case 0: { tag = 'avail'; break; }
+                case 2: tag = 'noavail'; break;
+                case 1: tag = 'onrq'; break;
             }
-            indexDisplay.value = 1
-        })
-
-
-})
+            const dateCopy = useDeepCopy(departure.Date);
+            const end = dayjs(dateCopy).add(dur - 1, 'days').toDate();
+            presetDates.value.push({
+                label: dayjs(departure.Date).format('DD/MM'),
+                value: [new Date(departure.Date), new Date(end)],
+                slot: `${tag}`
+            });
+        }
+        indexDisplay.value = 1;
+    } catch (error) {
+        console.error("Error fetching catalog:", error);
+    }
+    toTop()
+});
 
 watch(indexDisplay, (after, before) => {
-    if (after >= getCatalog.value.Departures.length) {
-        indexDisplay.value = getCatalog.value.Departures.length - 1
-        return
+    if (after >= allowedDepartures.value.length) {
+        indexDisplay.value = allowedDepartures.value.length - 1;
+        return;
     }
 
     if (after < 0) {
-        indexDisplay.value = 0
-        return
+        indexDisplay.value = 0;
+        return;
     }
+    const currentDeparture = allowedDepartures.value[after];
+    if (!currentDeparture) return;
 
-    const departure = getCatalog.value.Departures[before];
-    if (!departure) return;
-    let month = new Date(departure.Date).getMonth()
-    if (new Date(getCatalog.value.Departures[after].Date).getMonth() == month) {
-        return after > before ? indexDisplay.value++ : indexDisplay.value--;
+    selectDate(new Date(currentDeparture.Date));
+});
+
+const goToNextMonth = () => {
+    const currentDeparture = allowedDepartures.value[indexDisplay.value];
+    if (!currentDeparture) return;
+
+    const currentMonth = new Date(currentDeparture.Date).getMonth();
+    const currentYear = new Date(currentDeparture.Date).getFullYear();
+
+    // Calcular la fecha límite para el rango de meses actuales
+    const lastDayOfCurrentMonth = new Date(currentYear, currentMonth + 1, 0);
+    const lastDateOfCurrentMonth = new Date(currentYear, currentMonth, lastDayOfCurrentMonth.getDate());
+
+    // Encontrar la siguiente fecha disponible después de la fecha límite
+    const nextMonthDeparture = allowedDepartures.value.find(dep => {
+        const depDate = new Date(dep.Date);
+        return depDate > lastDateOfCurrentMonth;
+    });
+
+    if (nextMonthDeparture) {
+        const index = allowedDepartures.value.indexOf(nextMonthDeparture);
+        indexDisplay.value = index;
     }
-    selectDate(new Date(getCatalog.value.Departures[after].Date))
+};
 
-})
+const goToPreviousMonth = () => {
+    const currentDeparture = allowedDepartures.value[indexDisplay.value];
+    if (!currentDeparture) return;
+
+    const currentMonth = new Date(currentDeparture.Date).getMonth();
+    const currentYear = new Date(currentDeparture.Date).getFullYear();
+
+    // Filtrar las fechas disponibles que sean del mes anterior al actual
+    const previousMonthDepartures = allowedDepartures.value.filter(dep => {
+        const depDate = new Date(dep.Date);
+        return (depDate.getMonth() < currentMonth && depDate.getFullYear() === currentYear) ||
+               (depDate.getMonth() === 11 && depDate.getFullYear() === currentYear - 1 && currentMonth === 0);
+    });
+
+    // Encontrar la última fecha disponible del mes anterior al actual
+    const previousMonthDeparture = previousMonthDepartures[previousMonthDepartures.length - 1];
+
+    if (previousMonthDeparture) {
+        const index = allowedDepartures.value.indexOf(previousMonthDeparture);
+        indexDisplay.value = index;
+    }
+};
+
+
 
 const departureSelected = computed(() => {
-    if (getCatalog.value && getCatalog.value.Departures)
-        return getCatalog.value.Departures.find(x => dayjs(x.Date).format('YYYY-MM-DD') == dayjs(selectedDate.value).format('YYYY-MM-DD'))
-})
+    if (allowedDepartures.value.length > 0) {
+        return allowedDepartures.value.find(x => dayjs(x.Date).format('YYYY-MM-DD') == dayjs(selectedDate.value).format('YYYY-MM-DD'));
+    }
+    return null;
+});
 
 const isSelectedDateAvailable = ref(false)
 const selectDate = (date) => {
-    const dep = getCatalog.value.Departures.find(x => dayjs(x.Date).format('YYYY-MM-DD') == dayjs(date).format('YYYY-MM-DD'))
+    const dep = allowedDepartures.value.find(x => dayjs(x.Date).format('YYYY-MM-DD') == dayjs(date).format('YYYY-MM-DD'));
+    if (!dep) return;
+
     isSelectedDateAvailable.value = dep.Availability < 2;
     const duration = Number.parseInt(durationSelected.value.Key);
-    const endDate = dayjs(date).add(duration - 1, 'days')
+    const endDate = dayjs(date).add(duration - 1, 'days');
     displayDates.value = [date, endDate];
-    selectedDate.value = date
-}
+    selectedDate.value = date;
+};
 
 const searchAvail = (async () => {
     availLoading.value = true
@@ -998,6 +1075,21 @@ const customNext = async () => {
     }
 }
 
+const router = useRouter();
+
+// BACK TO RESULTS
+function backToResults() {
+    store.results = []
+  router.push({
+    path: "/circuits/results",
+    query: {
+      cities: route.query.cities,
+      countries: route.query.countries
+    },
+    wait: false,
+  })
+}
+
 </script>
 
 <style>
@@ -1064,4 +1156,5 @@ const customNext = async () => {
 .card-selected {
     border: 1px solid rgb(var(--v-theme-primary)) !important;
     background-color: rgb(var(--v-theme-foreground)) !important;
-}</style>
+}
+</style>

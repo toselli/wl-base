@@ -1,6 +1,7 @@
 <template>
     <div class="mb-2">
-        <v-form v-model=valid> <v-select v-model="rooms" bg-color="foreground" base-color="secondary_text"
+        <v-form v-model="valid"> 
+            <v-select v-model="rooms" bg-color="foreground" base-color="secondary_text"
                 density="compact" :items="[...Array(10).keys()].map(x => x + 1)" variant="outlined" rounded="md">
 
             </v-select>

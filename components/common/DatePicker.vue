@@ -3,7 +3,7 @@
         <VueDatePicker class="search-datepicker" :class="compact ? '' : 'mt-2'" ref="dp" v-model="date"
             @internal-model-change="handleInternal" :range="multiple" :auto-position="false" :multi-calendars="multiple"
             :teleport="true"
-            :menu-class-name="isMobile ? (multiple ? 'search-datepicker-mobile search-datepicker-multiple' : 'search-datepicker-mobile') : (multiple ? 'search-datepicker-menu search-datepicker-multiple' : 'search-datepicker-menu')"
+            :menu-class-name="getMenuClassName"
             :hide-offset-dates="true" :alt-position="isMobile ? mobilePosition : null" :enable-time-picker="false"
             :auto-apply="!multiple" :clearable="false" locale="es" month-name-format="long" :min-date="minDate"
             :dark="theme.name != 'ThemeLight'">
@@ -67,9 +67,11 @@
                 </div>
             </template>
             <template #action-buttons="{ value }" v-if="multiple">
-                <div :set="nights = $dayjs(value[1]).diff($dayjs(value[0]), 'day')"></div>
+                <div v-if="Array.isArray(value) && value.length >= 2">
+                    <div :set="$dayjs(value[1]) ? nights = $dayjs(value[1]).diff($dayjs(value[0]), 'day') : ''"></div>
+                </div>
                 <v-btn variant="flat" rounded="md" color="secondary" :block="isMobile" size="large" @click="selectDate"
-                    :disabled="value[0] == undefined || value[1] == undefined || nights == 0">
+                :disabled="!Array.isArray(value) || value.length < 2 || value[0] == undefined || value[1] == undefined || nights == 0">
                     {{ $capitalize($t("confirm")) }}</v-btn>
             </template>
             <template #dp-input="{ }">
@@ -92,7 +94,7 @@
 </template>
 
 <script setup>
-import dayjs from "dayjs";
+const dayjs = useDayjs()
 const isMobile = useMobile()
 
 const props = defineProps(["compact", "multiple", "searchedDate", "labelDays", "minDate"]);
@@ -104,12 +106,21 @@ const theme = ref(useTheme())
 const mobilePosition = () => ({ top: 0, left: 0 });
 const desktopPosition = () => ({ top: 150, left: 450 });
 
+const getMenuClassName = computed(() => {
+  if (isMobile.value) {
+    return props.multiple ? 'search-datepicker-mobile search-datepicker-multiple' : 'search-datepicker-mobile';
+  } else if (props.compact) {
+    return props.multiple ? 'search-datepicker-menu search-datepicker-multiple-compact' : 'search-datepicker-menu search-datepicker-compact';
+  } else {
+    return props.multiple ? 'search-datepicker-menu search-datepicker-multiple' : 'search-datepicker-menu';
+  }
+});
+
 const date = ref();
 const dp = ref();
 
 const selectDate = () => {
     dp.value.selectDate();
-    console.log(dp.value.selectDate())
     emit('update:selectedDate', date.value);
 };
 
@@ -141,7 +152,6 @@ watch(() => selectDays.value, () => {
         alert(formattedNewDate)
 
         dp.value.updateInternalModelValue([startDate.value, formattedNewDate]);
-        console.log(formattedStartDate + ' y ' + formattedNewDate);
         window.scrollTo(0, 0); // Restaurar la posición del scroll
     }
 });

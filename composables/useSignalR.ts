@@ -33,7 +33,6 @@ const useSignalR = (url: string, _handleDisconnect: any) => {
       if (isConnected.value) {
          try {
             await connectionInstance.stop();
-            // No es necesario connectionInstance.dispose() aquí
             isConnected.value = false;
          } catch (error) {
             console.error('Error al desconectar: ', error);

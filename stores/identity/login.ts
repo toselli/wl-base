@@ -16,16 +16,39 @@ export const useLoginStore = defineStore("login", () => {
             const res = await useIdentity.post<LoginResponse>('v1/accounts/login', apiHeaders, payload);
     
             loggedIn.value = true;
+
+            const anonymousUser = useCookie('anonymousUser')
+            anonymousUser.value = null
+
+            const anonymousToken = useCookie('anonymousToken', { secure: true })
+            anonymousToken.value = null
     
-            const accessTokenCookie = useCookie('accessToken');
+            const accessTokenCookie = useCookie('accessToken', { secure: true });
             accessTokenCookie.value = res.AccessToken;
 
             const securityTokenCookie = useCookie('SECURITYTOKEN', { path: '/', secure: true })
             securityTokenCookie.value = res.SecurityToken
+
+            return res;
+        } catch (error) {
+            logout();
+            throw error;
+        }
+    };
+
+    async function anonymousLogin(payload: LoginRequest): Promise<LoginResponse> {
+        try {
+            const apiHeaders = {};
+            const res = await useIdentity.post<LoginResponse>('v1/accounts/login', apiHeaders, payload);
     
-            const refreshTokenCookie = useCookie('refreshToken');
-            refreshTokenCookie.value = res.RefreshToken;
-            console.log(res)
+            loggedIn.value = true;
+    
+            const accessTokenCookie = useCookie('anonymousToken', { secure: true });
+            accessTokenCookie.value = res.AccessToken;
+
+            const anonymousUser = useCookie('anonymousUser');
+            anonymousUser.value = true
+
             return res;
         } catch (error) {
             logout();
@@ -62,8 +85,6 @@ export const useLoginStore = defineStore("login", () => {
                         const securityTokenCookie = useCookie('SECURITYTOKEN', { path: '/', secure: true })
                         securityTokenCookie.value = res.securityToken
 
-                        const refreshTokenCookie = useCookie('refreshToken')
-                        refreshTokenCookie.value = res.refreshToken;
                     }
                     resolve(res)
                 }, error => {
@@ -81,10 +102,12 @@ export const useLoginStore = defineStore("login", () => {
         return new Promise((resolve, reject) => {
             let accessToken = useCookie('accessToken')
             accessToken.value = null
-            let refreshToken = useCookie('refreshToken')
-            refreshToken.value = null
+            let anonymousUser = useCookie('anonymousUser')
+            anonymousUser.value = null
             let securityToken = useCookie('SECURITYTOKEN')
             securityToken.value = null
+            let anonymousToken = useCookie('anonymousToken')
+            anonymousToken.value = null
 
             loggedIn.value = false
             const userStore = useUsersStore()
@@ -109,6 +132,6 @@ export const useLoginStore = defineStore("login", () => {
         })
     }
 
-    return { isLoggedin, loggedIn, isExpired, login, logout, refresh, sendToken, verifyToken }
+    return { isLoggedin, loggedIn, isExpired, login, anonymousLogin, logout, refresh, sendToken, verifyToken }
 
 })

@@ -1,4 +1,4 @@
-import serviceTypes from '~/custom/service-types.json'
+import serviceTypes from '@/stores/data/service-types.json'
 export const useWebStore = defineStore("web", () => {
     const getServiceTypeFromUrl = () => {
         const route = useRoute();
@@ -52,12 +52,12 @@ export const useWebStore = defineStore("web", () => {
     }
 
     const fetchWebsite = () => {
-        const nuxtConfig = useRuntimeConfig() 
+        const runtimeConfig = useRuntimeConfig() 
         return new Promise((resolve, reject) => {
             useEbooking.get('clients/getWebSite',  {
-                'AgencyId': nuxtConfig.public.agencyId,
-                'OwnerId': nuxtConfig.public.ownerId,
-                'WebSiteId': nuxtConfig.public.websiteId
+                'AgencyId': runtimeConfig.public.agencyId,
+                'OwnerId': runtimeConfig.public.ownerId,
+                'WebSiteId': runtimeConfig.public.websiteId
             }, null)
             .then((res) => {
                 website.value = res;

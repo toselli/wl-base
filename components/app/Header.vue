@@ -5,17 +5,18 @@
         <v-row dense align="center">
           <v-col>
             <div class="d-flex align-center">
-                <a href="/" v-if="isMobile" class="body-3" >
-                  <CommonLogoMobileDark height="70" class="ml-2"
-                    v-if="theme.name == 'ThemeDark'" />
-                  <CommonLogoMobileLight height="70" class="ml-2"  v-else />
-                </a>
-                <a href="/" v-else class="body-3">
-                  <CommonLogoDark height="i30" class="ml-2"
-                    v-if="theme.name == 'ThemeDark'" />
-                  <CommonLogoLight height="30" class="ml-2" v-else />
-                </a>
-              <CommonServiceTypesMenu class="ml-lg-6"  v-if="$route.path != '/'" />
+              <a @click="$router.push('/')" @click.middle.prevent="handleMiddleClick($event)" style="cursor: pointer"
+                v-if="isMobile" class="body-3">
+                <CommonLogoMobileDark height="70" class="ml-2" v-if="theme?.name == 'ThemeDark'" />
+                <CommonLogoMobileLight height="70" class="ml-2" v-else />
+              </a>
+              <a @click="$router.push('/')" @click.middle.prevent="handleMiddleClick($event)" style="cursor: pointer"
+                v-else class="body-3">
+                <CommonLogoDark height="i30" class="ml-2" v-if="theme?.name == 'ThemeDark'" />
+                <CommonLogoLight height="30" class="ml-2" v-else />
+              </a>
+              <CommonServiceTypesMenu class="ml-lg-6"
+                v-if="$route.path !== '/' && !$route.path.startsWith('/checkout')" />
             </div>
           </v-col>
           <v-col class="text-right" v-if="getLoggedUser == null" :class="isMobile ? 'pr-2' : ''">
@@ -27,9 +28,18 @@
             </v-btn>
           </v-col>
           <v-col class="text-right" v-else>
-            <v-tooltip text="Cambiar modo" location="bottom">
+            <v-tooltip text="Reportar error o sugerencia" location="bottom">
               <template v-slot:activator="{ props }">
-                <v-btn rounded icon="mdi-theme-light-dark" class="mr-2" color="primary" @click="toggleTheme()"
+                <v-btn icon="mdi-comment-outline" color="secondary_text" @click="newIssueDialog = true" v-bind="props">
+                </v-btn>
+              </template>
+            </v-tooltip>
+            <v-tooltip :text="$capitalize($t('change_theme'))" location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn icon="md:light_mode" v-if="theme?.name == 'ThemeDark'" class="mr-2" color="secondary_text"
+                  @click="changeTheme('ThemeLight')" v-bind="props">
+                </v-btn>
+                <v-btn icon="md:dark_mode" v-else class="mr-2" color="secondary_text" @click="changeTheme('ThemeDark')"
                   v-bind="props">
                 </v-btn>
               </template>
@@ -39,8 +49,8 @@
                 <v-btn variant="text" size="xl" rounded="xl" class="pr-2" v-bind="props">
                   <v-avatar class="bg-secondary mr-2" size="42">
                     {{
-                      getLoggedUser.FirstName[0] + getLoggedUser.LastName[0]
-                    }}
+                  getLoggedUser.FirstName[0] + getLoggedUser.LastName[0]
+                }}
                   </v-avatar>
                   <v-icon size="16" icon="mdi-chevron-down">
                   </v-icon>
@@ -50,14 +60,17 @@
                 <v-card-text class="d-flex align-center">
                   <v-avatar class="bg-secondary mr-2" size="28">
                     {{
-                      getLoggedUser.FirstName[0] + getLoggedUser.LastName[0]
-                    }}
+                    getLoggedUser.FirstName[0] + getLoggedUser.LastName[0]
+                  }}
                   </v-avatar>
                   <p>{{
                     getLoggedUser.FirstName + ' ' + getLoggedUser.LastName
                   }}</p>
                 </v-card-text>
                 <v-list>
+                  <v-list-item @click="openConfigDialog">
+                    <v-icon icon="mdi-cog-outline" size="md"></v-icon> {{ $capitalize($t("config")) }}
+                  </v-list-item>
                   <v-list-item @click="openChangePasswordDialog">
                     <v-icon icon="mdi-lock-outline" size="md"></v-icon> {{ $capitalize($t("change_password")) }}
                   </v-list-item>
@@ -71,6 +84,8 @@
         </v-row>
       </v-container>
     </v-app-bar>
+    <AppConfigDialog v-model="configDialog" :user="getLoggedUser" :activeTheme="theme" :currentConfig="configStore.getConfig" @close="configDialog = false" v-if="getLoggedUser" @changeTheme="changeTheme" />
+    <AppNewIssueDialog v-model="newIssueDialog" :user="getLoggedUser" @close="newIssueDialog = false" v-if="getLoggedUser" />
     <AuthLoginDialog v-model="loginDialog" @close="closeLoginDialog" @openRegister="openRegisterDialog" />
     <AuthChangePasswordDialog v-model="changePasswordDialog" @close="closeChangePasswordDialog" />
   </div>
@@ -81,12 +96,20 @@
 const isMobile = useMobile()
 
 const usersStore = useUsersStore();
-const { getLoggedUser } = storeToRefs(usersStore);
+const { getLoggedUser, getAnonymousUser } = storeToRefs(usersStore);
 const loginStore = useLoginStore();
+const newIssueDialog = ref(false)
 
 function logout() {
   usersStore.loggedUser.value = null;
   loginStore.logout();
+}
+
+function handleMiddleClick(event) {
+  if (event.button === 1) {
+    const url = 'https://beta.ebooking.com.ar/';
+    window.open(url, '_blank');
+  }
 }
 
 //captura los 401 y abre el loginDialog
@@ -119,6 +142,13 @@ function openRegisterDialog() {
 function closeRegisterDialog() {
   registerDialog.value = false;
 }
+//CONFIG
+
+const configDialog = ref(false)
+
+function openConfigDialog() {
+  configDialog.value = true
+}
 
 //CHANGE PASSWORD
 
@@ -135,11 +165,19 @@ function closeChangePasswordDialog() {
 
 //THEME
 
-import { useTheme } from 'vuetify'
+const { theme, activeTheme, applyThemeConfig } = useThemeManager()
+const { updateUserConfig } = useUserConfig()
 
-const theme = ref(useTheme())
-
-function toggleTheme() {
-  theme.value.global.name = theme.value.global.current.dark ? 'ThemeLight' : 'ThemeDark'
+function changeTheme(newTheme) {
+  applyThemeConfig(newTheme)
+  updateUserConfig(getLoggedUser.value.IdString, { theme: newTheme })
 }
+
+const configStore = useConfigStore()
+
+watch(() => configStore.getConfig, (newConfig) => {
+    if (newConfig) {
+        applyThemeConfig(newConfig.theme)
+    }
+}, { once: true });
 </script>

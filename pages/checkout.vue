@@ -17,14 +17,18 @@
         </v-row>
       </v-card-text>
     </v-card>
-
     <v-row class="mt-2" v-else>
       <v-col cols="12" md="7" v-if="prebooking?.Services">
-        <v-card rounded="lg" class="pa-5 bg-foreground card-content-elevation mb-5">
-          <v-alert border="start" variant="tonal" color="warning" rounded="lg" density="compact" class="mb-2 body-1"
-            v-if="prebooking?.Services[0]?.PriceHasChanged">
-            El precio ha cambiado de la última vez que vió esta reserva
-          </v-alert>
+        <v-alert border="start" variant="tonal" color="warning" rounded="lg" density="compact" class="mb-2 body-1"
+          v-if="prebooking?.Services[0]?.PriceHasChanged">
+          El precio ha cambiado de la última vez que vió esta reserva
+        </v-alert>
+        <v-card rounded="lg" class="card-checkout-forms-content pa-4 mb-4" v-if="isMobile">
+          <checkout-details-card :booking="prebooking" :serviceType="serviceType" />
+
+        </v-card>
+        <v-card rounded="lg" class="card-checkout-forms">
+
           <v-row class="mb-4">
             <v-col cols="12" md="4">
               <h3 class="text-h4 semi mt-2">Completar detalles</h3>
@@ -45,52 +49,87 @@
               </v-alert>
             </v-col>
           </v-row>
-          <v-row v-if="false">
-            <v-col>
-              <h4 class="text-h6 semi mb-4">Grupo</h4>
-              <v-radio-group v-model="group" inline>
-                <v-radio label="Nuevo grupo" value="radio-1" class="body-1"></v-radio>
-                <v-radio label="Grupo existente" value="radio-2" class="body-1"></v-radio>
-                <v-text-field label="Escriba nombre de grupo al cual crear"></v-text-field>
-              </v-radio-group>
-            </v-col>
-          </v-row>
+          <!-- GRUPO -->
+          <v-skeleton-loader v-if="loading" type="card"></v-skeleton-loader>
+          <v-card rounded="lg" class="card-checkout-forms-content pa-4 mb-4" v-else>
+            <h4 class="text-h6 semi mb-4">Grupo de compra</h4>
+            <v-radio-group v-model="purchaseGroup" inline density="compact" color="secondary" hide-details>
+              <v-radio label="Nuevo grupo" :value="0" class="body-1"></v-radio>
+              <v-radio label="Grupo existente" :value="1" class="body-1"></v-radio>
+            </v-radio-group>
+            <v-text-field density="compact" type="number" width="300" class="body-2" variant="outlined"
+              v-if="purchaseGroup == 1" label="Escriba el código del grupo existente" hide-details
+              v-model="purchaseGroupId"></v-text-field>
+          </v-card>
           <!-- SELECCIONAR AGENTE -->
           <v-skeleton-loader v-if="loading" type="card"></v-skeleton-loader>
-          <checkout-select-agent-card :client-selected="clientSelected" :sellerSelected="sellerSelected"
+          <checkout-select-agent-card class="mb-4" :client-selected="clientSelected" :sellerSelected="sellerSelected"
             :clientSellerSelected="clientSellerSelected" :services="prebooking.Services"
-            @update:sellerSelected="sellerSelected = $event" @update:clientSellerSelected="clientSellerSelected = $event"
-            @update:clientSelected="seedClientSelected" v-else />
+            @update:sellerSelected="sellerSelected = $event"
+            @update:clientSellerSelected="clientSellerSelected = $event" @update:clientSelected="seedClientSelected"
+            v-else />
+          <!-- INFO EXTRA -->
+          <v-skeleton-loader v-if="loading" type="card"></v-skeleton-loader>
+          <checkout-service-extra-info-card class="mb-4" :booking="prebooking" :serviceType="serviceType"
+            @update:transferInDetailsFrom="prebooking.TransferInDetailsFrom = $event"
+            @update:transferInDetailsTo="prebooking.TransferInDetailsTo = $event"
+            @update:transferOutDetailsFrom="prebooking.TransferOutDetailsFrom = $event"
+            @update:transferOutDetailsTo="prebooking.TransferOutDetailsTo = $event" @valid="validExtraInfo" v-else>
+          </checkout-service-extra-info-card>
+          <!-- PASAJEROS -->
+          <v-skeleton-loader v-if="loading" type="card"></v-skeleton-loader>
+          <checkout-passengers :booking="prebooking" :serviceType="serviceType" @validPax="validPax" class="mb-4"
+            v-else />
+          <!-- CREDIT CARD -->
+          <v-skeleton-loader v-if="loading" type="card"></v-skeleton-loader>
+          <v-card rounded="lg" v-else class="card-checkout-forms-content pa-4 mb-4" v-if="isHotelCollect">
+            <div v-if="!selectedPayment">
+              <h4 class="text-h6 semi mb-2">Método de pago</h4>
+              <p class="body-2 text-secondary_text mb-2">Seleccione el método de pago con el que desea pagar la reserva
+              </p>
+              <div class="d-flex ">
+                <img src="/base/img/visa_c.svg" width="60" class="" />
+                <img src="/base/img/mastercard.svg" width="60" />
+                <img src="/base/img/amex.svg" width="60" />
+                <v-btn rounded="md" class="mt-2" flat color="background" @click="creditCardDialog = true">
+                  Agregar tarjeta <v-icon>mdi-chevron-right</v-icon>
+                </v-btn>
+              </div>
+            </div>
+            <div v-else>
+              <h4 class="text-h6 semi mb-2">Método de pago seleccionado</h4>
+              <v-btn rounded="md" class="float-right" flat color="background" @click="creditCardDialog = true">
+                Modificar método de pago <v-icon>mdi-chevron-right</v-icon>
+              </v-btn>
+              <h4 class="body-1 d-flex align-center mt-3">
+                <img :src="'/base/img/' + selectedPayment.cardType + '.svg'" width="60" class="border" />
+                <span class="ml-2">terminada en {{ selectedPayment.cardNumber.slice(-4) }}</span>
+              </h4>
+
+            </div>
+          </v-card>
+          <checkout-credit-card-dialog v-model="creditCardDialog" @close="creditCardDialog = false"
+            @update:selectedPayment="selectPayment" />
+          <!-- PETICIONES ESPECIALES -->
+          <v-skeleton-loader v-if="loading" type="card"></v-skeleton-loader>
+          <checkout-comments v-else :comments="comments" @update:comments="comments = $event" />
         </v-card>
-        <!-- INFO EXTRA -->
-        <v-skeleton-loader v-if="loading" type="card"></v-skeleton-loader>
-        <checkout-service-extra-info-card :booking="prebooking" :serviceType="serviceType"
-          @update:transferInDetailsFrom="prebooking.TransferInDetailsFrom = $event"
-          @update:transferInDetailsTo="prebooking.TransferInDetailsTo = $event"
-          @update:transferOutDetailsFrom="prebooking.TransferOutDetailsFrom = $event"
-          @update:transferOutDetailsTo="prebooking.TransferOutDetailsTo = $event" @valid="validExtraInfo" v-else>
-        </checkout-service-extra-info-card>
-        <!-- PASAJEROS -->
-        <v-skeleton-loader v-if="loading" type="card"></v-skeleton-loader>
-        <checkout-passengers :booking="prebooking" :serviceType="serviceType" @validPax="validPax" v-else />
-        <!-- PETICIONES ESPECIALES -->
-        <checkout-comments :comments="comments" @update:comments="comments = $event" />
       </v-col>
-      <v-col v-if="prebooking?.Services">
+      <v-col cols="12" md="5" v-if="prebooking?.Services">
         <!-- DETALLES -->
-        <v-card rounded="lg" variant="outlined" class="pa-3 bg-foreground card-content-elevation mb-5">
-          <checkout-details-card :booking="prebooking" :serviceType="serviceType" />
+        <v-card rounded="lg" class="card-checkout-details">
+          <checkout-details-card :booking="prebooking" :serviceType="serviceType" v-if="!isMobile" />
           <!-- POLITICAS  -->
-          <v-divider class="my-4"></v-divider>
-          <h4 class="text-h5 mb-4">Políticas de cancelación</h4>
+          <v-divider class="my-3" v-if="!isMobile"></v-divider>
+          <h4 class="text-h5 mb-2">Políticas de cancelación</h4>
           <checkout-policies-card :booking="prebooking" :serviceType="serviceType"></checkout-policies-card>
-          <v-divider class="my-4"></v-divider>
+          <v-divider class="my-3"></v-divider>
           <!-- PRECIOS  -->
-          <h4 class="text-h5 mb-4">Detalles del costo</h4>
-          <v-skeleton-loader v-if="priceLoading"  type="card">
+          <h4 class="text-h5 mb-2">Detalles del costo</h4>
+          <v-skeleton-loader v-if="priceLoading" type="card">
           </v-skeleton-loader>
-            <checkout-price-card  v-else :services="prebooking?.Services" :price="prebooking?.Price" :serviceType="serviceType"
-              :retail="false"></checkout-price-card>
+          <checkout-price-card v-else :services="prebooking?.Services" :price="prebooking?.Price"
+            :serviceType="serviceType" :retail="false"></checkout-price-card>
           <!-- TERMINOS  -->
           <v-checkbox class="body-1 mt-3" v-model="terms" color="secondary">
             <template v-slot:label>
@@ -103,12 +142,12 @@
           <checkout-terms-dialog v-model="termsDialog" @close="termsDialog = false">
           </checkout-terms-dialog>
           <!-- BOTON CONFIRMAR -->
-          <v-btn variant="flat" size="large" block color="primary" rounded="xl" :disabled="!validBooking"
+          <v-btn variant="flat" size="large" block color="primary" rounded="xl" :disabled="!validBooking || loading"
             :loading="loading"
             v-if="prebooking?.Services[0]?.NonRefundable || $dayjs(prebooking?.Services[0]?.LastDayToCharge).isBefore($dayjs().add(1, 'day'), 'day')"
             @click="finishBookingOnCancellation">Confirmar reserva con gastos
           </v-btn>
-          <v-btn variant="flat" size="large" block color="primary" rounded="xl" :disabled="!validBooking"
+          <v-btn variant="flat" size="large" block color="primary" rounded="xl" :disabled="!validBooking || loading"
             @click="finishBooking" :loading="loading" v-else>Confirmar reserva
           </v-btn>
           <h4 class="body-2 text-error my-3 mx-3"> {{ tooltipValidBooking }}</h4>
@@ -118,7 +157,8 @@
           <p class="text-secondary_text body-1 mt-2"><v-icon icon="mdi-check-circle" color="success"></v-icon>
             Protegemos tu información personal</p>
         </v-card>
-        <v-dialog width="450" v-model="confirmBookingOnCancellationPoliciesDialog" v-if="prebooking?.Services">
+        <v-dialog width="450" v-model="confirmBookingOnCancellationPoliciesDialog" persistent
+          v-if="prebooking?.Services">
           <v-card class="pa-7" rounded="xl">
             <v-icon size="50" color="warning" class="mx-auto mb-4">mdi-information-outline</v-icon>
             <div v-if="prebooking?.Services[0]?.NonRefundable">
@@ -128,16 +168,17 @@
               <p class="mb-3">Esta tarifa especial con descuento es <strong>no reembolsable</strong>. Por lo tanto, si
                 elige cambiar o cancelar esta reserva, el pago no será reembolsado.</p>
               <p> ¿Confirma esta reserva de <strong>{{ prebooking?.Services[0]?.PriceRetail.Currency }} {{
-                prebooking?.Services[0]?.PriceRetail.PVP.Total.toFixed(2) }}</strong> sin reembolso?</p>
+      prebooking?.Services[0]?.PriceRetail.PVP.Total.toFixed(2) }}</strong> sin reembolso?</p>
             </div>
             <div v-else>
               <p class="mb-3">
-                Esta reserva tiene gastos de cancelación, el voucher se emitirá automáticamente para evitar ser cancelada.
+                Esta reserva tiene gastos de cancelación, el voucher se emitirá automáticamente para evitar ser
+                cancelada.
               </p>
               <p class="mb-3">Esta es una tarifa especial con descuento, por lo tanto, si elige cambiar o cancelar esta
                 reserva, el pago no será reembolsado en su totalidad.</p>
               <p> ¿Confirma esta reserva de <strong>{{ prebooking?.Services[0]?.PriceRetail.Currency }} {{
-                prebooking?.Services[0]?.PriceRetail.PVP.Total.toFixed(2) }}</strong>?</p>
+      prebooking?.Services[0]?.PriceRetail.PVP.Total.toFixed(2) }}</strong>?</p>
             </div>
             <v-btn variant="flat" size="large" block color="primary" rounded="xl" :disabled="!validBooking" class="mt-6"
               @click="finishBooking">Confirmar reserva
@@ -205,10 +246,25 @@
 </template>
 
 <script setup>
+const isMobile = useMobile()
 //SERVICE TYPE
 const route = useRoute();
 const serviceType = route.query.serviceType
 const store = useServiceStore(serviceType);
+
+//HOTEL COLLECT - B2C
+
+const anonymousUser = useCookie('anonymousUser')
+const runtimeConfig = useRuntimeConfig()
+const isHotelCollect = route.query.isHotelCollect
+const b2c = runtimeConfig.public.b2c === 'true'
+const creditCardDialog = ref(false)
+
+const selectedPayment = ref(null)
+
+function selectPayment(data) {
+  selectedPayment.value = data
+}
 
 //LOGGED USER
 
@@ -218,7 +274,15 @@ const { getLoggedUser } = storeToRefs(usersStore);
 
 //CHECKOUT DATA
 
-const group = ref(null)
+const purchaseGroup = ref(0)
+const purchaseGroupId = ref(null)
+
+watch(() => purchaseGroup.value, (newValue, oldValue) => {
+  if (purchaseGroup.value == 0) {
+    purchaseGroupId.value = null
+  }
+}, { deep: true });
+
 const details = ref({})
 
 const loading = ref(false);
@@ -226,6 +290,7 @@ const prebooking = ref({})
 
 const { getPrebooking } = storeToRefs(store)
 const clientSelected = ref('')
+
 async function getBasket() {
   loading.value = true
   try {
@@ -241,7 +306,6 @@ async function getBasket() {
     prebooking.value = getPrebooking.value
 
     sellerSelected.value = prebooking.value.Services[0].Seller
-    clientSellerSelected.value = prebooking.value.Services[0].User
     seedClientSelected(prebooking.value.Services[0].Agency)
   } catch (error) {
     notAvailableCard.value = true
@@ -285,7 +349,7 @@ const timeoutDialog = ref(false)
 
 function openTimeoutDialog() {
   if (successBookingDialog.value == false) {
-    timeoutDialog.value = true
+    timeoutDialog.value = false
   }
 }
 
@@ -377,86 +441,31 @@ const notAvailableCard = ref(false)
 const comments = ref('')
 const successBookingDialog = ref(false)
 const errorBookingDialog = ref(false)
-const paymentProcessor = ref('')
+const paymentProcessor = ref('RSTAFF')
 
-import { useAbility } from "@casl/vue";
 const { can } = usePermissions();
 const confirmBookingOnCancellationPoliciesDialog = ref(false)
 
 async function finishBookingOnCancellation() {
   confirmBookingOnCancellationPoliciesDialog.value = true
 }
+const dayjs = useDayjs()
 
-import dayjs from "dayjs";
 
 async function finishBooking() {
-  if (prebooking.value.Services[0].NonRefundable == true || dayjs(prebooking.value.Services[0].LastDayToCharge).isBefore(dayjs().add(1, 'day'), 'day')) {
-    paymentProcessor.value = 'RSTAFF'
-  }
-  else if (can('Sellers', 'Division')) {
-    paymentProcessor.value = 'RSTAFF'
-  } else {
-    paymentProcessor.value = 'RAGE'
+  // if (prebooking.value.Services[0].NonRefundable == true || dayjs(prebooking.value.Services[0].LastDayToCharge).isBefore(dayjs().add(1, 'day'), 'day')) {
+  //   paymentProcessor.value = 'RSTAFF'
+  // }
+  // else if (can('Sellers', 'Division')) {
+  //   paymentProcessor.value = 'RSTAFF'
+  // } else {
+  //   paymentProcessor.value = 'RAGE'
 
-  }
+  // }
   loading.value = true
   errorBookingDialog.value = false
-  const passengersReduce = prebooking.value.Services.reduce((acc, pax) => {
-    return acc.concat(pax.Passengers);
-  }, []);
+  const payload = createPayload()
   try {
-    let payload = {}
-    if (serviceType == 'stays') {
-      payload = {
-        BasketId: route.query.id,
-        BedTypes: [],
-        Comments: [],
-        Customer: {
-          DocumentType: "DNI",
-          CustomerType: "FISICA",
-          FiscalResponsability: "Consumidor Final",
-          Nationality: "AR",
-          Address: {}
-        },
-        House: false,
-        Passengers: passengersReduce,
-        PaymentProcessorId: paymentProcessor.value,
-        PurchaseGroupId: null,
-        Reference: '',
-        SellerRef: sellerSelected.value,
-      }
-    }
-    if (serviceType == 'transfers') {
-      payload = {
-        BasketId: route.query.id,
-        TransferInDetailsFrom: prebooking.value.TransferInDetailsFrom,
-        TransferInDetailsTo: prebooking.value.TransferInDetailsTo,
-        TransferOutDetailsFrom: prebooking.value.TransferOutDetailsFrom,
-        TransferOutDetailsTo: prebooking.value.TransferOutDetailsTo,
-        Comments: [],
-        Customer: {
-          DocumentType: "DNI",
-          CustomerType: "FISICA",
-          FiscalResponsability: "Consumidor Final",
-          Nationality: "AR",
-          Address: {}
-        },
-        Passengers: passengersReduce,
-        PaymentProcessorId: paymentProcessor.value,
-        PurchaseGroupId: null,
-        Reference: '',
-        SellerRef: sellerSelected.value,
-      }
-    }
-    if (can('Sellers', 'Division')) {
-      payload.SellerRef = {
-        Key: getLoggedUser.value.LegacyId,
-        Value: getLoggedUser.value.FullName,
-      }
-    }
-    if (comments.value != '') {
-      payload.Comments.push(comments.value)
-    }
     let bookingsToPay = []
     await useNuxtApp().$toast.promise(store.updateServices(payload), {
       pending: "Preparando datos de la reserva",
@@ -482,14 +491,59 @@ async function finishBooking() {
   } catch (error) {
     console.log(error)
     errorBookingDialog.value = true
-  } finally {
     loading.value = false
   }
 }
 
+const createPayload = () => {
+  const passengersReduce = prebooking.value.Services.reduce((acc, pax) => {
+    return acc.concat(pax.Passengers);
+  }, []);
+
+  let payload = {
+    BasketId: route.query.id,
+    Comments: [],
+    Customer: {
+      DocumentType: "DNI",
+      CustomerType: "FISICA",
+      FiscalResponsability: "Consumidor Final",
+      Nationality: "AR",
+      Address: {}
+    },
+    Passengers: passengersReduce,
+    PaymentProcessorId: paymentProcessor.value,
+    PurchaseGroupId: purchaseGroupId.value,
+    Reference: '',
+    SellerRef: sellerSelected.value,
+  }
+
+  if (serviceType == 'stays') {
+    payload.BedTypes = []
+    payload.House = false
+  } else if (serviceType == 'transfers') {
+    payload.TransferInDetailsFrom = prebooking.value.TransferInDetailsFrom
+    payload.TransferInDetailsTo = prebooking.value.TransferInDetailsTo
+    payload.TransferOutDetailsFrom = prebooking.value.TransferOutDetailsFrom
+    payload.TransferOutDetailsTo = prebooking.value.TransferOutDetailsTo
+  }
+
+  if (getLoggedUser.value && can('Sellers', 'Division')) {
+    payload.SellerRef = {
+      Key: getLoggedUser.value.LegacyId,
+      Value: getLoggedUser.value.FullName,
+    }
+  }
+
+  if (comments.value != '') {
+    payload.Comments.push(comments.value)
+  }
+
+  return payload
+}
+
 
 watch(sellerSelected, (newValue, oldValue) => {
-  if (newValue.Key !== oldValue.Key)
+  if (newValue?.Key !== oldValue?.Key)
     updatePrice()
 })
 
@@ -517,23 +571,29 @@ const updatePrice = async () => {
   }
 }
 
+const commonStore = useCommonServicesStore();
+
 async function processPayment(payload) {
-  await useNuxtApp().$toast.promise(store.processPayment(payload)
+  await useNuxtApp().$toast.promise(commonStore.processPayment(payload)
     .then((res) => {
-      callProvider(res);
+      callProvider(res)
+        .then(() => {
+
+          successBookingDialog.value = true
+          loading.value = false
+        });
+      console.log(res)
     }), {
     pending: "Enviando datos al proveedor",
   })
-    .then(() => {
-      successBookingDialog.value = true
-    })
+
 }
 
 async function callProvider(payload) {
   try {
     const response = await fetch(payload.FormData.FormAction, {
       method: 'GET',
-      redirect: 'manual' 
+      redirect: 'manual'
     });
 
     if (response.type === 'opaqueredirect') {
@@ -556,7 +616,7 @@ async function getBookingByTransaction(transaction) {
     currency: 'USD'
   }
   waitingProvider.value = true
-  await useNuxtApp().$toast.promise(store.getBookingByTransaction(payload), {
+  await useNuxtApp().$toast.promise(commonStore.getBookingByTransaction(payload), {
     pending: "Consultando estado de reserva en proveedor",
     success: "Datos obtenidos"
   }).then((res) => {
@@ -579,8 +639,5 @@ onMounted(() => {
   startCountdown()
   toTop()
 });
-
-
-
 
 </script>

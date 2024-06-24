@@ -64,7 +64,7 @@ export const useCarsStore = defineStore("cars", () => {
             useEbooking.post('carService/search', null, payload)
                 .then((r: any) => {
                     const res = r as CarsSearchResponse;
-                    results.value.push(...res.Services)
+                    results.value = res.Services
                     basketId.value = res.Token
                     totalServices.value = res.TotalServices
                     features.value = res.Features
@@ -116,8 +116,8 @@ export const useCarsStore = defineStore("cars", () => {
         return new Promise((resolve, reject) => {
             useEbooking.post('payments/paymentRequestUSD', null, payload)
                 .then((res: any) => {
-                    if (res && res.FormData) {
-                        resolve(res.FormData)
+                    if (res && res) {
+                        resolve(res)
                     }
                 })
                 .catch((error) => {

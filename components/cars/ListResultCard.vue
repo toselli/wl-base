@@ -1,11 +1,11 @@
 <template>
     <v-card rounded="lg" class="list-result-card fill-height" flat :id="service.Id">
         <v-row dense no-gutters :class="mode == 'list' ? '' : 'fill-height'">
-            <v-col :lg="mode == 'list' ? '2' : '12'" class="pa-1 bg-white">
+            <v-col :md="mode == 'list' ? '2' : '12'" class="pa-1 bg-white">
                 <v-img :src="car.PictureUrl" height="150px" contain></v-img>
                 <v-img :src="runtimeConfig.public.ebookingCdn+'providers/'+service.ProviderRef.Key+'.png'" height="30px" width="80" class="mx-auto" contain ></v-img>
             </v-col>
-            <v-col :lg="mode == 'list' ? '7' : '12'" :class="mode == 'list' ? 'pa-4' : 'px-4'">
+            <v-col :md="mode == 'list' ? '7' : '12'" :class="mode == 'list' ? 'pa-4' : 'px-4'">
                 <h3 class="text-h5 semi">
                     {{ car.VehicleName }}
                 </h3>
@@ -33,7 +33,7 @@
                     </span>
                 </p>
             </v-col>
-            <v-col :lg="mode == 'list' ? '3' : '12'" class="pa-4 d-flex justify-space-between " :class="mode == 'list' ? 'flex-column text-right' : ''">
+            <v-col :md="mode == 'list' ? '3' : '12'" class="pa-4 d-flex justify-space-between " :class="mode == 'list' ? 'flex-column text-right' : ''">
                 <h3 class="text-h4 semi pr-4" :class="mode == 'list' ? 'pt-4' : ''">
                         <span class="body-2 text-secondary_text">{{ service.Currency }}</span>
                         {{ service.Total.toFixed(2) }}

@@ -50,11 +50,10 @@
               </div>
             </div>
           </v-card>
-          </div>
-       
-          <div :class="docked ? 'floating-search-docked' : 'floating-search'" v-if="!loadingArea && !isMobile">
+          </div>       
+          <div :class="docked ? 'floating-search-docked' : 'floating-search'" v-if="!loadingArea">
             <v-text-field variant="solo" rounded="lg" hide-details density="compact" label="Filtrar por nombre"
-              v-model="searchPromptModel" class="pt-0 mr-2"
+              v-model="searchPromptModel" class="pt-0 mr-2" clearable
               :placeholder="`Escriba nombre del hotel y presione la tecla Enter`" v-if="!docked"></v-text-field>
           </div>
           <div class="floating-tools">
@@ -759,6 +758,7 @@ watch(isFullscreen, (newValue) => {
 
 .label-cluster-level-1 {
   border: 1px solid  rgb(30,130,231) !important;
+  background-color:  rgb(var(--v-theme-foreground)) !important;
   color:  rgb(var(--v-theme-primary_text));
   padding: 6px 12px !important;
   border-radius: 18px !important;
@@ -766,6 +766,7 @@ watch(isFullscreen, (newValue) => {
 
 .label-cluster-level-2 {
   border: 1px solid rgb(14,99,241) !important;
+  background-color:  rgb(var(--v-theme-foreground)) !important;
   color:  rgb(var(--v-theme-primary_text));
   padding: 6px 12px !important;
   border-radius: 18px !important;
@@ -773,6 +774,7 @@ watch(isFullscreen, (newValue) => {
 
 .label-cluster-level-3 {
   border: 1px solid  rgb(10,35,255) !important;
+  background-color:  rgb(var(--v-theme-foreground)) !important;
   color:  rgb(var(--v-theme-primary_text));
   padding: 6px 12px !important;
   border-radius: 18px !important;
@@ -796,12 +798,10 @@ watch(isFullscreen, (newValue) => {
 
 @media (max-width: 420px) {
   .floating-tools {
-  width: 190px;
-  right: auto;
-  left: 12px;
-  z-index: 10000;
-}
-
+    width: 150px;
+    right: 2px;
+    z-index: 10000;
+  }
 }
 
 .floating-search {
@@ -810,6 +810,14 @@ watch(isFullscreen, (newValue) => {
   width: 280px;
   left: 15px;
   z-index: 10000;
+}
+
+@media (max-width: 420px) {
+  .floating-search {
+    width: 150px;
+    left: 0;
+    z-index: 10000;
+  }
 }
 
 .floating-results {

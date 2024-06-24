@@ -6,7 +6,18 @@
         <v-container fluid class="py-0 px-0">
             <v-row class="pb-2" v-if="getLoggedUser">
                 <v-col cols="12" md="4">
-                    <h5 class="mt-3" v-if="filteredResults.length > 0">
+                    <v-btn-toggle v-model="resultsMode" density="compact" mandatory color="midground"
+                        class="btn-toggle-large bg-secondary_lighten" variant="flat" rounded="md"
+                        selected-class="btn-toggle-large-selected" v-if="activeHotelCollect && getLoggedUser">
+                        <v-btn class="my-1 mx-1 body-2 text-primary_text bg-background" rounded="md">
+                            Pago por agencia ({{ filteredResults.length }})
+                        </v-btn>
+                        <v-btn class="my-1 mx-1 body-2 text-primary_text bg-background" rounded="md"
+                            :disabled="filteredResultsHotelCollect.length == 0">
+                            Pago directo al hotel ({{ filteredResultsHotelCollect.length }})
+                        </v-btn>
+                    </v-btn-toggle>
+                    <h5 class="mt-3" v-else-if="filteredResults.length > 0">
                         Encontramos <span class="text-primary">{{ filteredResults.length }}</span> resultados
                     </h5>
                     <h5 class="mt-3" v-if="!loadingResults && !isReceiving && results.length == 0">
@@ -22,15 +33,15 @@
             </v-row>
         </v-container>
         <!-- FORZAR LOGIN -->
-        <auth-force-login-card v-if="!getLoggedUser" />
-        <v-container fluid class="px-0" v-if="getLoggedUser">
+        <auth-force-login-card  v-if="(!getLoggedUser && !getAnonymousUser) && !loadingLoggedUser" />
+        <v-container fluid class="px-0" v-if="getLoggedUser || getAnonymousUser">
             <!-- RESULTADOS -->
             <v-row dense>
                 <v-col :cols="showMap ? '7' : '12'" v-show="!expandedMap">
                     <v-row dense justify="center">
-                        <v-col :lg="viewMode == 'list' ? 12 : (showMap ? 6 : 4)" cols="12"
+                        <v-col :md="viewMode == 'list' ? 12 : (showMap ? 6 : 4)" cols="12"
                             :class="viewMode == 'list mb-1' ? 'pa-0' : ''" class="mb-2"
-                            v-for="result in filteredResults.slice(0, limitResults)">
+                            v-for="result in currentResults.slice(0, limitResults)">
                             <stays-list-result-card :item="result" :mode="viewMode" @goTo="goToDetails(result)"
                                 @goTotab="goToDetailsNewTab(result)"></stays-list-result-card>
                         </v-col>
@@ -49,35 +60,37 @@
                             </h2>
                         </v-col>
                     </v-row>
-                    <v-row v-if="limitResults < filteredResults.length">
+                    <v-row v-if="limitResults < currentResults.length">
                         <v-col>
                             <v-skeleton-loader type="list-item-avatar-three-line" class="rounded-lg list-result-card">
                             </v-skeleton-loader>
                         </v-col>
                     </v-row>
                     <v-row dense justify="center">
-                        <div v-if="!loadingResults && filteredResults.length > limitResults" v-intersect="onIntersect">
+                        <div v-if="!loadingResults && currentResults.length > limitResults" v-intersect="onIntersect">
                         </div>
 
                     </v-row>
                 </v-col>
                 <v-col v-if="showMap" :cols="expandedMap ? '12' : '5'">
                     <div class="sticky-container">
-                        <stays-results-map-cluster class="sticky-card" :place="place" :results="filteredResults"
+                        <stays-results-map-cluster class="sticky-card" :place="place" :results="currentResults"
                             :filters="features" @goTo="goToDetailsNewTab" @goTotab="goToDetailsNewTab"
                             @expand="toggleExpandedMap" @update:prompt="hotelName = $event"
                             @update:filters="getFilteredResults" @hideMap="hideMapResults" />
                     </div>
                 </v-col>
             </v-row>
-            <StaysFinishSearchBottomSheet v-model="finishSearch" v-if="!loadingResults && !isReceiving" :results="filteredResults.length" @close="finishSearch = false" @orderResults="orderResults({
+            <StaysFinishSearchBottomSheet v-model="finishSearch"
+                v-if="!loadingResults && !isReceiving && currentResults.length > 0 && !configStore.getConfig.autoOrderbyPrice"
+                :results="currentResults.length" @close="finishSearch = false" @orderResults="orderResults({
             field: 'Total',
             name: 'Precio',
-            icon: 'md:arrow_upward',
+            icon: 'mdi-sort-ascending',
             direction: 'asc'
-        }); finishSearch = false"/>
+        }); finishSearch = false" />
             <v-row class="mt-3" justify="center"
-                v-if="filteredResults && filteredResults.length == 0 && !isReceiving && !loadingResults">
+                v-if="currentResults && currentResults.length == 0 && !isReceiving && !loadingResults">
                 <v-col cols="12" class="text-center">
                     <h3 class="text-primary_text mb-4">No hemos podido encontrar hoteles que coincidan con tu búsqueda
                     </h3>
@@ -97,31 +110,63 @@ const isMobile = useMobile()
 //LOGGED USER
 
 const usersStore = useUsersStore();
-const { getLoggedUser } = storeToRefs(usersStore);
+const { getLoggedUser, getAnonymousUser } = storeToRefs(usersStore);
+const loadingLoggedUser = ref(false)
+const { anonymousLogin } = useAnonymousLogin()
 
 //LOGIN
 
 onMounted(() => {
-    const loggedUser = getLoggedUser.value;
-    if (loggedUser != null) {
-        getResults();
-    } else {
-        // Esperar a que el usuario se loguee
-        const unwatch = watch(getLoggedUser, (newValue, oldValue) => {
-            if (newValue != null) {
-                getResults();
-                unwatch(); // Deja de observar una vez que el usuario se ha logueado
-            }
-        });
+    loadingLoggedUser.value = true;
+
+    const timeoutDuration = 3000; 
+    let timeoutId;
+
+    const triggerAnonymousLogin = () => {
+        if (activeHotelCollect && !getLoggedUser.value && !getAnonymousUser.value) {
+            anonymousLogin();
+        }
+    };
+
+    timeoutId = setTimeout(triggerAnonymousLogin, timeoutDuration);
+
+    const executeSearchActions = (isAnonymous = false) => {
+        getResults(isAnonymous);
+        clearTimeout(timeoutId);
+        loadingLoggedUser.value = false;
+        unwatchLoggedUser();
+        unwatchAnonymousUser();
+    };
+
+    timeoutId = setTimeout(triggerAnonymousLogin, timeoutDuration);
+
+    const unwatchLoggedUser = watch(getLoggedUser, (newValue) => {
+        if (newValue != null) {
+            executeSearchActions();
+        }
+    });
+
+    const unwatchAnonymousUser = watch(getAnonymousUser, (newValue) => {
+        if (newValue != null) {
+            executeSearchActions(true);
+        }
+    });
+
+    // Verificar inicialmente si getLoggedUser o getAnonymousUser ya tienen valores
+    if (getLoggedUser.value != null) {
+        executeSearchActions();
+    } else if (getAnonymousUser.value != null) {
+        executeSearchActions(true);
     }
 });
 
-
 //RESULTS
 const results = ref([]);
+const resultsHotelCollect = ref([]);
 const viewMode = ref("list");
 const hotelName = ref('')
 const limitResults = ref(25)
+
 
 const filteredResults = computed(() => {
     const activeFilters = filters.value
@@ -154,6 +199,48 @@ const filteredResults = computed(() => {
     });
 });
 
+const filteredResultsHotelCollect = computed(() => {
+    const activeFilters = filters.value
+        .flat()
+        .map(filter => {
+            return {
+                GroupName: filter.GroupName,
+                SelectedFeatures: filter.Filters.map(f => f.Key),
+            };
+        });
+
+    return resultsHotelCollect.value.filter(hotel => {
+        const plainNameMatch = hotel.PlainName.toLowerCase().includes(hotelName.value.toLowerCase());
+
+        if (activeFilters.length > 0) {
+            const featuresMatch = activeFilters.every(activeFilter => {
+                if (activeFilter.GroupName === 'feature.propertyCategory') {
+                    const hotelCategory = hotel.Category.toFixed(2);
+                    return hotelCategory && activeFilter.SelectedFeatures.includes(hotelCategory);
+                } else {
+                    return hotel.Features && Array.isArray(hotel.Features) && activeFilter.SelectedFeatures.every(feature => {
+                        return hotel.Features.includes(feature);
+                    });
+                }
+            });
+
+            return plainNameMatch && featuresMatch;
+        }
+        return plainNameMatch;
+    });
+});
+
+//HOTEL COLLECT
+
+const runtimeConfig = useRuntimeConfig()
+const activeHotelCollect = runtimeConfig.public.activeHotelCollect === 'true'
+
+const resultsMode = ref(0);
+
+const currentResults = computed(() => {
+    return resultsMode.value == 1 ? filteredResultsHotelCollect.value : filteredResults.value;
+});
+
 const intersecting = ref(false)
 
 function onIntersect(isIntersecting, entries, observer) {
@@ -171,6 +258,7 @@ async function viewMoreResults() {
 const finishSearch = ref(false)
 
 //SEARCH
+
 const route = useRoute();
 const checkIn = ref(route.query.checkIn)
 const checkOut = ref(route.query.checkOut)
@@ -191,9 +279,8 @@ watch(isReceiving, (newValue) => {
     }
 });
 
-const nuxtConfig = useRuntimeConfig()
 
-async function getResults() {
+async function getResults(anonymous = false) {
     occupancies.value = useOccupancies.parse(route.query.occupancies)
     finishSearch.value = false
     showMap.value = false
@@ -218,6 +305,13 @@ async function getResults() {
         Residence: "AR",
         Id: place.value,
     }
+    if (!activeHotelCollect) {
+        search.IsOnlyHotelCollect = null
+    } else if (activeHotelCollect) {
+        search.IsOnlyHotelCollect = false
+    } else if (activeHotelCollect && anonymous) {
+        search.IsOnlyHotelCollect = true
+    }
     let payload = {
         Paging: paging,
         Search: search,
@@ -229,6 +323,7 @@ async function getResults() {
         await store.fetchResults(payload);
         useNuxtApp().$toast.info('Buscando los mejores precios', { autoClose: false, icon: "🚀", hideProgressBar: false, toastId: 'searchingToast', closeButton: false });
         results.value = store.getResults
+        resultsHotelCollect.value = store.getResultsHotelCollect
         features.value = store.getFeatures
     } catch (error) {
         console.log(error);
@@ -250,45 +345,76 @@ function getFilteredResults(payload) {
 
 const sorting = [
     {
-        name: 'Precio: menor a mayor',
-        icon: 'md:arrow_upward',
+        name: 'Precio',
+        icon: 'mdi-sort-ascending',
         field: 'Total',
         direction: 'asc'
     },
     {
-        name: 'Precio: mayor a menor',
-        icon: 'md:arrow_downward',
+        name: 'Precio',
+        icon: 'mdi-sort-descending',
         field: 'Total',
         direction: 'desc'
     },
     {
         name: 'Popularidad',
         field: 'GuestRatingCount',
+        icon: 'mdi-sort-bool-descending',
         direction: 'desc'
     },
     {
-        name: 'Mejor calificado',
+        name: 'Calificación',
         field: 'GuestRatingAverage',
+        icon: 'mdi-sort-numeric-descending',
         direction: 'desc'
     }
 ]
-const activeOrderInfo = ref({})
+const activeOrderInfo = ref(null)
+const configStore = useConfigStore();
 
 const orderResults = (orderInfo) => {
-    activeOrderInfo.value = orderInfo
+    activeOrderInfo.value = orderInfo;
     const { field, direction } = orderInfo;
-    results.value = results.value.sort((a, b) => {
-        const aValue = a[field];
-        const bValue = b[field];
 
-        if (direction === 'asc') {
-            return aValue - bValue;
-        } else {
-            return bValue - aValue;
-        }
-    });
+    const sortArray = (array) => {
+        array.sort((a, b) => {
+            const aValue = a[field];
+            const bValue = b[field];
+
+            if (direction === 'asc') {
+                return aValue - bValue;
+            } else {
+                return bValue - aValue;
+            }
+        });
+    };
+
+    sortArray(results.value);
+    sortArray(resultsHotelCollect.value);
 };
 
+watch(() => configStore.getConfig, (newConfig) => {
+    if (newConfig && newConfig.autoOrderbyPrice) {
+        orderResults({
+            name: 'Precio',
+            icon: 'mdi-sort-ascending',
+            field: 'Total',
+            direction: 'asc'
+        });
+    }
+}, { immediate: true });
+
+watch(results, () => {
+    if (activeOrderInfo.value) {
+        orderResults(activeOrderInfo.value);
+    }
+}, { deep: true });
+
+watch(resultsHotelCollect, () => {
+    if (activeOrderInfo.value) {
+        orderResults(activeOrderInfo.value);
+    }
+}, { deep: true });
 //MAP
 
 const showMap = ref(false);
@@ -315,7 +441,7 @@ onBeforeRouteUpdate((to, from) => {
         checkOut.value = to.query.checkOut
         place.value = to.query.id
         getResults();
-
+        alert('routeupdate')
     }
 });
 
@@ -377,5 +503,4 @@ async function goToDetailsNewTab(item) {
     width: 100%;
     /* Asegura que la card tenga el ancho completo de la columna */
 }
-
 </style>

@@ -2,8 +2,8 @@
   <v-container class="content-container">
     <v-row dense>
       <v-col>
-        <v-btn prepend-icon="mdi-chevron-left" rounded="xl" variant="outlined" density="comfortable"
-          v-if="route.query.place" @click="backToResults"> Volver</v-btn>
+        <v-btn prepend-icon="mdi-chevron-left" rounded="sm" variant="outlined" density="comfortable"
+          @click="backToResults"> Volver a los resultados</v-btn>
       </v-col>
     </v-row>
     <v-row dense class="mt-md-1">
@@ -13,7 +13,7 @@
     </v-row>
     <v-skeleton-loader v-if="loading" class="list-result-loader mt-4" type="card">
     </v-skeleton-loader>
-    <v-row dense v-if="getLoggedUser && property && !loading" justify="space-between"
+    <v-row dense v-if="property && !loading" justify="space-between"
       :class="isMobile ? 'flex-column-reverse' : ''" class="mb-2">
       <v-col cols="12" md="9">
         <h2 class="semi">{{ property.Name }}
@@ -50,7 +50,7 @@
                   style="height: 100%;">
                   <v-btn color="white" variant="flat" rounded="xl" size="small" @click="imageGallery = true"
                     prepend-icon="mdi-camera">
-                    Ver {{ property.Images.length }} fotos
+                    Ver {{ property.Images?.length }} fotos
                   </v-btn>
                 </div>
               </v-expand-transition>
@@ -91,7 +91,8 @@
         </v-bottom-sheet>
       </v-col>
     </v-row>
-    <v-sheet rounded="lg" class="pa-1 bg-midground" v-if="getLoggedUser" :class="isMobile ? '' : 'd-inline-block'">
+
+    <v-sheet rounded="lg" class="pa-1 bg-midground" :class="isMobile ? '' : 'd-inline-block'">
       <v-tabs v-model="detailsTabs" class="text-secondary_text" active-class="text-secondary" color="secondary"
         density="compact" align-tabs="start" hide-slider :show-arrows="isMobile">
         <v-tab :value="1">Disponibilidad</v-tab>
@@ -103,8 +104,11 @@
     </v-sheet>
     <v-window v-model="detailsTabs" class="bg-midground rounded-lg mt-1">
       <v-window-item :value="1">
-        <v-row dense justify="center">
-          <v-col v-if="property && loadingAvail && rooms.length == 0" class="mt-12 d-flex justify-center flex-column">
+                    <!-- FORZAR LOGIN -->
+                    <auth-force-login-card v-if="!getLoggedUser && !getAnonymousUser" />
+
+        <v-row dense justify="center"  v-if="getLoggedUser || getAnonymousUser && !loading">
+          <v-col v-if="property && rooms.length == 0" class="mt-12 d-flex justify-center flex-column">
             <v-progress-circular indeterminate color="primary" size="50" class="mx-auto"></v-progress-circular>
             <h3 class="text-center">
               Buscando las mejores habitaciones en
@@ -114,9 +118,7 @@
             </h2>
           </v-col>
         </v-row>
-        <!-- FORZAR LOGIN -->
-        <auth-force-login-card v-if="!getLoggedUser" />
-        <v-container v-if="getLoggedUser != null" class="pa-3">
+        <v-container v-if="getLoggedUser || getAnonymousUser" class="pa-3">
           <v-sheet rounded="lg" class="pt-2 d-inline-block bg-midground" v-if="rooms.length > 1">
             <v-tabs v-model="roomsTabs" class="text-secondary_text" color="secondary_darken" align-tabs="start"
               hide-slider>
@@ -133,29 +135,42 @@
             <v-window-item :value="index" v-for="room, index in rooms">
               <v-container v-if="avail">
                 <v-row dense class="mb-2">
-                  <v-col cols="12" md="4" v-if="!loadingAvail">
-                    <p class="body-2 pt-1"> Encontramos {{ getRoomResults(room.Id).length }} opciones disponibles</p>
+                  <v-col cols="12" md="12">
+                    <v-btn-toggle v-model="availMode" density="compact" mandatory color="midground"
+                      class="btn-toggle-large bg-secondary_lighten" variant="flat" rounded="md"
+                      selected-class="btn-toggle-large-selected" v-if="activeHotelCollect">
+                      <v-btn class="my-1 mx-1 body-2 text-primary_text bg-background" rounded="md">
+                        Pago por agencia ({{ filteredAvail(room.Id).length }})
+                      </v-btn>
+                      <v-btn class="my-1 mx-1 body-2 text-primary_text bg-background" rounded="md"
+                        :disabled="filteredAvailHotelCollect(room.Id).length == 0">
+                        Pago directo al hotel ({{ filteredAvailHotelCollect(room.Id).length }})
+                      </v-btn>
+                    </v-btn-toggle>
+                    <h5 class="mt-3" v-else>
+                      Encontramos <span class="text-primary">{{ currentAvail(room.Id).length }}</span> resultados
+                    </h5>
                   </v-col>
-                  <v-col cols="12" md="8" :class="!isMobile ? 'text-right' : ''">
-                    <stays-details-tools :viewMode="viewMode" :loading="loading" @orderDes="orderDes(room.Id)"
-                      @orderAsc="orderAsc(room.Id)" @update:prompt="searchPrompt = $event; roomNumber = room.Id"
+                  <v-col cols="12" md="12" :class="!isMobile ? 'text-right' : ''">
+                    <stays-details-tools :viewMode="viewMode" :loading="loading" @orderDes="orderDes()"
+                      @orderAsc="orderAsc()" @update:prompt="searchPrompt = $event; roomNumber = room.Id" 
                       @update:showNonRef="showNonRef = $event" @update:showDirectChain="showDirectChain = $event"
-                      @update:viewMode="viewMode = $event" :orderType="priceOrder" />
+                      @update:viewMode="viewMode = $event" @update:selectedSupplement="selectedSupplementGroup = $event" :orderType="priceOrder" />
                   </v-col>
                 </v-row>
                 <!-- FILTROS -->
                 <!-- RESULTS -->
-                <v-row dense v-if="!loadingAvail && avail.length > 0">
-                  <v-col :lg="viewMode == 'list' ? 12 : 4" cols="12"
+                <v-row dense v-if="currentAvail(room.Id).length > 0">
+                  <v-col :md="viewMode == 'list' ? 12 : 4" cols="12"
                     :class="viewMode == 'list' ? 'pa-0 d-flex flex-column' : ''"
-                    v-for="result in getRoomResults(room.Id).slice(0, limitAvail)">
+                    v-for="result in currentAvail(room.Id).slice(0, limitAvail)">
                     <stays-list-avail-card :item="result" :mode="viewMode" @book="goToCheckoutSingle(result, property)"
                       :multiple="rooms.length > 1 ? true : false" @select="selectRoom(room.Id, result.Id)"
                       @unselect="unselectRoom(result.Id)" :selected.sync="isSelected(result.Id)"
                       :class="hasId(result.Id) ? 'list-avail-card-selected mb-2' : 'mb-2'">
                     </stays-list-avail-card>
                   </v-col>
-                  <v-col cols="12" v-if="getRoomResults(room.Id).length > limitAvail">
+                  <v-col cols="12" v-if="currentAvail(room.Id).length > limitAvail">
                     <v-skeleton-loader type="list-item-avatar-three-line" class="rounded-lg list-result-card">
                     </v-skeleton-loader>
                   </v-col>
@@ -164,8 +179,7 @@
                     </div>
                   </v-col>
                 </v-row>
-                <v-row class="mt-3" justify="center"
-                  v-if="getRoomResults(room.Id).length == 0 && !loadingAvail && !isReceiving">
+                <v-row class="mt-3" justify="center" v-if="currentAvail(room.Id).length == 0 && !isReceiving">
                   <v-col cols="12">
                     <h3 class="text-center">En este momento no hay habitaciones disponibles</h3>
                     <v-img src="/base/img/services/no_avail.png" width="280" class="my-6 mx-auto"></v-img>
@@ -176,7 +190,17 @@
                     <StaysNearPropertiesGrid :items="nearProperties" :principal="property" v-if="property" />
                   </v-col>
                 </v-row>
-                <StaysFinishSearchBottomSheet v-model="finishSearch" v-if="!isReceiving && avail.length > 0"
+                <v-row class="mt-3" justify="center" v-if="currentAvail(room.Id).length == 0 && searchPrompt">
+                  <v-col cols="12">
+                    <h3 class="text-center">No hay habitaciones con su filtro de búsqueda</h3>
+                    <v-img src="/base/img/services/no_avail.png" width="280" class="my-6 mx-auto"></v-img>
+                    <h4 class="body-1 semi text-secondary_text text-center  mt-5">
+                      Pruebe modificando sus filtros
+                    </h4>
+                  </v-col>
+                </v-row>
+                <StaysFinishSearchBottomSheet v-model="finishSearch"
+                  v-if="!isReceiving && avail.length > 0 && !configStore.getConfig.autoOrderbyPrice"
                   :results="avail.length" :rooms="rooms.length" @close="finishSearch = false"
                   @orderResults="orderAsc(); finishSearch = false" />
               </v-container>
@@ -287,13 +311,13 @@
         </v-skeleton-loader>
         <v-container v-else-if="nearProperties && nearProperties.length > 0">
           <v-row>
-            <v-col>
+            <v-col cols="12" md="6">
               <StaysNearPropertiesMap :items="nearProperties" :principal="property" v-if="property"
                 @goTo="goToDetails" />
             </v-col>
-            <v-col>
+            <v-col cols="12" md="6">
               <StaysNearPropertiesList :items="nearProperties" :principal="property" v-if="property"
-                @goToTab="detailsTabs = 1" />
+                @goToTab="goToDetails" />
             </v-col>
           </v-row>
         </v-container>
@@ -345,7 +369,7 @@ function startCountdown() {
         seconds.value = 59;
       } else {
         clearInterval(countdownInterval);
-        timeoutDialog.value = false
+        timeoutDialog.value = true
       }
     }
   }, 1000);
@@ -362,36 +386,65 @@ function reloadAvail() {
 //LOGGED USER
 
 const usersStore = useUsersStore();
-const { getLoggedUser } = storeToRefs(usersStore);
+const { getLoggedUser, getAnonymousUser } = storeToRefs(usersStore);
+const loadingLoggedUser = ref(false)
+const { anonymousLogin } = useAnonymousLogin()
 
 //LOGIN
-const occupancies = ref([])
 
 onMounted(() => {
-  const loggedUser = getLoggedUser.value;
+  loadingLoggedUser.value = true
   occupancies.value = useOccupancies.parse(route.query.occupancies)
-  if (loggedUser != null) {
-    getAvail();
-    startCountdown();
-    getDetails();
 
-  } else {
-    // Esperar a que el usuario se loguee
-    const unwatch = watch(getLoggedUser, (newValue, oldValue) => {
-      if (newValue != null) {
-        getAvail();
-        getDetails();
+  getDetails();
+
+  const timeoutDuration = 3000;
+  let timeoutId;
+
+  const triggerAnonymousLogin = () => {
+    if (activeHotelCollect && !getLoggedUser.value && !getAnonymousUser.value) {
+      anonymousLogin();
+    }
+  };
+
+  timeoutId = setTimeout(triggerAnonymousLogin, timeoutDuration);
+
+  const executeSearchActions = (isAnonymous = false) => {
+        getAvail(isAnonymous);
         startCountdown();
-        unwatch(); // Deja de observar una vez que el usuario se ha logueado
-      }
+        clearTimeout(timeoutId);
+        loadingLoggedUser.value = false;
+        unwatchLoggedUser();
+        unwatchAnonymousUser();
+    };
+
+    timeoutId = setTimeout(triggerAnonymousLogin, timeoutDuration);
+
+    const unwatchLoggedUser = watch(getLoggedUser, (newValue) => {
+        if (newValue != null) {
+            executeSearchActions();
+        }
     });
-  }
+
+    const unwatchAnonymousUser = watch(getAnonymousUser, (newValue) => {
+        if (newValue != null) {
+            executeSearchActions(true);
+        }
+    });
+
+    // Verificar inicialmente si getLoggedUser o getAnonymousUser ya tienen valores
+    if (getLoggedUser.value != null) {
+        executeSearchActions();
+    } else if (getAnonymousUser.value != null) {
+        executeSearchActions(true);
+    }
 
   roomsSelected.value = [];
   toTop();
 });
 
 //GET DATA
+const occupancies = ref([])
 const property = ref({})
 const detailsTabs = ref(1)
 const route = useRoute();
@@ -450,11 +503,11 @@ function handleImageError(index) {
 
 //AVAIL
 const avail = ref([])
-const loadingAvail = ref(false);
+const availHotelCollect = ref([])
 const rooms = ref([])
-const nuxtConfig = useRuntimeConfig()
+const runtimeConfig = useRuntimeConfig()
 
-async function getAvail() {
+async function getAvail(anonymous = false) {
   roomsSelected.value = []
   let searchAvail = {
     CheckIn: checkin.value,
@@ -467,20 +520,30 @@ async function getAvail() {
     Residence: "AR",
     PropertyId: propertyId.value,
   }
+  if (!activeHotelCollect) {
+    searchAvail.IsOnlyHotelCollect = null
+  } else if (activeHotelCollect) {
+    searchAvail.IsOnlyHotelCollect = false
+  } else if (activeHotelCollect && anonymous) {
+    searchAvail.IsOnlyHotelCollect = true
+  }
   try {
-    loadingAvail.value = true
     await store.suscribeAvail();
     await store.fetchAvail(searchAvail);
-    useNuxtApp().$toast.info('Buscando los mejores precios', { autoClose: nuxtConfig.public.searchTime, icon: "🚀", hideProgressBar: false, toastId: 'searchingToast', closeButton: false });
+    useNuxtApp().$toast.info('Buscando los mejores precios', { autoClose: runtimeConfig.public.searchTime, icon: "🚀", hideProgressBar: false, toastId: 'searchingToast', closeButton: false });
     avail.value = store.getAvail
+    availHotelCollect.value = store.getAvailHotelCollect
     rooms.value = store.getRooms
+    while (avail.value.length === 0 && property.value) {
+      // Esperar 1 segundo antes de volver a comprobar
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
     if (avail.value.length == 0 && property.value) {
-      fetchNearProperties()
+      fetchNearProperties();
     }
   } catch (error) {
     console.log(error);
   } finally {
-    loadingAvail.value = false;
   }
 }
 
@@ -499,62 +562,184 @@ watch(isReceiving, (newValue, oldValue) => {
 
 
 //RESULTS
-const searchPrompt = ref('')
+const searchPrompt = ref(null)
 const roomNumber = ref(null)
 const viewMode = ref('list')
 const showNonRef = ref(true)
 const showDirectChain = ref(false)
 const priceOrder = ref("asc");
 const roomsTabs = ref(0)
+const dayjs = useDayjs()
+const selectedSupplementGroup  = ref(null)
 
-function orderAsc(roomId) {
+function orderAsc() {
   avail.value = avail.value.sort((a, b) => a.Price.PVP.Total - b.Price.PVP.Total);
   priceOrder.value = 'asc'
 }
 
-function orderDes(roomId) {
+function orderDes() {
   avail.value = avail.value.sort((a, b) => b.Price.PVP.Total - a.Price.PVP.Total);
   priceOrder.value = 'des'
 }
 
-import dayjs from 'dayjs';
+const configStore = useConfigStore();
 
-function getRoomResults(roomId) {
-  let filteredResults = avail.value.filter(result => result.RoomId === roomId);
-
-  if (searchPrompt.value) {
-    const lowerCaseRoomName = searchPrompt.value.toLowerCase();
-
-    filteredResults = filteredResults.filter(result =>
-    (result.Room.Description.toLowerCase().includes(lowerCaseRoomName) ||
-
-      result.Price.PVP.IncludedSupplements.some(supplement =>
-        supplement.Description.toLowerCase().includes(lowerCaseRoomName)
-      ) ||
-
-      result.Price.PVP.Boards.some(board =>
-        board.Description.toLowerCase().includes(lowerCaseRoomName)
-      ))
-    )
+watch(() => configStore.getConfig, (newConfig) => {
+  if (newConfig && newConfig.autoOrderbyPrice) {
+    orderAsc()
   }
-  if (!showNonRef.value) {
-    filteredResults = filteredResults.filter(result => {
-      const isNonRefundable = result.NonRefundable;
-      const isBeforeThreshold = !dayjs(result.LastDayToCharge).isAfter(dayjs(), 'day');
+}, { immediate: true });
 
-      return !(isNonRefundable || isBeforeThreshold);
-    });
+watch(avail, () => {
+  if (priceOrder.value == 'asc') {
+    orderAsc();
   }
-  if (showDirectChain.value) {
-    filteredResults = filteredResults.filter(result => {
-      const isDirectChain = result.DirectChain;
+}, { deep: true });
 
-      return isDirectChain;
-    });
-  }
-  return filteredResults;
-};
+const filteredAvail = computed(() => roomId => {
+    let results = avail.value.filter(result => result.RoomId === roomId);
 
+    if (searchPrompt.value) {
+        const lowerCaseRoomName = searchPrompt.value.toLowerCase();
+        results = results.filter(result =>
+            result.Room.Description.toLowerCase().includes(lowerCaseRoomName) ||
+            result.Price.PVP.IncludedSupplements.some(supplement =>
+                supplement.Description.toLowerCase().includes(lowerCaseRoomName)
+            ) ||
+            result.Price.PVP.Boards.some(board =>
+                board.Description.toLowerCase().includes(lowerCaseRoomName)
+            ) ||
+            result.ProviderRef.Key.toLowerCase().includes(lowerCaseRoomName)
+        );
+    }
+
+    if (!showNonRef.value) {
+        results = results.filter(result => {
+            const isNonRefundable = result.NonRefundable;
+            const isBeforeThreshold = !dayjs(result.LastDayToCharge).isAfter(dayjs(), 'day');
+            return !(isNonRefundable || isBeforeThreshold);
+        });
+    }
+
+    if (showDirectChain.value) {
+        results = results.filter(result => result.DirectChain);
+    }
+
+    if (selectedSupplementGroup.value && selectedSupplementGroup.value !== 'Mostrar todos') {
+        const groupSupplements = (supplementGroups[selectedSupplementGroup.value]?.items || [selectedSupplementGroup.value]).map(s => s.toLowerCase());
+        results = results.filter(result => {
+            const allDescriptions = [
+                ...result.Price.PVP.IncludedSupplements.map(supplement => supplement.Description),
+                ...result.Price.PVP.Boards.map(board => board.Description)
+            ];
+
+            const priorityMap = new Map();
+            let ungroupedMatch = false;
+
+            allDescriptions.forEach(description => {
+                const lowerCaseDescription = description.toLowerCase();
+
+                let matched = false;
+                for (const group in supplementGroups) {
+                    const groupData = supplementGroups[group];
+                    if (groupData.items.map(item => item.toLowerCase()).includes(lowerCaseDescription)) {
+                        matched = true;
+                        if (!priorityMap.has(group) || groupData.priority < priorityMap.get(group)) {
+                            priorityMap.set(group, groupData.priority);
+                        }
+                    }
+                }
+                if (!matched && selectedSupplementGroup.value.toLowerCase() === lowerCaseDescription) {
+                    ungroupedMatch = true;
+                }
+            });
+
+            const highestPriorityGroup = Array.from(priorityMap.entries()).sort((a, b) => a[1] - b[1])[0]?.[0];
+
+            return highestPriorityGroup === selectedSupplementGroup.value || ungroupedMatch;
+        });
+    }
+
+    return results;
+});
+
+
+const filteredAvailHotelCollect = computed(() => roomId => {
+    let results = availHotelCollect.value.filter(result => result.RoomId === roomId);
+
+    if (searchPrompt.value) {
+        const lowerCaseRoomName = searchPrompt.value.toLowerCase();
+        results = results.filter(result =>
+            result.Room.Description.toLowerCase().includes(lowerCaseRoomName) ||
+            result.Price.PVP.IncludedSupplements.some(supplement =>
+                supplement.Description.toLowerCase().includes(lowerCaseRoomName)
+            ) ||
+            result.Price.PVP.Boards.some(board =>
+                board.Description.toLowerCase().includes(lowerCaseRoomName)
+            ) ||
+            result.ProviderRef.Key.toLowerCase().includes(lowerCaseRoomName)
+        );
+    }
+
+    if (!showNonRef.value) {
+        results = results.filter(result => {
+            const isNonRefundable = result.NonRefundable;
+            const isBeforeThreshold = !dayjs(result.LastDayToCharge).isAfter(dayjs(), 'day');
+            return !(isNonRefundable || isBeforeThreshold);
+        });
+    }
+
+    if (showDirectChain.value) {
+        results = results.filter(result => result.DirectChain);
+    }
+
+    if (selectedSupplementGroup.value && selectedSupplementGroup.value !== 'Mostrar todos') {
+        const groupSupplements = (supplementGroups[selectedSupplementGroup.value]?.items || [selectedSupplementGroup.value]).map(s => s.toLowerCase());
+        results = results.filter(result => {
+            const allDescriptions = [
+                ...result.Price.PVP.IncludedSupplements.map(supplement => supplement.Description),
+                ...result.Price.PVP.Boards.map(board => board.Description)
+            ];
+
+            const priorityMap = new Map();
+            let ungroupedMatch = false;
+
+            allDescriptions.forEach(description => {
+                const lowerCaseDescription = description.toLowerCase();
+
+                let matched = false;
+                for (const group in supplementGroups) {
+                    const groupData = supplementGroups[group];
+                    if (groupData.items.map(item => item.toLowerCase()).includes(lowerCaseDescription)) {
+                        matched = true;
+                        if (!priorityMap.has(group) || groupData.priority < priorityMap.get(group)) {
+                            priorityMap.set(group, groupData.priority);
+                        }
+                    }
+                }
+                if (!matched && selectedSupplementGroup.value.toLowerCase() === lowerCaseDescription) {
+                    ungroupedMatch = true;
+                }
+            });
+
+            const highestPriorityGroup = Array.from(priorityMap.entries()).sort((a, b) => a[1] - b[1])[0]?.[0];
+
+            return highestPriorityGroup === selectedSupplementGroup.value || ungroupedMatch;
+        });
+    }
+
+    return results;
+});
+
+
+//HOTEL COLLECT
+
+const activeHotelCollect = runtimeConfig.public.activeHotelCollect === 'true'
+
+const availMode = ref(0);
+
+// Computed property para seleccionar el array correcto
+const currentAvail = computed(() => roomId => availMode.value == 1 ? filteredAvailHotelCollect.value(roomId) : filteredAvail.value(roomId));
 
 const limitAvail = ref(25)
 
@@ -591,7 +776,8 @@ onBeforeRouteUpdate(async (to, from) => {
     roomsSelected.value = []
     nearProperties.value = []
     guestReviews.value = []
-    getAvail();
+    getDetails()
+    getAvail()
     startCountdown()
     toTop()
   }
@@ -675,10 +861,10 @@ watchEffect(() => {
 
 const router = useRouter();
 
-function goToDetails(item) {
-  store.handleUnsubscribeAvail()
+async function goToDetails(item) {
+  await store.handleUnsubscribeAvail()
   detailsTabs.value = 1
-  router.push({
+  navigateTo({
     path: "/stays/details",
     query: {
       id: item.Id,
@@ -748,10 +934,10 @@ function backToResults() {
   });
 }
 
-const runtimeConfig = useRuntimeConfig()
 // GO TO CHECKOUT
 
 async function goToCheckoutSingle(item) {
+  console.log(item)
   store.handleUnsubscribeAvail()
   try {
     let payload = {
@@ -761,6 +947,7 @@ async function goToCheckoutSingle(item) {
       selectedPropertyServices: item.Id,
       selectedBoards: null
     }
+    let isHotelCollect = item.IsHotelCollect
     await useNuxtApp().$toast.promise(store.addService(payload), {
       pending: 'Preparando todo para su reserva',
       error: 'Error al crear la reserva'
@@ -775,7 +962,8 @@ async function goToCheckoutSingle(item) {
         checkOut: route.query.checkOut,
         occupancies: route.query.occupancies,
         placeid: route.query.placeid,
-        place: route.query.place
+        place: route.query.place,
+        isHotelCollect: isHotelCollect
       },
     });
   } catch (error) {

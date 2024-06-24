@@ -91,7 +91,7 @@
                         <v-sheet v-else rounded="sm" class="bg-background  body-3 pa-2">
                             <v-icon size="12" icon="md:schedule"></v-icon>
                             <span class="bold"> Duración total</span>
-                            {{ getTotalTime(itinerary) }}
+                            {{ totalTime }}
                         </v-sheet>
                     </v-col>
                 </v-row>
@@ -101,8 +101,8 @@
 </template>
 
 <script setup lang="ts">
-import dayjs from 'dayjs'
-const props = defineProps(['itinerary'])
+const dayjs = useDayjs()
+const props = defineProps(['itinerary','totalTime'])
 
 function parseAirport(input: string) {
     const matches = /(.+?)\s?\((\w{3})-(.+)\)/.exec(input)
@@ -123,15 +123,8 @@ const getWaitingTime = (arrival, nextDeparture) => {
 
 }
 
-const getTotalTime = (itinerary) => {
-    const firstTime = itinerary.Segments[0].DepartureDateTime;
-    const lastTime = itinerary.Segments[itinerary.Segments.length - 1].ArrivalDateTime
-    const miliseconds = Math.abs(new Date(lastTime) - new Date(firstTime));
-    const diff = dayjs(miliseconds)
-    const offset = diff.toDate().getTimezoneOffset()
-    return diff.add(offset, 'minutes').format('H[hs], mm[min]')
 
-}
+
 
 const emit = defineEmits(['close'])
 </script>

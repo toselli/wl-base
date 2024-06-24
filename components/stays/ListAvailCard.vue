@@ -1,18 +1,19 @@
 <template>
   <v-card rounded="lg" class="list-avail-card fill-height mb-2" variant="outlined" v-if="showItem">
     <v-row dense no-gutters :class="mode == 'list' ? '' : 'fill-height'">
-      <v-col :md="mode == 'list' ? '3' : '11'" cols="11" class="pa-0 d-flex flex-column pl-4 justify-center">
-        <h4 class="semi" :class="mode == 'grid' ? 'mt-4' : ''"> {{ item.Room.Description }}</h4>
+      <v-col :md="mode == 'list' ? '4' : '11'" cols="11" class="pa-0 pl-4">
+        <v-chip size="x-small" v-if="item.IsHotelCollect" color="secondary" class="mt-1">Pago directo al hotel</v-chip>
+        <h4 class="semi" :class="mode == 'grid' ? 'mt-1' : ''"> {{ item.Room.Description }}</h4>
         <h6 v-if="item.Room.BedTypes.length > 0" class="body-2 semi mt-1">
           <v-icon icon="mdi-bed"></v-icon>
           Tipos de cama:
         </h6>
         <div v-if="item.Room.BedTypes.length > 0">
-          <p class="mt-1 body-2" v-for="bedType in item.Room.BedTypes" v-html="bedType.Value">
+          <p class="mt-1 mb-0 body-2" v-for="bedType in item.Room.BedTypes" v-html="bedType.Value">
           </p>
         </div>
         <span class="text-success body-3 mt-1" v-if="item.ProviderRef">
-          ({{ item.ProviderRef?.Value }})
+          ({{ item.ProviderRef?.Key }})
         </span>
         <!-- <v-alert class="bg-info" v-if="item.DebugInfo"
                       v-html="item.DebugInfo">
@@ -35,6 +36,11 @@
             </div>
           </li>
         </ul> -->
+        <!-- <div v-if="item.Price.PVP.Supplements.length > 0" class="body-2">
+          <p v-for="supplement in item.Price.PVP.Supplements">
+            {{ supplement.Description }}
+          </p>
+        </div> -->
         <div v-if="item.Price.PVP.IncludedSupplements.length > 0" class="body-2">
           <strong>Incluye:</strong>
           <p v-for="supplement in item.Price.PVP.IncludedSupplements">
@@ -68,14 +74,14 @@
         </div>
       </v-col>
       <v-divider class="ma-2" v-if="mode == 'grid' || isMobile"></v-divider>
-      <v-col cols="12" :md="mode == 'list' ? '3' : '12'" :class="mode == 'list' ? 'pa-4' : 'px-4'"
+      <v-col cols="12" :md="mode == 'list' ? '2' : '12'" :class="mode == 'list' ? 'pa-4' : 'px-4'"
         class="d-flex justify-center flex-column align-start">
         <!-- CONSULTAR POLITICAS -->
           <v-progress-circular indeterminate color="primary" v-if="!item.HaveCancellationPolicies"></v-progress-circular>
         <!-- POLITICAS CONSULTADAS -->
         <div v-else>
           <v-chip size="small" variant="outlined" color="error" class="my-1 mx-1"
-            v-if="!item.NonRefundable && $dayjs(item.LastDayToCharge).isBefore($dayjs(), 'day')">
+            v-if="!item.NonRefundable && $dayjs(item.LastDayToCharge).isBefore($dayjs().add(1, 'day'), 'day')">
             Cancelación con cargo
           </v-chip>
           <v-chip size="small" variant="outlined" color="success" class="my-1 mx-1" v-else-if="!item.NonRefundable">

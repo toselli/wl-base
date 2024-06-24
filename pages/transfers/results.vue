@@ -18,9 +18,9 @@
                 </p>
             </v-col>
             <v-col cols="12" md="7" :class="!isMobile ? 'text-right' : ''">
-                <CommonResultsTools v-if="results?.transfersIn?.length > 0" :viewMode="viewMode" serviceType="transfers"
-                    :sorting="sorting" :loading="loading" @orderDes="orderDes" @orderAsc="orderAsc"
-                    @update:viewMode="viewMode = $event" @update:prompt="transferName = $event" />
+                <CommonResultsTools v-if="results?.transfersIn?.length > 0" :viewMode="viewMode" serviceType="transfers" :hidePrompt="true"
+                    :sorting="sorting" :loading="loading" @update:order="orderResults"
+                        @update:prompt="transferName = $event" @update:viewMode="viewMode = $event" />
             </v-col>
         </v-row>
          <!-- FORZAR LOGIN -->
@@ -46,7 +46,7 @@
                         <v-row dense  v-if="results?.transfersIn?.length > 1">
                             <v-col cols="12">
                                 <v-row dense justify="center">
-                                    <v-col :lg="viewMode == 'list' ? 12 : 4" cols="12"
+                                    <v-col :md="viewMode == 'list' ? 12 : 4" cols="12"
                                         :class="viewMode == 'list mb-1' ? 'pa-0' : ''" class="mb-2"
                                         v-for="result in filteredResults?.transfersIn.slice(0, limitResultsIn)">
                                         <transfers-list-result-card :item="result" :mode="viewMode"
@@ -88,7 +88,7 @@
                         <v-row dense  v-if="filteredResults?.transfersOut?.length > 1">
                             <v-col cols="12">
                                 <v-row dense justify="center">
-                                    <v-col :lg="viewMode == 'list' ? 12 : 4" cols="12"
+                                    <v-col :md="viewMode == 'list' ? 12 : 4" cols="12"
                                         :class="viewMode == 'list mb-1' ? 'pa-0' : ''" class="mb-2"
                                         v-for="result in filteredResults?.transfersOut.slice(0, limitResultsOut)">
                                         <transfers-list-result-card :item="result" :mode="viewMode"
@@ -160,10 +160,8 @@ const { getLoggedUser } = storeToRefs(usersStore);
 //RESULTS
 
 const resultTabs = ref(1)
-const results = ref({});
+const results = ref();
 const viewMode = ref("list");
-const priceOrder = ref("asc");
-const searchByName = ref(false)
 const transferName = ref('')
 const limitResultsIn = ref(60)
 const limitResultsOut = ref(60)
@@ -182,16 +180,33 @@ icon: 'md:arrow_downward',
         direction: 'desc'
     }]
 
+const activeOrderInfo = ref({})
 
-function orderAsc() {
-    results.value = results.value.sort((a, b) => a.Total - b.Total);
-    priceOrder.value = 'asc'
+function orderResults(orderInfo) {
+    activeOrderInfo.value = orderInfo
+    const { field, direction } = orderInfo;
+    results.value.transfersIn = results.value.transfersIn.sort((a, b) => {
+        const aValue = a[field];
+        const bValue = b[field];
+
+        if (direction === 'asc') {
+            return aValue - bValue;
+        } else {
+            return bValue - aValue;
+        }
+    });
+    results.value.transfersOut = results.value.transfersOut.sort((a, b) => {
+        const aValue = a[field];
+        const bValue = b[field];
+
+        if (direction === 'asc') {
+            return aValue - bValue;
+        } else {
+            return bValue - aValue;
+        }
+    });
 }
 
-function orderDes() {
-    results.value = results.value.sort((a, b) => b.Total - a.Total);
-    priceOrder.value = 'des'
-}
 
 const filteredResults = computed(() => {
     let filtered = []
@@ -379,13 +394,11 @@ onBeforeRouteUpdate((to, from) => {
 
 //CHECKOUT
 
-const nuxtConfig = useRuntimeConfig()
-
 async function goToCheckoutIn(payload) {
     try {
         let services = {
             basketId: store.basketId,
-            websiteId: nuxtConfig.public.websiteId,
+            websiteId: runtimeConfig.public.websiteId,
             availUrl: window.location.href,
             selectedServices: payload.service,
             selectedSupplements: payload.supplements

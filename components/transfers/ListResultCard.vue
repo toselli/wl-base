@@ -3,10 +3,10 @@
     <!-- <v-btn @click="share" size="xs" variant="flat" color="primary" icon class="btn-share"><v-icon icon="mdi-share"
         size="xs"></v-icon></v-btn> -->
     <v-row dense no-gutters :class="mode == 'list' ? '' : 'fill-height'">
-      <v-col cols="12" :lg="mode == 'list' ? '3' : '12'" class="pa-0">
+      <v-col cols="12" :md="mode == 'list' ? '3' : '12'" class="pa-0">
         <v-img :src="item.Transfer.VehicleInfo.UrlImage" height="164px" lazy-src="/base/img/services/no_results_cars.png" contain></v-img>
       </v-col>
-      <v-col cols="12" :lg="mode == 'list' ? '4' : '12'" :class="mode == 'list' ? 'pa-4' : 'px-4'">
+      <v-col cols="12" :md="mode == 'list' ? '4' : '12'" :class="mode == 'list' ? 'pa-4' : 'px-4'">
         <h3 class="text-h5 semi" :class="mode == 'list' ? '' : 'mt-2'">
           {{ descriptionWithoutParenthesis(item.Transfer.VehicleInfo.Description) }}
           <v-chip v-if="hasParenthesis(item.Transfer.VehicleInfo.Description)" size="small" class="ml-1"
@@ -15,6 +15,9 @@
             {{ descriptionCategory(item.Transfer.VehicleInfo.Description) }}
           </v-chip>
         </h3>
+        <span class="text-success body-3" v-if="item.ProviderRef">
+          ({{ item.ProviderRef?.Value }})
+        </span>
         <p class="body-2 mt-1 text-secondary_text ">
           <!-- <span class="body-2"><v-icon icon="bus"></v-icon>{{ item.NumberOfVehicles }} - </span> -->
           <span v-if="item.Transfer.VehicleInfo.IsShuttle">Traslado regular</span>
@@ -28,8 +31,9 @@
           {{ item.Transfer.DestinationPoint.Name }}
         </p>
         <p class="body-2 text-secondary_text mt-1">
-          <v-icon icon="mdi-calendar"></v-icon> Fecha y hora recogida: 
-          {{ $dayjs($route.query.arrivalDate).format('DD-MM-YYYY') }} - {{ $route.query.arrivalTime }} hs
+          <v-icon icon="mdi-calendar"></v-icon> Fecha recogida: 
+          {{ $dayjs($route.query.arrivalDate).format('DD-MM-YYYY') }} 
+          <!-- - {{ $route.query.arrivalTime }} hs -->
         </p>
         <p class="body-2 text-secondary_text mt-2">
           <span title="Capacidad Pasajeros" class="mr-5">
@@ -109,7 +113,7 @@
           No reembolsable
         </v-chip>
       </v-col>
-      <v-col cols="12" :lg="mode == 'list' ? '3' : '12'"
+      <v-col cols="12" :md="mode == 'list' ? '3' : '12'"
         class="pa-4 d-flex justify-space-between " :class="mode == 'list' ? 'flex-column text-right' : ''">
         <h3 class="text-h4 semi pr-4 pt-4">
           <span class="body-2 text-secondary_text">{{ item.Price.Currency }}</span>{{

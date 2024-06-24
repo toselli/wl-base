@@ -2,13 +2,14 @@
   <v-card rounded="lg" class="list-result-card fill-height" flat @click="handleCardClick"
     @click.middle.prevent="$emit('goTotab')">
     <v-row dense no-gutters :class="mode == 'list' ? '' : 'fill-height'">
-      <v-col cols="12" :lg="mode == 'list' ? '3' : '12'" class="pa-0">
+      <v-col cols="12" :md="mode == 'list' ? '3' : '12'" class="pa-0">
         <v-img :src="cleanThumbUrl(item.Thumb)" height="164px" cover lazy-src="/base/img/services/hotel_no_image.png"
           :class="mode == 'list' ? '' : 'mb-1'"></v-img>
       </v-col>
       <v-col :class="mode == 'list' ? 'pa-4' : 'px-4'">
         <v-rating :model-value="item.Rating" density="compact" size="small" color="orange" v-if="item.Rating" readonly
-          half-increments></v-rating>
+          half-increments></v-rating>       
+
         <h3 :class="!item.Rating ? 'mt-2' : ''">
           {{ item.Name }}
         </h3>
@@ -20,11 +21,11 @@
           <h3 class="float-left mr-1" :class="item.GuestRatingAverage > 3 ? 'bg-success pa-1 rounded-sm' : ''">{{
     item.GuestRatingAverage }} </h3>
           <h4 v-if="item.GuestRatingQualification" class="mb-2">{{
-    $capitalize($t('guestRating.' + item.GuestRatingQualification)) }} </h4>
-          <span class="body-3">({{ item.GuestRatingCount }} {{ $t('reviews') }})</span>
+    $capitalize($t('guestRating.' + item.GuestRatingQualification)) }}  <span class="body-3">({{ item.GuestRatingCount }} {{ $t('reviews') }})</span></h4>
+         
         </div>
       </v-col>
-      <v-col cols="12" :lg="mode == 'list' ? '3' : '12'" class="pa-4  d-flex justify-space-between flex-column">
+      <v-col cols="12" :md="mode == 'list' ? '3' : '12'" class="pa-4  d-flex justify-space-between flex-column">
         <v-row dense no-gutters>
           <v-col v-if="!hideInfo && mode == 'grid'" cols="5">
             <div class="body-2 text-secondary_text mt-4" v-if="item.GuestRatingAverage">
@@ -48,7 +49,8 @@
                       <span class="body-2 mr-1">{{ item.Currency }}</span>{{ item.previousPrice[0].toFixed(2) }}
                     </h5>
                     <h2>
-                      <span class="body-2 text-secondary_text mr-1">{{ item.Currency }}</span>{{ item.Total.toFixed(2)
+                      <span v-if="item.IsHotelCollect" class="body-3 text-success mr-4">Pago directo</span>
+   <span class="body-2 text-secondary_text mr-1">{{ item.Currency }}</span>{{ item.Total.toFixed(2)
                       }}
                     </h2>
                   </div>
@@ -72,6 +74,7 @@
                 </h2>
               </div>
             </div>
+            
           </v-col>
         </v-row>
         <!-- <p class="body-2 text-secondary_text">{{ $t('per_night') }}</p> -->

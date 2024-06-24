@@ -11,11 +11,11 @@
                         :append-inner-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'" @click:append-inner="showPass = !showPass"
                         v-model="loginData.password" :type="showPass ? 'text' : 'password'" :rules="passwordRules"
                         class="mb-2"></v-text-field>
-                    <v-btn type="submit" block color="primary" rounded="xl" flat
+                    <v-btn type="submit" block color="primary" rounded="md" flat
                         :disabled="!loginData.password || loading" :loading="loading">
                         Ingresar
                     </v-btn>
-                    <p class="body-2 text-error text-center mt-4">{{ $t(errorMessage) }}</p>
+                    <p class="body-2 text-error text-center mt-4" v-if="errorMessage">{{ $t(errorMessage) }}</p>
                 </v-form>
                 <v-divider class="my-4"></v-divider>
                 <v-btn type="submit" block color="secondary" rounded="xl" variant="text"
@@ -38,7 +38,7 @@
                                 </v-btn>
                             </v-col>
                             <v-col>
-                                <v-btn block color="primary" :disabled="!validForgot" rounded="xl" flat
+                                <v-btn block color="primary" :disabled="!validForgot" rounded="md" flat
                                     :loading="loading" type="submit">{{ $capitalize($t('request')) }}
                                 </v-btn>
                             </v-col>
@@ -65,13 +65,13 @@
                         <p class="body-2 text-error text-center mt-4">{{ $t(errorMessage) }}</p>
                         <v-row dense>
                             <v-col>
-                                <v-btn block rounded="xl"  variant="flat"
+                                <v-btn block rounded="md"  variant="flat"
                                     @click="loginForm = true; validateForm = false; restoreForm = false"
                                     :loading="loading">{{ $capitalize($t('cancel')) }}
                                 </v-btn>
                             </v-col>
                             <v-col>
-                                <v-btn block color="primary" :disabled="!validRestore || !isTokenValid" rounded="xl"
+                                <v-btn block color="primary" :disabled="!validRestore || !isTokenValid" rounded="md"
                                 variant="flat" :loading="loading" type="submit">{{ $capitalize($t('request')) }}
                                 </v-btn>
                             </v-col>
@@ -93,7 +93,7 @@
                         <p class="body-2 text-error text-center my-4">{{ $t(errorMessage) }}</p>
                         <v-row dense>
                             <v-col>
-                                <v-btn block color="primary" :disabled="!isTokenOtpValid" rounded="xl" flat
+                                <v-btn block color="primary" :disabled="!isTokenOtpValid" rounded="md" flat
                                     :loading="loading" type="submit">{{
                                         $capitalize($t('verify')) }}
                                 </v-btn>

@@ -17,46 +17,41 @@
                     <span class="semi">Ver detalles</span>
                 </v-btn>
                 <v-dialog width="510px" height="510px" v-model="detailsDialog">
-
                     <v-card flat rounded="lg" class="list-result-card fill-height py-2" :id="service.Id">
                         <v-card-title>
-                            <v-row>
-                                <v-col>
-                                    <div class="d-flex justify-space-between">
-                                        <h5 class="ml-4 semi">Información de la asistencia</h5>
-                                        <v-icon icon="md:close" @click="detailsDialog = false"></v-icon>
-                                    </div>
-                                </v-col>
-                            </v-row>
+
+                            <div class="d-flex justify-space-between">
+                                <h5 class="ml-4 semi">Información de la asistencia</h5>
+                                <v-icon icon="md:close" @click="detailsDialog = false"></v-icon>
+                            </div>
+
                         </v-card-title>
                         <v-card-text class="bg-background">
                             <v-row>
-                                <v-col cols="8">
-                                    <v-text-field variant="outlined" hide-details density="compact"
-                                        label="Realiza una búsqueda específica" v-model="attributeSearch"
-                                        class="small-text-field" ref="prompRef"
+                                <v-col cols="12">
+                                    <v-text-field variant="outlined" class="mb-2" hide-details
+                                        density="compact" label="Realiza una búsqueda específica"
+                                        v-model="attributeSearch" ref="prompRef"
                                         placeholder="Realiza una búsqueda específica" prepend-inner-icon="mdi-magnify">
                                     </v-text-field>
                                 </v-col>
                             </v-row>
-                            <v-row>
-                                <v-card rounded="lg" class="bg-foreground">
-                                    <v-card-text>
-                                        <v-row class="body-2 py-2" dense v-for="(attr, index) in filteredAttributes"
-                                            :class="index % 2 !== 0 ? 'bg-background' : 'bg-foreground'">
-                                            <v-col cols="9" class="d-inline-block text-truncate">
-                                                <v-icon color="success" icon="md:check" class="mr-2" size="16"></v-icon>
-                                                <span>
-                                                    {{ attr.VisibleName }}
-                                                </span>
-                                            </v-col>
-                                            <v-col cols=3 class="text-end">
-                                                <span class="semi text-end">{{ attr.Value }} {{ attr.Unit }}</span>
-                                            </v-col>
-                                        </v-row>
-                                    </v-card-text>
-                                </v-card>
+                            <v-card rounded="md" class="foreground pa-3" variant="flat">
+                                <v-row class="body-2 py-2 rounded-md" dense v-for="(attr, index) in filteredAttributes"
+                                :class="index % 2 !== 0 ? 'bg-background' : 'bg-foreground'">
+                                <v-col cols="9" class="d-inline-block text-truncate px-3">
+                                    <v-icon color="success" icon="md:check" class="mr-2" size="16"></v-icon>
+                                    <span>
+                                        {{ attr.VisibleName }}
+                                    </span>
+                                </v-col>
+                                <v-col cols=3 class="text-end pr-4">
+                                    <span class="semi text-end">{{ attr.Value }} {{ attr.Unit }}</span>
+                                </v-col>
                             </v-row>
+                            </v-card>
+
+                            
 
                         </v-card-text>
                     </v-card>
@@ -100,7 +95,7 @@ const toggle = () => {
 
 watch(attributeSearch, (newValue, oldValue) => {
     let attrs = useDeepCopy(service.Attributes)
-    attrs = attrs.filter(x => x.VisibleName.includes(newValue))
+    attrs = attrs.filter(x => x.VisibleName.toLowerCase().includes(newValue.toLowerCase()))
     filteredAttributes.value = attrs;
 })
 

@@ -1,0 +1,76 @@
+[
+    {
+        "serviceType": 1,
+        "ebookingServiceType": 0,
+        "code": "stays",
+        "name": "Alojamientos",
+        "icon": "md:hotel"
+    },
+    {
+        "serviceType": 2,
+        "name": "Traslados",
+        "ebookingServiceType": 3,
+        "code": "transfers",
+        "icon": "md:airport_shuttle"
+    },
+    {
+        "serviceType": 3,
+        "name": "Autos",
+        "ebookingServiceType": 2,
+        "code": "cars",
+        "icon": "md:directions_car"
+    },
+    {
+        "serviceType": 4,
+        "ebookingServiceType": 1,
+        "name": "Aéreos",
+        "code": "flights",
+        "icon": "md:flight_takeoff"
+    },
+    {
+        "serviceType": 5,
+        "name": "Asistencias",
+        "ebookingServiceType": 7,
+        "code": "assistances",
+        "icon": "md:health_and_safety"
+    },
+    {
+        "serviceType": 6,
+        "name": "Circuitos",
+        "ebookingServiceType": 6,
+        "code": "circuits",
+        "icon": "md:map"
+    },
+    {
+        "serviceType": 7,
+        "name": "Paquetes",
+        "ebookingServiceType": 6,
+        "code": "tours",
+        "icon": "md:luggage",
+        "oldUrl" : "salidas"
+    },
+    {
+        "serviceType": 8,
+        "name": "Atracciones",
+        "ebookingServiceType": 6,
+        "code": "sightseeing",
+        "icon": "md:local_activity",
+        "oldUrl" : "atracciones"
+    },
+    {
+        "serviceType": 9,
+        "name": "Cruceros",
+        "ebookingServiceType": 6,
+        "code": "cruceros",
+        "icon": "md:map",
+        "oldUrl" : "cruceros"
+    },
+    {
+        "serviceType": 9,
+        "name": "Disney",
+        "ebookingServiceType": 6,
+        "code": "disney",
+        "icon": "md:castle",
+        "oldUrl" : "disney"
+    }
+]

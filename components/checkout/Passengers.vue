@@ -1,5 +1,5 @@
 <template>
-  <v-card rounded="lg" class="pa-5 bg-foreground card-content-elevation mb-5">
+  <v-card rounded="lg" class="card-checkout-forms-content pa-4">
     <h4 class="text-h6 semi my-2">Datos de los pasajeros</h4>
     <div v-for="(service, index) in booking.Services" v-if="serviceType == 'stays'">
       <h5 class="text-h5 mb-2 ml-2" v-if="booking.Services.length > 1">Habitación {{ index + 1 }} <span class="body-2">-
