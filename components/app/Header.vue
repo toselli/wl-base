@@ -44,42 +44,8 @@
                 </v-btn>
               </template>
             </v-tooltip>
-            <v-menu>
-              <template v-slot:activator="{ props }">
-                <v-btn variant="text" size="xl" rounded="xl" class="pr-2" v-bind="props">
-                  <v-avatar class="bg-secondary mr-2" size="42">
-                    {{
-                  getLoggedUser.FirstName[0] + getLoggedUser.LastName[0]
-                }}
-                  </v-avatar>
-                  <v-icon size="16" icon="mdi-chevron-down">
-                  </v-icon>
-                </v-btn>
-              </template>
-              <v-card flat>
-                <v-card-text class="d-flex align-center">
-                  <v-avatar class="bg-secondary mr-2" size="28">
-                    {{
-                    getLoggedUser.FirstName[0] + getLoggedUser.LastName[0]
-                  }}
-                  </v-avatar>
-                  <p>{{
-                    getLoggedUser.FirstName + ' ' + getLoggedUser.LastName
-                  }}</p>
-                </v-card-text>
-                <v-list>
-                  <v-list-item @click="openConfigDialog">
-                    <v-icon icon="mdi-cog-outline" size="md"></v-icon> {{ $capitalize($t("config")) }}
-                  </v-list-item>
-                  <v-list-item @click="openChangePasswordDialog">
-                    <v-icon icon="mdi-lock-outline" size="md"></v-icon> {{ $capitalize($t("change_password")) }}
-                  </v-list-item>
-                  <v-list-item @click="logout">
-                    <v-icon icon="mdi-logout" size="md"></v-icon> {{ $capitalize($t("log_out")) }}
-                  </v-list-item>
-                </v-list>
-              </v-card>
-            </v-menu>
+            <AppUserMenu :user="getLoggedUser" v-if="getLoggedUser" @openConfigDialog="openConfigDialog" @openChangePasswordDialog="openChangePasswordDialog" @logout="logout" />
+
           </v-col>
         </v-row>
       </v-container>
