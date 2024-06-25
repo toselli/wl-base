@@ -7,7 +7,7 @@
             <h3 class="semi pa-0 mb-2">
                 {{ tourType[0].TourType.Value }}
                 <a :href="buildTypeLink(tourType[0].TourType)" target="_blank">
-                    <v-btn color=secondary variant="tonal" append-icon="mdi-chevron-right" density="compact" class="ml-5">
+                    <v-btn color=secondary variant="tonal" append-icon="mdi-chevron-right" density="compact" class="ml-5 rounded-md">
                         <span class="body-2 semi">Ver más <span v-if="false">{{ tourType[0].TourType.Value }}</span> </span>
                     </v-btn>
                 </a>
