@@ -3,16 +3,9 @@
     <v-row dense no-gutters :class="mode == 'list' ? '' : 'fill-height'">
       <v-col :md="mode == 'list' ? '4' : '11'" cols="11" class="pa-0 pl-4">
         <v-chip size="x-small" v-if="item.IsHotelCollect" color="secondary" class="mt-1">Pago directo al hotel</v-chip>
-        <h4 class="semi" :class="mode == 'grid' ? 'mt-1' : ''"> {{ item.Room.Description }}</h4>
-        <h6 v-if="item.Room.BedTypes.length > 0" class="body-2 semi mt-1">
-          <v-icon icon="mdi-bed"></v-icon>
-          Tipos de cama:
-        </h6>
-        <div v-if="item.Room.BedTypes.length > 0">
-          <p class="mt-1 mb-0 body-2" v-for="bedType in item.Room.BedTypes" v-html="bedType.Value">
-          </p>
-        </div>
-        <span class="text-success body-3 mt-1" v-if="item.ProviderRef">
+        <h4 class="semi" :class="mode == 'grid' ? 'mt-2' : 'mt-2'"> {{ item.Room.Description }}</h4>
+        
+        <span class="text-success body-3" v-if="item.ProviderRef">
           ({{ item.ProviderRef?.Key }})
         </span>
         <!-- <v-alert class="bg-info" v-if="item.DebugInfo"
@@ -41,7 +34,12 @@
             {{ supplement.Description }}
           </p>
         </div> -->
-        <div v-if="item.Price.PVP.IncludedSupplements.length > 0" class="body-2">
+        <div v-if="item.Room.BedTypes.length > 0">
+          <p class="mt-1 mb-0 body-2" v-for="bedType in item.Room.BedTypes">
+            <v-icon icon="mdi-bed" size="small"</v-icon> {{ bedType.Value }}
+          </p>
+        </div>
+        <div v-if="item.Price.PVP.IncludedSupplements.length > 0" class="body-2 mt-1">
           <strong>Incluye:</strong>
           <p v-for="supplement in item.Price.PVP.IncludedSupplements">
             {{ supplement.Description }}

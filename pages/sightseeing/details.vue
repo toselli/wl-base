@@ -8,147 +8,66 @@
         </v-row>
         <v-row>
             <v-col cols="12" md="8">
-                <v-card rounded="lg" class="bg-midground" flat>
+                <v-card rounded="lg" class="bg-foreground" flat>
+                    <v-row dense class="mb-4">
+                        <v-col :cols="getProduct.Images?.length > 1 ? 7 : 12" class="bg-background">
+                            <v-card rounded="md" class="fill-height">
+                                <v-img cover class="fill-height" rounded="md" :src="getProduct.Images[0].Url"></v-img>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="5">
+                            <v-row dense>
+                                <v-col cols="12" v-if="getProduct.Images?.length > 1" class="bg-background">
+                                    <v-card rounded="md" class="fill-height">
+                                        <v-img cover class="fill-height" rounded="md"
+                                            :src="getProduct.Images[1].Url"></v-img>
+                                    </v-card>
+                                </v-col>
+                                <v-col cols="12" v-if="getProduct.Images?.length > 2" class="bg-background">
+                                    <v-card rounded="md" class="fill-height">
+                                        <v-img cover class="fill-height" rounded="md"
+                                            :src="getProduct.Images[2].Url"></v-img>
+                                    </v-card>
+                                </v-col>
+                            </v-row>
+                        </v-col>
+                    </v-row>
                     <v-card-text>
+                        <v-rating :model-value="getProduct.Rating" density="compact" size="small" color="orange"
+                            v-if="getProduct.Rating" readonly half-increments></v-rating>
                         <h1 class="semi text-primary_text">
-                            {{ getCatalog.Name }}
+                            {{ getProduct.Title }}
                         </h1>
-                        <p class="body-1 my-3 d-flex">
-                            <span class="body-1 semi"><v-icon icon="md:date_range" size="small"></v-icon> Duración:
-                                <span class="text-secondary_text" v-if="getCatalog.Durations"> {{
-                                getCatalog.Durations[0].Value }}</span>
-
-                            </span>
-                            <span class="ml-3" v-if="getCatalog && getCatalog.Cities">
-                                <v-icon icon="md:hotel" size="small" class="mr-1"></v-icon>
-                                <span class="semi">Pernoctando en: </span>
-                                <span class="text-secondary_text">{{ getCatalog.Cities.map(x => x.Value).join(',')
-                                    }}</span>
+                        <p class="body-2 my-3 d-flex">
+                            <span class="body-3 semi text-secondary_text" v-if="getProduct.Duration">
+                                <v-icon icon="mdi-clock" size="small"></v-icon> Duración:
+                                <span>
+                                    {{ getProduct.Duration }}
+                                </span>
                             </span>
                         </p>
                     </v-card-text>
                     <v-card-text>
-                        <v-btn-toggle mandatory v-model="tabInfo" color="secondary" class="bg-foreground pa-1 mb-2"
-                            variant="flat" rounded="md">
-                            <v-btn rounded="lg" class="mr-2">
-                                Información general
-                            </v-btn>
-                            <v-btn rounded="lg" v-if="getCatalog.Itinerary">
-                                Itinerario
-                            </v-btn>
-                        </v-btn-toggle>
-                        <v-card class="bg-background pa-3" flat rounded="lg" v-if="tabInfo == 0">
-                            <v-card rounded="lg" class="bg-foreground mb-3" flat v-if="getCatalog.Cities">
-                                <v-card-text>
-                                    <h4 class="semi mb-2">Destinos</h4>
-                                    <v-list class="ml-1">
-                                        <li class="body-1 mb-6 text-secondary_text" v-for="dest in getCatalog.Cities">
-                                            {{ dest.Value }}
-                                        </li>
-                                    </v-list>
-                                </v-card-text>
-                            </v-card>
-                            <v-card rounded="lg" class="bg-foreground my-3" flat v-if="getCatalog.Included">
-                                <v-card-text>
-                                    <h4 class="semi mb-2">Incluye</h4>
-                                    <v-list class="ml-1">
-                                        <li class="body-1 mb-6 text-secondary_text" v-for="incl in getCatalog.Included">
-                                            {{ incl }}
-                                        </li>
-                                    </v-list>
-                                </v-card-text>
-                            </v-card>
-                            <v-card rounded="lg" class="bg-foreground my-3" flat v-if="getCatalog.Excluded">
-                                <v-card-text>
-                                    <h4 class="semi mb-2">Excluye</h4>
-                                    <v-list class="ml-1">
-                                        <li class="body-1 mb-6 text-secondary_text" v-for="excl in getCatalog.Excluded">
-                                            {{ excl }}
-                                        </li>
-                                    </v-list>
-                                </v-card-text>
-                            </v-card>
-                            <v-card rounded="lg" class="bg-foreground mt-3" flat
-                                v-if="getCatalog && getCatalog.ExpectedHotels && getCatalog.ExpectedHotels.length > 0">
-                                <v-card-text>
-                                    <h4 class="semi mb-2">Hoteles</h4>
-                                    <v-list class="ml-1">
-                                        <li class="body-1 mb-6 text-secondary_text"
-                                            v-for="hotel in getCatalog.ExpectedHotels">
-                                            {{ hotel }}
-                                        </li>
-                                    </v-list>
-                                </v-card-text>
-                            </v-card>
-                        </v-card>
-                        <v-card class="bg-background pa-3" flat rounded="lg"
-                            v-if="getCatalog.Itinerary && tabInfo == 1">
-                            <v-card rounded="lg" class="bg-foreground mb-3" flat
-                                v-for="(item, index) in getCatalog.Itinerary">
-                                <v-card-text>
-                                    <h4 class="semi mb-2">Día {{ index + 1 }} - {{ item.Tittle }}</h4>
-                                    <p class="mb-0">{{ item.Description }}</p>
-                                    <v-list class="ml-1" density="compact" v-if="item.Cities?.length > 1">
-                                        <v-list-item class="body-1 text-secondary_text" v-for="dest in item.Cities">
-                                            {{ dest.Value }}
-                                        </v-list-item>
-                                    </v-list>
-                                </v-card-text>
-                            </v-card>
-                        </v-card>
+                        <p class="body-2"> {{ getProduct.Description }}</p>
+
+                        <h4 class="mt-2 mb-1">Información adicional</h4>
+                        <p class="body-2" v-for="item in getProduct.AdditionalInformation">
+                            {{ item }}
+                        </p>
+                        <h4 class="mt-2 mb-1">Incluye</h4>
+                        <p class="body-2" v-for="item in getProduct.Inclusion">
+                            <v-icon size="x-small" color="success" class="mr-1">mdi-check-circle</v-icon>{{ item }}
+                        </p>
+                        <h4 class="mt-2 mb-1">No incluye</h4>
+                        <p class="body-2" v-for="item in getProduct.Exclusion">
+                            <v-icon size="x-small" color="warning" class="mr-1">mdi-cancel</v-icon>{{ item }}
+                        </p>
                     </v-card-text>
                 </v-card>
             </v-col>
             <v-col cols="12" md="4">
-                <v-row dense>
-                    <v-col :cols="getCatalog.Images?.length > 1 ? 7 : 12" class="bg-background">
-                        <v-card rounded="md" class="fill-height">
-                            <v-img cover class="fill-height" rounded="md" :src="getCatalog.Images[0]"></v-img>
-                        </v-card>
-                    </v-col>
-                    <v-col cols="5">
-                        <v-row dense>
-                            <v-col cols="12" v-if="getCatalog.Images?.length > 1" class="bg-background">
-                                <v-card rounded="md" class="fill-height">
-                                    <v-img cover class="fill-height" rounded="md" :src="getCatalog.Images[1]"></v-img>
-                                </v-card>
-                            </v-col>
-                            <v-col cols="12" v-if="getCatalog.Images?.length > 2" class="bg-background">
-                                <v-card rounded="md" class="fill-height">
-                                    <v-img cover class="fill-height" rounded="md" :src="getCatalog.Images[2]"></v-img>
-                                </v-card>
-                            </v-col>
-                        </v-row>
-                    </v-col>
-                </v-row>
-                <v-card variant="outlined" class="border border-secondary bg-foreground pa-3" rounded="lg">
-                    <v-expansion-panels multiple v-model="openPanels">
-                        <v-expansion-panel rounded="lg" class="bg-background border-secondary_lighten"
-                            elevation="0">
-                            <v-expansion-panel-title>
-                                <v-btn class="mr-2" icon rounded="md" size="small" flat
-                                    color="secondary_lighten"><v-icon size="20" icon="md:timelapse"
-                                        color="secondary"></v-icon></v-btn>
-                                <span class="body-1 semi">Duración</span>
-                            </v-expansion-panel-title>
-                            <v-expansion-panel-text>
-                                <v-select bg-color="foreground" base-color="secondary_text" density="compact"
-                                    v-model="durationSelected" :items="getCatalog.Durations"
-                                    variant="outlined" rounded="md" item-name="Value">
-                                    <template v-slot:item="{ props, item }">
-                                        <span class="px-2 text-secondary_text" v-bind="props">
-                                            {{ item.raw?.Value }}
-                                        </span>
-                                    </template>
-                                    <template v-slot:selection="{ item }">
-                                        {{ item.raw?.Value }}
-                                    </template>
-                                </v-select>
-                            </v-expansion-panel-text>
-                            <template v-slot:prepend-inner>
-                                <v-icon icon="md:timelapse" color="secondary"></v-icon>
-                            </template>
-                        </v-expansion-panel>
+                <v-card variant="outlined" class="border border-secondary bg-foreground pa-3 sticky-card" rounded="lg">
+                    <v-expansion-panels multiple  v-model="openPanels">
                         <v-expansion-panel rounded="md" class="bg-background border-secondary_lighten"
                             elevation="0">
                             <v-expansion-panel-title>
@@ -171,28 +90,29 @@
                                             <v-icon size="16" icon="md:chevron_left"></v-icon>
                                         </v-btn>
                                         <v-btn name="next" class="ml-1" rounded="sm" stacked size="32"
-                                            :disabled="indexDisplay >= allowedDepartures?.length - 1"
-                                            variant="outlined" color="secondary" @click="goToNextMonth">
+                                            :disabled="indexDisplay >= allowedDepartures?.length - 1" variant="outlined"
+                                            color="secondary" @click="goToNextMonth">
                                             <v-icon size="16" icon="md:chevron_right"></v-icon>
                                         </v-btn>
                                         <!-- NO BORRAR ESTA LINEA MISTERY OF VUE -->
-                                       <span v-show="false">{{indexDisplay}}</span> 
+                                        <span v-show="false">{{ indexDisplay }}</span>
                                     </div>
                                 </div>
                                 <div>
                                     <v-no-ssr>
-                                        <VueDatePicker inline v-model="displayDates" focus-start-date :dark="theme.name == 'ThemeDark'"
-                                            :loading="!durationSelected" auto-apply prevent-min-max-navigation
-                                            :key="dpKey" :hide-offset-dates="true" :enable-time-picker="false" range
-                                            style="display: inline;" locale="es" :show-last-in-range="false"
+                                        <VueDatePicker inline v-model="displayDates" focus-start-date
+                                            :dark="theme.name == 'ThemeDark'" :loading="!durationSelected" auto-apply
+                                            prevent-min-max-navigation :key="dpKey" :hide-offset-dates="true"
+                                            :enable-time-picker="false" range style="display: inline;" locale="es"
+                                            :show-last-in-range="false"
                                             :auto-range="durationSelected ? durationSelected.Key - 1 : 0"
                                             :allowed-dates="allowedDepartures.map(x => new Date(x.Date))">
                                             <template #month-year="{ month, year }">
                                                 <v-row align="center">
                                                     <v-col class="text-center">
                                                         <span class="text-center body-1 text-secondary_text">{{
-                                $capitalize(dayjs(`${year}-${month
-                                    + 1}-15`).format("MMMM YYYY")) }}
+                        $capitalize(dayjs(`${year}-${month
+                            + 1}-15`).format("MMMM YYYY")) }}
                                                         </span>
                                                     </v-col>
                                                 </v-row>
@@ -224,15 +144,16 @@
                                     </v-no-ssr>
                                     <p class="my-3 body-1 semi text-center">
                                         <span class="body-2">Fechas seleccionadas:</span>
-                                        {{ dayjs(selectedDate).format('DD-MM-YYYY') }} al 
-                                        {{ dayjs(selectedDate).add(Number.parseInt(durationSelected.Key) - 1, 'days').format('DD-MM-YYYY') }}
+                                        {{ dayjs(selectedDate).format('DD-MM-YYYY') }} al
+                                        {{ dayjs(selectedDate).add(Number.parseInt(durationSelected.Key) - 1,
+                        'days').format('DD-MM-YYYY') }}
                                     </p>
                                 </div>
                                 <v-sheet class="price-sheet d-flex">
                                     <span class="fw-400">Desde</span>
                                     <span class="ml-auto">
                                         <span class="body-1 text-secondary_text mr-1">{{ departureSelected?.Currency ||
-                                currency }}</span>
+                        currency }}</span>
                                         <span class="bold" v-if="departureSelected">{{ departureSelected.Amount
                                             }}</span>
                                         <span class="bold" v-else>0</span>
@@ -241,44 +162,17 @@
                             </v-expansion-panel-text>
 
                         </v-expansion-panel>
-                        <v-expansion-panel v-if="getCatalog.MealPlans && getCatalog.MealPlans.length > 0" rounded="md"
-                            class="bg-background border-secondary_lighten" elevation="0">
-                            <v-expansion-panel-title>
-                                <v-btn class="mr-2" icon rounded="md" size="20" flat color="secondary_lighten"><v-icon
-                                        icon="md:restaurant" color="secondary"></v-icon></v-btn>
-                                <span class="body-1 semi">Plan comidas</span>
-                            </v-expansion-panel-title>
-                            <v-expansion-panel-text>
-
-                                <v-select bg-color="foreground" base-color="secondary_text" density="compact"
-                                    v-model="mealPlanSelected" :items="getCatalog.MealPlans" variant="outlined"
-                                    rounded="md" return-object>
-                                    <template v-slot:item="{ item, props }">
-                                        <div class="pa-3 text-secondary_text" v-bind="props">
-                                            {{ item.raw.Value }}
-                                        </div>
-                                    </template>
-
-                                    <template v-slot:selection="{ item }">
-                                        <div class="text-secondary_text">
-                                            {{ item.raw.Value }}
-                                        </div>
-                                    </template>
-                                </v-select>
-
-                            </v-expansion-panel-text>
-                        </v-expansion-panel>
-                        <v-expansion-panel rounded="md" class="mb-3 bg-background border-secondary_lighten"
-                            elevation="0" value=10>
+                        <v-expansion-panel rounded="md" class="bg-background border-secondary_lighten"
+                            elevation="0">
                             <v-expansion-panel-title>
                                 <v-btn class="mr-2" icon rounded="md" size="small" flat
-                                    color="secondary_lighten"><v-icon icon="md:hotel" size="20"
+                                    color="secondary_lighten"><v-icon icon="md:person" size="20"
                                         color="secondary"></v-icon></v-btn>
-                                <span class="body-1 semi">Habitaciones</span>
+                                <span class="body-1 semi">Personas</span>
                             </v-expansion-panel-title>
                             <v-expansion-panel-text>
-                                <CircuitsOccupanciesCard @update:rooms="setOccupancies" :compact="false"
-                                    themed="default" v-model:valid="valid" multiple="true" />
+                                <SightseeingOccupanciesCard @update:occupancies="setOccupancies" :compact="false"
+                                    themed="default" v-model:valid="valid" multiple="true" :occupancies="getProduct.Occupancies" />
                             </v-expansion-panel-text>
                         </v-expansion-panel>
                     </v-expansion-panels>
@@ -302,7 +196,7 @@
                                 Complete el circuito
                             </span>
                             <span class="ml-2 body-1 semi text-secondary_text">
-                                <span>{{ $sentence(getCatalog.Name) }}</span>
+                                <span>{{ $sentence(getProduct.Name) }}</span>
                             </span>
                         </div>
                         <span class="ml-auto d-flex ">
@@ -365,8 +259,8 @@
                                                 <v-btn class="btn btn-primary ml-auto"
                                                     :variant="roomSelected == room ? 'outlined' : 'flat'"
                                                     color="primary" rounded="sm" @click="roomSelected = room">{{
-                                roomSelected != room ?
-                                    'Seleccionar' : 'Seleccionado' }}
+                        roomSelected != room ?
+                            'Seleccionar' : 'Seleccionado' }}
                                                     <template v-slot:prepend>
                                                         <v-icon size="20" v-if="roomSelected == room">
                                                             md:check_circle</v-icon>
@@ -410,11 +304,11 @@
                                                                 class="body-1 d-flex align-center justify-space-between"
                                                                 cols="12">
                                                                 <span class="text-secondary_text">Día {{ city.DayIndex +
-                                1
+                        1
                                                                     }}</span>
                                                                 <span class="text-secondary_text"> {{
-                                dayjs(getPrebooking.Services[0].BeginService).add(city.Index
-                                    + 1, 'days').format('DD/MM/YYYY') }}
+                        dayjs(getPrebooking.Services[0].BeginService).add(city.Index
+                            + 1, 'days').format('DD/MM/YYYY') }}
                                                                 </span>
 
 
@@ -502,16 +396,14 @@
                                     <v-row dense no-gutters>
                                         <v-col class="text-center">
                                             <span class="body-2 text-warning">Máximo: {{
-                                service.Catalog.ExtraNightsInfo.MaxNights }} noches</span>
+                        service.Catalog.ExtraNightsInfo.MaxNights }} noches</span>
                                         </v-col>
                                     </v-row>
 
                                 </v-card>
                             </v-stepper-window-item>
                             <v-stepper-window-item value=3>
-                                <CircuitsTransfersCard v-model:valid="validTransfers" v-model:in="transferIn"
-                                    v-model:out="transferOut" v-model:modeIn="transferInMode"
-                                    v-model:modeOut="transferOutMode" />
+                                3
                             </v-stepper-window-item>
 
                         </v-stepper-window>
@@ -540,17 +432,16 @@
 
 <script setup lang="ts">
 
-import { CircuitAvailRequest } from "~/interfaces/services/circuits/AvailRequest";
+import { SightseeingAvailRequest } from "~/interfaces/services/sightseeing/AvailRequest";
 import { useTheme } from 'vuetify/framework';
-import { FlightInfo, PointInfo, SetTransferDetailsRequest, TravelInfo } from "~/interfaces/services/circuits/SetTransferDetailsRequest";
 
 const theme = ref(useTheme())
 const route = useRoute()
-const store = useCircuitsStore();
-const { getCatalog, getAvail, getPrebooking } = storeToRefs(store)
-const { fetchCatalog, getAvailability } = store;
+const store = useSightseeingStore();
+const { getProduct, getAvail, getPrebooking } = storeToRefs(store)
+const { fetchDetails, getAvailability } = store;
 const tabInfo = ref(0)
-const openPanels = ref([1, 2, 3])
+const openPanels = ref([0, 1])
 const durationSelected = ref({})
 const mealPlanSelected = ref({})
 const selectedDate = ref(new Date())
@@ -610,19 +501,11 @@ const { toTop } = useScroll();
 const allowedDepartures = ref([])
 onMounted(async () => {
     if (!route.query) return;
-    const catalogId = route.query.catalogId as string;
+    const productCode = route.query.productCode as string;
     store.basketId = route.query.basketId as string;
     currency.value = route.query.currency;
 
     try {
-        await fetchCatalog({ catalogId: catalogId, currency: route.query.currency as string });
-
-        durationSelected.value = getCatalog.value.Durations ? getCatalog.value.Durations[0] : null;
-        mealPlanSelected.value = getCatalog.value.MealPlans ? getCatalog.value.MealPlans[0] : null;
-
-        // Filtro modificado para Availability < 2
-        allowedDepartures.value = getCatalog.value.Departures.filter(x => x.Availability < 2 && dayjs(x.Date).toDate() >= new Date());
-
         const dep = allowedDepartures.value[0];
         startDate.value = dep.Date;
         selectDate(new Date(dep.Date));
@@ -701,7 +584,7 @@ const goToPreviousMonth = () => {
     const previousMonthDepartures = allowedDepartures.value.filter(dep => {
         const depDate = new Date(dep.Date);
         return (depDate.getMonth() < currentMonth && depDate.getFullYear() === currentYear) ||
-               (depDate.getMonth() === 11 && depDate.getFullYear() === currentYear - 1 && currentMonth === 0);
+            (depDate.getMonth() === 11 && depDate.getFullYear() === currentYear - 1 && currentMonth === 0);
     });
 
     // Encontrar la última fecha disponible del mes anterior al actual
@@ -736,9 +619,9 @@ const selectDate = (date) => {
 
 const searchAvail = (async () => {
     availLoading.value = true
-    const catalogId = route.query.catalogId as string
-    const payload: CircuitAvailRequest = {
-        catalogId: catalogId,
+    const productCode = route.query.productCode as string
+    const payload: SightseeingAvailRequest = {
+        productCode: productCode,
         categoryId: null,
         mealplan: mealPlanSelected.value ? mealPlanSelected.value.Key : null,
         nationality: "AR",
@@ -816,7 +699,7 @@ const isCityDisabled = (city) => {
 
 const getItineraryCollection = computed(() => {
     const coll = []
-    for (let item of getCatalog.value.Itinerary) {
+    for (let item of getProduct.value.Itinerary) {
         const cities = item.Cities.filter(x => x.IsStartAvailable || x.IsEndAvailable)
         for (let city of cities) {
             city.DayIndex = item.Index;
@@ -1064,7 +947,7 @@ const customNext = async () => {
                         path: "/checkout/",
                         query: {
                             id: service.value.Id,
-                            serviceType: 'circuits',
+                            serviceType: 'sightseeing',
                             currency: currency.value
                         },
                     });
@@ -1080,82 +963,22 @@ const router = useRouter();
 // BACK TO RESULTS
 function backToResults() {
     store.results = []
-  router.push({
-    path: "/circuits/results",
-    query: {
-      cities: route.query.cities,
-      countries: route.query.countries,
-      provider: route.query.provider
-    },
-    wait: false,
-  })
+    router.push({
+        path: "/sightseeing/results",
+        query: {
+            destinationId: route.query.destinationId,
+            destinationName: route.query.destinationName
+        },
+        wait: false,
+    })
 }
 
 </script>
 
 <style>
-.v-stepper-window {
-    margin: 0;
+.sticky-card {
+    position: sticky !important;
+    top: 0;
 }
 
-.price-sheet {
-    border: 1px solid rgb(var(--v-theme-secondary));
-    border-left: 4px solid rgb(var(--v-theme-secondary));
-    border-radius: 12px;
-    padding: 16px;
-    margin-top: 8px;
-    background-color: rgb(var(--v-theme-secondary_lighten));
-}
-
-.v-expansion-panel-title,
-.v-expansion-panel-title__overlay {
-    border-radius: 12px !important;
-}
-
-
-.dp__cell_inner {
-    border-radius: 6px !important;
-}
-
-
-.dp__range_between .v-btn,
-.dp__range_end .v-btn {
-    z-index: 0 !important;
-    background-color: transparent !important;
-    border-color: transparent !important;
-    color: whitesmoke !important;
-
-}
-
-.dp__range_between {
-    color: whitesmoke !important;
-    background-color: rgb(var(--v-theme-secondary)) !important;
-    z-index: 5 !important
-}
-
-
-.v-stepper-item--complete .v-stepper-item__avatar {
-    background-color: rgb(var(--v-theme-success)) !important
-}
-
-.v-stepper-item--error {
-    color: rgb(var(--v-theme-secondary_text)) !important;
-}
-
-.v-stepper-item--error .v-stepper-item__avatar {
-    background-color: rgb(var(--v-theme-secondary_text)) !important;
-}
-
-.v-stepper-header {
-    box-shadow: 0px 0px 0px 0px !important;
-}
-
-.v-stepper-item--selected>div>span {
-    font-weight: bold !important
-}
-
-.card-selected {
-    border: 1px solid rgb(var(--v-theme-primary)) !important;
-    background-color: rgb(var(--v-theme-foreground)) !important;
-}
 </style>

@@ -126,11 +126,10 @@
               prepend-icon="mdi-minus-circle">
               Descartar</v-btn>
             <v-btn color="primary" variant="outlined" rounded="xl" density="comfortable"
-              :class="mode == 'list' ? 'mt-2' : 'mt-6'" @click="selectService()"
-              :disabled="item.NonRefundable || (!item.HaveCancellationPolicies ? $dayjs(cancellationPolicies.LastDayToCharge).isBefore($dayjs().add(1, 'day'), 'day') : $dayjs(item.LastDayToCharge).isBefore($dayjs(), 'day'))"
+              :class="mode == 'list' ? 'mt-2' : 'mt-6'" @click="selectService()" :disabled="item.NonRefundable"
               v-else prepend-icon="mdi-check-circle">Seleccionar</v-btn>
           </div>
-          <v-btn color="primary" class="px-4" rounded="md" variant="flat" @click="addService" v-else>{{
+          <v-btn color="primary" class="px-4" rounded="md" variant="flat" :disabled="item.NonRefundable" click="addService" v-else>{{
     $capitalize($t('get_book'))
             }}</v-btn>
         </div>

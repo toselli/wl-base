@@ -59,14 +59,11 @@
                             <v-row justify="end" v-if="room.Children    > 0">
                                 <v-col cols="6" class="text-right px-4" v-for="n in room.Children">
                                     <v-no-ssr>
-                                        <v-autocomplete :label="$capitalize($t('child_age'))" hide-details density="compact"
-                                            variant="outlined" class="custom-text-field" :items="childrenAges"
-                                            v-model="room.ChildrenAges[n - 1]">
-                                        
-                                        <template v-slot:no-data>
-                                           <span class="pa-2 body-3"> No puede ingresar esa edad.</span>
-                                        </template>
-                                    </v-autocomplete>
+                                        <v-text-field :label="$capitalize($t('child_age'))" hide-details density="compact" type="number"
+                                            variant="outlined" class="custom-text-field" 
+                                            v-model="room.ChildrenAges[n - 1]" auto-select-first="exact"
+                                            :min="0" :max="17"  @input="validateChildAge(room, n - 1)">                                        
+                                     </v-text-field>
                                     </v-no-ssr>
                                 </v-col>
                             </v-row>
@@ -178,6 +175,15 @@ function updateTotalPax() {
     totalChildren.value = countC;
 
     emit('update:rooms', occupancies)
+}
+
+function validateChildAge(room, index) {
+  const age = room.ChildrenAges[index];
+  if (age < 0) {
+    room.ChildrenAges[index] = 0;
+  } else if (age > 15) {
+    room.ChildrenAges[index] = 17;
+  }
 }
 
 onMounted(() => {

@@ -41,21 +41,21 @@
         "code": "circuits",
         "icon": "md:map"
     },
+
     {
         "serviceType": 7,
+        "name": "Atracciones",
+        "ebookingServiceType": 5,
+        "code": "sightseeing",
+        "icon": "md:local_activity"
+    },
+    {
+        "serviceType": 8,
         "name": "Paquetes",
         "ebookingServiceType": 6,
         "code": "tours",
         "icon": "md:luggage",
         "oldUrl" : "salidas"
-    },
-    {
-        "serviceType": 8,
-        "name": "Atracciones",
-        "ebookingServiceType": 6,
-        "code": "sightseeing",
-        "icon": "md:local_activity",
-        "oldUrl" : "atracciones"
     },
     {
         "serviceType": 9,

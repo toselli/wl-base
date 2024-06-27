@@ -256,10 +256,13 @@ export const useCircuitsStore = defineStore("circuits", () => {
     function clearCountries() {
         countries.value = []
     }
+    function clearSearch() {
+        results.value = []
+    }
 
 
     return {
-        fetchCatalog, fetchCityData, fetchCountryData, clearCities, setStartEnd, setExtraNights, setTransfers, clearCountries, countriesAutocomplete, getAvailability, citiesAutocomplete, updateServices, processPayment, getBasket, addService, search, getCancellationPolicies,
+        fetchCatalog, fetchCityData, fetchCountryData, clearCities, clearSearch, setStartEnd, setExtraNights, setTransfers, clearCountries, countriesAutocomplete, getAvailability, citiesAutocomplete, updateServices, processPayment, getBasket, addService, search, getCancellationPolicies,
         getCatalog, getCountries, getCities, getResults, getAvail, getFeatures, getPrebooking, totalServices, searchToken, results, features, basketId, preBooking
     }
 

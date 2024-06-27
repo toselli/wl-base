@@ -17,7 +17,7 @@
                         <v-icon icon="mdi-account-multiple"></v-icon> Adultos: {{ car.AdultsCount }}
                     </span>
                     <span class="mr-2">
-                        <v-icon icon="mdi-car-door"></v-icon> Puertas: {{ car.BagBigCount }}
+                        <v-icon icon="mdi-car-door"></v-icon> Puertas: {{ car.DoorCount }}
                     </span>
                     <span v-if="car.HasAirCondition">
                         <v-icon icon="mdi-snowflake"></v-icon> Aire acondicionado

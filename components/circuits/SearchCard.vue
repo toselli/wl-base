@@ -43,6 +43,16 @@
                 </v-btn>
             </v-col>
         </v-row>
+        <v-divider class="my-3"></v-divider>
+        <v-row dense class="my-3 px-16">
+            <v-col v-for="item in providers">
+                <v-btn @click="searchResults(item.id)" flat size="xl" :color="selectedProvider === item.id ? 'secondary bg-foreground' : 'background'" 
+                class="rounded-md" :variant="selectedProvider === item.id ? 'outlined' : 'flat'">                
+                    <img :src="item.logo" height="50px" contain />
+                </v-btn>
+            </v-col>
+        </v-row>
+
     </v-card>
 </template>
 
@@ -51,6 +61,7 @@ const props = defineProps(["compact", "nologo", "themed"])
 const isMobile = useMobile()
 const selectedCities = ref([])
 const selectedCountries = ref([])
+const selectedProvider = ref('')
 const code = ref('')
 const route = useRoute();
 const router = useRouter();
@@ -90,14 +101,54 @@ onMounted(() => {
                 })
         }
     }
+    if (route && route.query.provider) {
+        selectedProvider.value = route.query.provider as string;
+    }
 })
 
-const searchResults = () => {
+// PROVIDERS 
+
+const providers = [
+    {
+        logo: '/base/img/circuit_providers/special.png',
+        id: 'specialtourscircuit'
+    },
+    {
+        logo: '/base/img/circuit_providers/mapaplus.png',
+        id: 'mapapluscircuit'
+    },
+    {
+        logo: '/base/img/circuit_providers/satotours.png',
+        id: 'satotourscircuit'
+    },
+    {
+        logo: '/base/img/circuit_providers/wamos.png',
+        id: 'wamoscircuit'
+    },
+    {
+        logo: '/base/img/circuit_providers/abreu.png',
+        id: 'abreucircuit'
+    },
+    {
+        logo: '/base/img/circuit_providers/eurowelcome.png',
+        id: 'eurowelcome'
+    },
+    {
+        logo: '/base/img/circuit_providers/europamundo.png',
+        id: 'europamundocircuit'
+    }
+]
+
+const searchResults = (providerId) => {
     let query =  {
             cities: encodeURI(selectedCities.value.map(x => x.Id).join(',')),
             countries: encodeURI(selectedCountries.value.map(x => x.Id).join(',')),
-            code: code.value
+            code: code.value,
+            provider: providerId
         }
+       
+        selectedProvider.value = providerId
+
     //NUEVA BUSQUEDA DESDE RESULTS
     if (route.path == "/circuits/results") {
         router.replace({

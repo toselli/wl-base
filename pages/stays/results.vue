@@ -33,7 +33,7 @@
             </v-row>
         </v-container>
         <!-- FORZAR LOGIN -->
-        <auth-force-login-card  v-if="(!getLoggedUser && !getAnonymousUser) && !loadingLoggedUser" />
+        <auth-force-login-card  v-if="!getLoggedUser && !getAnonymousUser" />
         <v-container fluid class="px-0" v-if="getLoggedUser || getAnonymousUser">
             <!-- RESULTADOS -->
             <v-row dense>
@@ -111,12 +111,11 @@ const isMobile = useMobile()
 
 const usersStore = useUsersStore();
 const { getLoggedUser, getAnonymousUser } = storeToRefs(usersStore);
-const loadingLoggedUser = ref(false)
 const { anonymousLogin } = useAnonymousLogin()
+
 //LOGIN
 
 onMounted(() => {
-    loadingLoggedUser.value = true;
 
     const timeoutDuration = 3000; 
     let timeoutId;
@@ -132,7 +131,6 @@ onMounted(() => {
     const executeSearchActions = (isAnonymous = false) => {
         getResults(isAnonymous);
         clearTimeout(timeoutId);
-        loadingLoggedUser.value = false;
         unwatchLoggedUser();
         unwatchAnonymousUser();
     };

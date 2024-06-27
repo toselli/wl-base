@@ -21,7 +21,7 @@
               :variant="compact ? 'default' : 'default'">
               <v-row class="align-start" dense :no-gutters="compact">
                 <!-- INPUT PLACES -->
-                <v-col cols="12" :md="compact ? '8' : '7'" :class="compact ? 'pr-2' : ''">
+                <v-col cols="12" :md="compact ? '7' : '6'" :class="compact ? 'pr-2' : ''">
                   <v-row class="align-center" dense>
                     <v-col cols="12" sm="6" :class="compact ? '' : 'pr-2'">
                       <v-avatar color="secondary_text" size="x-small" class="mr-2" v-if="!compact">
@@ -31,7 +31,7 @@
       $capitalize($t("from")) }}</span>
 
                       <CommonPlacesSearch :compact="compact" :label="$capitalize($t('arrival_place'))" serviceType="3"
-                        :searchedPlace="selectedArrival" @update:selectedPlace="handleSelectedArrival" :length="50" />
+                        :searchedPlace="selectedArrival" @update:selectedPlace="handleSelectedArrival" :length="35" />
                     </v-col>
                     <!-- <v-divider vertical cols="1" class="my-4 mx-1" :color="divider" v-if="!compact"></v-divider> -->
                     <!-- <common-divider-icon icon="mdi-swap-horizontal" class="my-1" vertical button v-if="!noplaces">
@@ -45,33 +45,63 @@
       $capitalize($t("to")) }}</span>
                       <CommonPlacesSearch :compact="compact" :label="$capitalize($t('destination_place'))"
                         serviceType="3" :searchedPlace="selectedDestination"
-                        @update:selectedPlace="handleSelectedDestination" :length="50" />
+                        @update:selectedPlace="handleSelectedDestination" :length="35" />
 
                     </v-col>
                   </v-row>
                 </v-col>
                 <!-- <v-divider vertical v-if="!compact" class="my-4" :color="divider"></v-divider> -->
                 <!-- INPUT FECHA-->
-                <v-col cols="12" :md="compact ? '3' : '3'" :class="compact ? 'py-2 py-sm-0 pr-2' : ''">
-                      <v-avatar color="secondary_text" size="x-small" class="mr-2" v-if="!compact">
-                        <v-icon icon="mdi-calendar-today" color="foreground" size="x-small"></v-icon> </v-avatar><span
-                        class="body-1 semi" v-if="!compact">{{ $capitalize($t("date")) }} <span
-                          v-if="selectedArrival?.SmartSearchEnum == 3">{{ $t("flight_arrival") }}</span>
-                      </span>
-                      <CommonDatePicker :compact="compact" :searchedDate="arrivalDate" :multiple="false"
-                        :minDate="new Date()" @update:selectedDate="handleArrivalDate" />
-                      <span class="body-3 text-warning" v-if="selectedArrival?.SmartSearchEnum == 3 && !compact">
-                        Por favor indique fecha de llegada del vuelo.
-                      </span>
-                      <span class="body-3 text-warning" v-else-if="selectedDestination?.SmartSearchEnum == 3 && !compact">
-                        Por favor indique fecha de salida del vuelo.
-                      </span>
-                      <span class="body-3 text-warning" v-else-if="selectedArrival?.SmartSearchEnum == 5 && !compact">
-                        Por favor indique fecha de llegada del tren.
-                      </span>
-                      <span class="body-3 text-warning" v-else-if="selectedDestination?.SmartSearchEnum == 5 && !compact">
-                        Por favor indique fecha de salida del tren.
-                      </span>
+                <v-col cols="12" :md="compact ? '2' : '2'" :class="compact ? 'py-2 py-sm-0 pr-2' : ''">
+                  <v-avatar color="secondary_text" size="x-small" class="mr-2" v-if="!compact">
+                    <v-icon icon="mdi-calendar-today" color="foreground" size="x-small"></v-icon> </v-avatar><span
+                    class="body-1 semi" v-if="!compact">{{ $capitalize($t("date")) }} <span
+                      v-if="selectedArrival?.SmartSearchEnum == 3">{{ $t("flight_arrival") }}</span>
+                  </span>
+                  <CommonDatePicker :compact="compact" :searchedDate="arrivalDate" :multiple="false"
+                    :minDate="new Date()" @update:selectedDate="handleArrivalDate" />
+                  <span class="body-3 text-warning" v-if="selectedArrival?.SmartSearchEnum == 3 && !compact">
+                    Indique fecha de llegada del vuelo.
+                  </span>
+                  <span class="body-3 text-warning" v-else-if="selectedDestination?.SmartSearchEnum == 3 && !compact">
+                    Indique fecha de salida del vuelo.
+                  </span>
+                  <span class="body-3 text-warning" v-else-if="selectedArrival?.SmartSearchEnum == 5 && !compact">
+                    Indique fecha de llegada del tren.
+                  </span>
+                  <span class="body-3 text-warning" v-else-if="selectedDestination?.SmartSearchEnum == 5 && !compact">
+                    Indique fecha de salida del tren.
+                  </span>
+                </v-col>
+                <!-- INPUT HORA-->
+                <v-col cols="12" :md="compact ? '2' : '2'" class="pr-2">
+                  <v-avatar color="secondary_text" size="x-small" class="mr-2" v-if="!compact">
+                    <v-icon :icon="selectedArrival?.SmartSearchEnum == 3 ? 'mdi-airplane-clock' : 'mdi-car-clock'"
+                      color="background" size="x-small"></v-icon> </v-avatar><span class="body-1 semi"
+                    v-if="!compact">Hora
+                    <span v-if="selectedArrival?.SmartSearchEnum == 3">llegada vuelo</span>
+                  </span>
+                  <v-no-ssr>
+                    <VueDatePicker class="search-datepicker-input" :class="compact ? '' : ' mt-2'" ref="timeP"
+                      :clearable="false" v-model="arrivalTime" :dark="theme.name != 'ThemeLight'" :teleport="true"
+                      time-picker locale="es" minutes-increment="15">
+                      <template #action-buttons="{ value }">
+                        <v-btn variant="default" rounded="xl" color="primary" @click="selectTime">
+                          {{ $capitalize($t("confirm")) }}</v-btn>
+                      </template>
+                      <template #action-preview="{ value }">
+                      </template>
+                      <template #dp-input="{ }">
+                        <v-btn class="btn-search-date" :variant="(compact && !isMobile) ? 'tonal' : themed">
+                          <v-icon icon="mdi-clock-outline" class="mr-2"></v-icon>
+                          {{ arrivalTime.hours }}:{{ arrivalTime.minutes < 10 ? '0' + arrivalTime.minutes :
+      arrivalTime.minutes }} hs </v-btn>
+                      </template>
+                    </VueDatePicker>
+                  </v-no-ssr>
+                  <span class="body-3 text-warning" v-if="selectedArrival?.SmartSearchEnum == 3 && !compact">Además
+                    del horario del
+                    mismo.</span>
                 </v-col>
                 <!-- INPUT PASAJEROS -->
                 <v-col cols="12" :md="compact ? '1' : '2'" :class="isMobile ? 'mt-3' : ''">
@@ -80,16 +110,42 @@
                   </CommonOccupancies>
                 </v-col>
                 <!-- IDA Y VUELTA -->
-                <v-col cols="12" :md="compact ? '3' : '3'" :offset-md="compact ? '8' : '7'" v-if="transferMode == 1"
-                  :class="compact ? 'mt-1 pr-2' : 'mt-1 px-2'">
+                <v-col cols="12" :md="compact ? '2' : '2'" :offset-md="compact ? '7' : '6'" v-if="transferMode == 1"
+                  :class="compact ? 'mt-1 pr-2' : 'mt-1'">
                   <p v-if="compact" class="body-2 semi pa-1">Fecha regreso:</p>
+                  <!-- INPUT FECHA VUELTA-->
+                  <v-avatar color="secondary_text" size="x-small" class="mr-2" v-if="!compact">
+                    <v-icon icon="mdi-calendar-today" color="foreground" size="x-small"></v-icon> </v-avatar><span
+                    class="body-1 semi" v-if="!compact">Fecha regreso</span>
+                  <CommonDatePicker :compact="compact" :searchedDate="departureDate" :multiple="false"
+                    :minDate="arrivalDate" @update:selectedDate="handleDepartureDate" />
 
-                      <v-avatar color="secondary_text" size="x-small" class="mr-2" v-if="!compact">
-                        <v-icon icon="mdi-calendar-today" color="foreground" size="x-small"></v-icon> </v-avatar><span
-                        class="body-1 semi" v-if="!compact">Fecha regreso</span>
-                      <CommonDatePicker :compact="compact" :searchedDate="departureDate" :multiple="false"
-                        :minDate="arrivalDate" @update:selectedDate="handleDepartureDate" />
-
+                </v-col>
+                <!-- INPUT HORA VUELTA-->
+                <v-col class="pr-2" :md="compact ? '2' : '2'" :class="compact ? 'mt-1 pr-2' : 'mt-1'"
+                  v-if="transferMode == 1">
+                  <p v-if="compact" class="body-2 semi pa-1">Hora regreso:</p>
+                  <v-avatar color="secondary_text" size="x-small" class="mr-2" v-if="!compact">
+                    <v-icon icon="mdi-calendar-today" color="background" size="x-small"></v-icon> </v-avatar><span
+                    class="body-1 semi" v-if="!compact">Hora regreso</span>
+                  <v-no-ssr>
+                    <VueDatePicker class="search-datepicker-input" :class="compact ? '' : ' mt-2'" ref="timeD"
+                      :clearable="false" v-model="departureTime" :dark="theme.name != 'ThemeLight'" :teleport="true"
+                      time-picker locale="es" minutes-increment="15">
+                      <template #action-buttons="{ value }">
+                        <v-btn variant="default" rounded="xl" color="primary" @click="selectTimeD">
+                          {{ $capitalize($t("confirm")) }}</v-btn>
+                      </template>
+                      <template #action-preview="{ value }">
+                      </template>
+                      <template #dp-input="{ }">
+                        <v-btn class="btn-search-date" :variant="(compact && !isMobile) ? 'tonal' : themed">
+                          <v-icon icon="mdi-clock-outline" class="mr-2"></v-icon>
+                          {{ departureTime.hours }}:{{ departureTime.minutes < 10 ? '0' + departureTime.minutes :
+      departureTime.minutes }} hs </v-btn>
+                      </template>
+                    </VueDatePicker>
+                  </v-no-ssr>
                 </v-col>
               </v-row>
               <!-- <v-divider vertical class="mx-3" v-if="!noplaces"></v-divider> -->
@@ -166,14 +222,30 @@ watch(departureDate, (newValue, oldValue) => {
 //TIME
 const arrivalTime = ref({});
 const departureTime = ref({});
+const timeP = ref();
+const timeD = ref();
 
-const handleArrivalTime = (date) => {
-  arrivalTime.value = date;
-}
+const selectTime = () => {
+  timeP.value.selectDate();
+};
 
-const handleDepartureTime = (date) => {
-  departureTime.value = date;
-}
+const selectTimeD = () => {
+  timeD.value.selectDate();
+};
+
+watch(arrivalDate, (newValue, oldValue) => {
+  if (departureDate.value < arrivalDate.value) {
+    departureDate.value = arrivalDate.value
+  }
+},
+  { deep: true });
+
+watch(departureDate, (newValue, oldValue) => {
+  if (arrivalDate.value > departureDate.value) {
+    arrivalDate.value = departureDate.value
+  }
+},
+  { deep: true });
 
 //PAXES
 

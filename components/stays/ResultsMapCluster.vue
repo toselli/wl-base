@@ -358,14 +358,14 @@ const updateZoom = (newZoom) => {
 };
 
 function getDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Radio de la tierra en km
+  const R = 6371; 
   const dLat = deg2rad(lat2 - lat1);
   const dLon = deg2rad(lon2 - lon1);
   const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
     Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c; // Distancia en km
+  return R * c; 
 }
 
 function deg2rad(deg) {
@@ -374,21 +374,16 @@ function deg2rad(deg) {
 
 function getThresholdForZoom(zoom) {
   if (zoom < 5) {
-    return 20; // Agrupación muy amplia para zooms lejanos.
+    return 20; 
   } else if (zoom < 10) {
-    return 15; // Agrupación media para un nivel de detalle moderado.
+    return 15;
   } else if (zoom < 12) {
-    // Entre 10 y 11, el umbral disminuye gradualmente desde 10 a 5.4 km.
     return 10 - ((zoom - 10) * 2.7);
   } else if (zoom < 15) {
-    // Entre 12 y 14, el umbral disminuye más gradualmente desde 5.4 a 0.5 km.
-    // Ajuste para que el umbral disminuya de manera más precisa entre estos niveles.
     return 5.4 - ((zoom - 12) * 1.633);
   } else if (zoom < 16) {
-    // En el nivel 15, el umbral es pequeño para preparar la transición a no agrupar.
     return 0.5;
   } else {
-    // En el nivel 16 y superior, no se realiza agrupación.
     return 0;
   }
 }
@@ -448,7 +443,7 @@ function setLabelColor(length) {
     case length > 1:
       return 'label-cluster-level-1';
     default:
-      return ''; // Valor predeterminado para cualquier otro caso
+      return '';
   }
 }
 
@@ -461,14 +456,14 @@ const features = ref(props.filters)
 watch(props.results, (newInitialResults) => {
   if (newInitialResults.length > 0 && resultsToShow.value !== 'area') {
     resultsToShow.value = 'initial';
-    checkMarkersInBounds(mapBounds.value); // Revisar marcadores con los nuevos resultados iniciales
+    checkMarkersInBounds(mapBounds.value); 
   }
 }, { immediate: true });
 
 watch(resultsArea, (newAreaResults) => {
   if (newAreaResults.length > 0) {
     resultsToShow.value = 'area';
-    checkMarkersInBounds(mapBounds.value); // Revisar marcadores con los nuevos resultados
+    checkMarkersInBounds(mapBounds.value);
   }
 }, { immediate: true });
 

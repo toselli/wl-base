@@ -59,6 +59,7 @@ function getServiceUrl(serviceTypeId) {
         case 4: return "flights";
         case 5: return "assistances";
         case 6: return "circuits";
+        case 7: return "sightseeing";
         default: return "/"; 
     }
 }

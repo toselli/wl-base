@@ -387,13 +387,11 @@ function reloadAvail() {
 
 const usersStore = useUsersStore();
 const { getLoggedUser, getAnonymousUser } = storeToRefs(usersStore);
-const loadingLoggedUser = ref(false)
 const { anonymousLogin } = useAnonymousLogin()
 
 //LOGIN
 
 onMounted(() => {
-  loadingLoggedUser.value = true
   occupancies.value = useOccupancies.parse(route.query.occupancies)
 
   getDetails();
@@ -413,7 +411,6 @@ onMounted(() => {
         getAvail(isAnonymous);
         startCountdown();
         clearTimeout(timeoutId);
-        loadingLoggedUser.value = false;
         unwatchLoggedUser();
         unwatchAnonymousUser();
     };

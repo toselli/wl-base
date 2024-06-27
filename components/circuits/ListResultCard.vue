@@ -3,7 +3,7 @@
         <v-container fluid class="pa-0" :class="mode == 'list' ? '' : 'full-height'">
             <v-row dense no-gutters :class="mode == 'list' ? '' : 'full-height'">
                 <v-col cols="12" :md="mode == 'list' ? '3' : '12'">
-                    <v-img class="fill-height" :src="service.Thumbnail" height="204px" width="408px" contain style="cursor:pointer"
+                    <v-img class="fill-height" :src="service.Thumbnail" max-height="205" cover style="cursor:pointer;"
                         position="0 0" lazy-src="/base/img/services/circuits_no_image.png"  @click="$emit('selected', service.CatalogId)"></v-img>
                 </v-col>
                 <v-col cols="12" :md="mode == 'list' ? '6' : '12'" class="pa-3">

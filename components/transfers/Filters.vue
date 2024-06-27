@@ -1,8 +1,6 @@
 <template>
   <v-row dense class="mb-1" v-if="filters.length > 0">
     <v-col cols="12">
-      <v-btn @click="applyFilters" density="comfortable" rounded="sm" class="mr-1 semi body-2" flat color="secondary"
-        :disabled="!hasCheckedFilters">Aplicar filtros</v-btn>
       <v-menu center bottom offset-y transition="scale-transition" :close-on-content-click="false" rounded
         v-for="item in filters">
         <template v-slot:activator="{ props }">
@@ -27,6 +25,8 @@
           </v-list-item>
         </v-list>
       </v-menu>
+      <v-btn @click="applyFilters" density="comfortable" rounded="sm" class="mr-1 semi body-2" flat color="secondary"
+        :disabled="!hasCheckedFilters">Aplicar filtros</v-btn>
       <v-btn v-if="hasCheckedFilters" @click="clearFilters" color="secondary_text" dark size="small" rounded="sm"
         variant="text">
         <v-icon icon="mdi-close"></v-icon> Limpiar filtros

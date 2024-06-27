@@ -1,14 +1,14 @@
 <template>
      <v-menu>
               <template v-slot:activator="{ props }">
-                <v-btn variant="text" size="xl" rounded="xl" class="pr-2" v-bind="props">
-                  <v-avatar class="bg-secondary mr-2" size="42">
+                <v-btn variant="flat" color="secondary_lighten" size="xl" rounded="xl" class="py-1 pl-3 pr-0" v-bind="props">
+                  <v-icon size="sm" class="mr-2" icon="mdi-menu">
+                  </v-icon>
+                  <v-avatar class="bg-secondary mr-2" size="32">
                     {{
                   user.FirstName[0] + user.LastName[0]
                 }}
                   </v-avatar>
-                  <v-icon size="16" icon="mdi-chevron-down">
-                  </v-icon>
                 </v-btn>
               </template>
               <v-card flat>

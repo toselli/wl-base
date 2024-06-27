@@ -1,8 +1,7 @@
 <template>
- <v-menu :close-on-content-click="isMobile ? true : false" origin="overlap" v-model="menuSearch"
-    :location="isMobile ? 'top' : 'bottom'" 
-    :max-height="isMobile ? '' : '450'" :min-height="isMobile ? '750' : ''"
-    :max-width="isMobile ? '360' : '380'" :min-width="isMobile ? '360' : '380'"> 
+  <v-menu :close-on-content-click="isMobile ? true : false" origin="overlap" v-model="menuSearch"
+    :location="isMobile ? 'top' : 'bottom'" :max-height="isMobile ? '' : '450'" :min-height="isMobile ? '750' : ''"
+    :max-width="isMobile ? '360' : '380'" :min-width="isMobile ? '360' : '380'">
     <template v-slot:activator="{ props }">
       <v-btn class="btn-search-places" :class="!compact ? 'mt-2' : ''" variant="tonal" v-bind="props"
         :disabled="!selectedPlace">
@@ -12,7 +11,7 @@
         <span class="text-primary_text" v-else-if="selectedOffice">
           {{ formatOfficeHeader(selectedOffice.Name) }}
         </span>
-        <span class="text-secondary_text" v-else-if="noOffices">No hay oficinas en la ciudad seleccionada</span>
+        <span class="text-secondary_text" v-else-if="noOffices">No hay oficinas disponibles</span>
         <span class="text-secondary_text" v-else>{{ label }}</span>
       </v-btn>
     </template>
@@ -59,12 +58,14 @@ const store = useCarsStore();
 const noOffices = ref(false)
 const pickupOffices = ref([])
 const returnOffices = ref([])
+let searchedOfficeSelected = false;
 
 watch(() => props.selectedPlace, (newValue, oldValue) => {
   if (newValue) {
     fetchOffices(props.type);
   }
 }, { deep: true });
+
 
 async function fetchOffices(type) {
   const cityId = props.selectedPlace?.Id;
@@ -80,16 +81,20 @@ async function fetchOffices(type) {
       returnOffices.value = store.getReturnOffices;
     }
 
-    if (type == 'pickup' && pickupOffices.value.length > 0) {
-      selectOffice(pickupOffices.value[0])
-    } else if (type == 'return' && returnOffices.value.length > 0) {
-      selectOffice(returnOffices.value[0])
-    } else if (pickupOffices.value.length == 0 || returnOffices.value.length == 0) {
-      selectedOffice.value = null
-      emit('update:selectedOffice', null);
-      noOffices.value = true
+    if (!searchedOfficeSelected && props.searchedOffice) {
+      selectOffice(props.searchedOffice);
+      searchedOfficeSelected = true;
+    } else {
+      if (type == 'pickup' && pickupOffices.value.length > 0) {
+        selectOffice(pickupOffices.value[0])
+      } else if (type == 'return' && returnOffices.value.length > 0) {
+        selectOffice(returnOffices.value[0])
+      } else if (pickupOffices.value.length == 0 || returnOffices.value.length == 0) {
+        selectedOffice.value = null
+        emit('update:selectedOffice', null);
+        noOffices.value = true
+      }
     }
-
   } catch (error) {
     console.error(error);
   }
@@ -99,6 +104,10 @@ onMounted(() => {
   if (props.type) {
     fetchOffices(props.type);
   }
+  if (props.searchedOffice) {
+      selectOffice(props.searchedOffice)
+    }
+
 });
 
 const formatOfficeHeader = (name) => {

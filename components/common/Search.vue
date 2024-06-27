@@ -33,6 +33,9 @@
             <v-window-item :value="6">
                 <CircuitsSearchCard :compact="compact" :nologo="true" themed="tonal" />
             </v-window-item>
+            <v-window-item :value="7">
+                <SightseeingSearchCard :compact="compact" :nologo="true" themed="tonal" />
+            </v-window-item>
         </v-window> 
     </v-container>
 </template>
@@ -69,7 +72,8 @@ function updateServiceType(to) {
         '/cars': 3,
         '/flights': 4,
         '/assistances': 5,
-        '/circuits': 6
+        '/circuits': 6,
+        '/sightseeing': 7
     };
 
     let matchedPath = Object.keys(pathMapping).find(path => to.path.startsWith(path));
@@ -83,7 +87,8 @@ function updateServiceType(to) {
             'cars': 3,
             'flights': 4,
             'assistances': 5,
-            'circuits': 6
+            'circuits': 6,
+            'sightseeing': 7
         };
 
         if (queryServiceType && queryMapping[queryServiceType]) {
@@ -109,6 +114,7 @@ function getServiceUrl(serviceTypeId) {
         case 4: return "/?serviceType=flights";
         case 5: return "/?serviceType=assistances";
         case 6: return "/?serviceType=circuits";
+        case 7: return "/?serviceType=sightseeing";
         default: return "/"; 
     }
 }

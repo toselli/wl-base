@@ -29,19 +29,27 @@
                     </div>
                     <div class="pa-2 rounded-md v-col v-col-4 mr-1"
                         :class="value && value.length > 1 ? 'bg-secondary' : 'v-card--variant-outlined secondary'">
-                        <p class="body-2 mb-0"
-                            :class="value && value.length > 1 ? 'text-shade_light' : 'text-secondary_text'">
-                            {{ labelDays }}</p>
-                        <h4 class="text-h6 semi mb-0 mt-2 text-shade_light" v-if="value && value.length > 1">
+                        <div  v-if="isMobile">
+                            <p class="body-2 mb-0 text-secondary_text" v-if="value && value.length < 2 && isMobile">
+                           {{ labelDays }}</p> 
+                           <h5 class="body-3 mb-0 mt-1 text-secondary_text"  v-if="value && value.length < 2">
+                           --------
+                        </h5>
+                            <p class="body-2 mb-0 text-shade_light" v-if="value && value.length > 1 && isMobile">
+                           {{ labelDays }}</p> 
+                        <h4 class="text-h6 semi mb-0 mt-2 text-shade_light" v-if="value && value.length > 1  && isMobile">
                             {{ $dayjs(value[1]).diff($dayjs(value[0]), "day") }}
                         </h4>
-                        <!-- <div v-if="value && value.length == 1">
-                            <input type="number" v-model="selectDays" class="pa-2 rounded-sm body-3"
-                                :placeholder="'Ingrese ' + labelDays" />
-                        </div> -->
-                        <h5 class="body-3 mb-0 mt-1 text-secondary_text" v-else>
+                        </div>
+                       
+                        <h5 class="body-3 mb-0 mt-1 text-secondary_text"  v-if="value && value.length == 0">
                            ----
                         </h5>
+                        <div  v-if="value && value.length > 0  && !isMobile" class="d-flex pt-1" :class="value && value.length == 2 ? 'text-shade_light' : 'text-secondary_text'">
+                            <span class=" body-2 mr-4 ml-2 text-right">Ingrese <br> {{ labelDays }}</span>
+                            <input v-model="selectDays" id="daysInput" class="days-text-field body-1"  @keyup.enter="selectDate" />
+                        </div>
+                        
                     </div>
                     <div class="pa-2 rounded-md v-col v-col-4"
                         :class="value && value.length > 1 ? 'bg-secondary' : 'v-card--variant-outlined secondary'">
@@ -120,8 +128,12 @@ const date = ref();
 const dp = ref();
 
 const selectDate = () => {
-    dp.value.selectDate();
-    emit('update:selectedDate', date.value);
+    if (selectDays.value > 0) {
+        dp.value.selectDate();
+        emit('update:selectedDate', date.value);
+    } else {
+        console.error('El número de días debe ser mayor a 0');
+    }
 };
 
 const closeMenu = () => {
@@ -138,21 +150,52 @@ watchEffect(() => {
 const selectDays = ref(null)
 const startDate = ref()
 
+const days = Array.from({ length: 30 }, (_, i) => i + 1);
+
 const handleInternal = (date) => {
     if (date && date.length == 1) {
-        startDate.value = date
+        startDate.value = date;
+    } else if (date && date.length == 2) {
+        const startDateObject = dayjs(date[0]);
+        const endDateObject = dayjs(date[1]);
+        if (startDateObject.isValid() && endDateObject.isValid()) {
+            const daysDifference = endDateObject.diff(startDateObject, 'day');
+            selectDays.value = daysDifference;
+        }
     }
-}
+};
 
 watch(() => selectDays.value, () => {
-    if (props.multiple && selectDays.value !== null && dp && startDate.value) {
-        const newDate = dayjs(startDate.value).add(selectDays.value, 'day');
-        const formattedStartDate = dayjs(startDate.value).format('YYYY-MM-DD');
-        const formattedNewDate = newDate.format('YYYY-MM-DD');
-        alert(formattedNewDate)
+    if (props.multiple && selectDays.value !== null && dp.value && startDate.value) {
+        try {
+            const startDateObject = dayjs(startDate.value);
+            if (!startDateObject.isValid()) {
+                console.error('Invalid start date');
+                return;
+            }
 
-        dp.value.updateInternalModelValue([startDate.value, formattedNewDate]);
-        window.scrollTo(0, 0); // Restaurar la posición del scroll
+            const newEndDate = startDateObject.add(selectDays.value, 'day');
+            if (!newEndDate.isValid()) {
+                console.error('Invalid end date');
+                return;
+            }
+
+            dp.value.updateInternalModelValue([startDateObject.toDate(), newEndDate.toDate()]);
+        } catch (error) {
+            console.error('Error updating date:', error);
+        }
+    }
+});
+
+watch(() => startDate.value, (newValue) => {
+    if (newValue) {
+        selectDays.value = null;
+        nextTick(() => {
+            const inputElement = document.getElementById('daysInput');
+            if (inputElement) {
+                inputElement.focus();
+            }
+        });
     }
 });
 

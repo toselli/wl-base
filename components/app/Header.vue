@@ -12,7 +12,7 @@
               </a>
               <a @click="$router.push('/')" @click.middle.prevent="handleMiddleClick($event)" style="cursor: pointer"
                 v-else class="body-3">
-                <CommonLogoDark height="i30" class="ml-2" v-if="theme?.name == 'ThemeDark'" />
+                <CommonLogoDark height="30" class="ml-2" v-if="theme?.name == 'ThemeDark'" />
                 <CommonLogoLight height="30" class="ml-2" v-else />
               </a>
               <CommonServiceTypesMenu class="ml-lg-6"

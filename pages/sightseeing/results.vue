@@ -1,8 +1,8 @@
 <template>
     <v-container class="content-container">
         <CommonSearch :compact="true" />
-        <circuits-filters :filters="store.features" @apply="getFilteredResults" @clear="clearFilters"
-            v-if="getLoggedUser && filteredResults.length > 0 && !$route.query.provider"></circuits-filters> 
+        <!-- <circuits-filters :filters="store.features" @apply="getFilteredResults" @clear="clearFilters"
+            v-if="getLoggedUser && filteredResults.length > 0"></circuits-filters>  -->
         <v-row dense v-if="getLoggedUser">
             <v-col cols="12" md="5">
                 <div>
@@ -21,7 +21,7 @@
             </v-col>
             <v-col cols="12" md="7" :class="!isMobile ? 'text-right' : ''">
                 <common-results-tools v-if="getResults.length > 0" service-type="circuits" :sorting="sorting"
-                    @update:order="order" @update:prompt="$event => catalogNameSearch = $event" :loading="loading"
+                    @update:order="order" @update:prompt="$event => serviceName = $event" :loading="loading"
                     @update:viewMode="viewMode = $event" :orderType="activeOrderInfo" />
             </v-col>
         </v-row>
@@ -31,8 +31,8 @@
             <v-row v-if="filteredResults.length > 0" :key="renderKey">
 
                 <v-col :cols="viewMode == 'list' ? 12 : 4" v-for="service in filteredResults">
-                    <CircuitsListResultCard :service="service" :mode="viewMode" @selected="goToAvail">
-                    </CircuitsListResultCard>
+                    <SightseeingListResultCard :service="service" :mode="viewMode" @selected="goToAvail">
+                    </SightseeingListResultCard>
                 </v-col>
                 <v-col cols="12" class="text-center" v-if="!loading && filteredResults.length < totalServices">
                     <v-btn variant="outlined" rounded="xl" @click="limitResults += 24" :loading="loadingMore">
@@ -46,10 +46,10 @@
             <!-- SIN RESULTADOS -->
             <v-row class="mt-3" justify="center" v-if="filteredResults.length == 0 && !loading">
                 <v-col cols="12" class="text-center">
-                    <h3>No hemos podido encontrar circuitos disponibles con los parámetros de tu búsqueda</h3>
-                    <v-img src="/base/img/services/no_results_circuits.png" width="280" class="my-10 mx-auto"></v-img>
+                    <h3>No hemos podido encontrar atracciones disponibles con los parámetros de tu búsqueda</h3>
+                    <v-img src="/base/img/services/no_results_sightseeing.png" width="280" class="my-10 mx-auto"></v-img>
                     <h4 class="body-1 semi text-secondary_text  mt-5">Pruebe realizando otra búsqueda</h4>
-                    <circuits-search-card :compact="true" :noresults="true" class="mx-auto mt-2" />
+                    <sightseeing-search-card :compact="true" :noresults="true" class="mx-auto mt-2" />
                 </v-col>
             </v-row>
         </v-container>
@@ -57,7 +57,6 @@
 </template>
 
 <script setup lang="ts">
-import { CatalogsSearchRequest } from '~/interfaces/services/circuits/CatalogsSearch';
 
 //#region SITE
 const viewMode = ref("grid");
@@ -84,11 +83,11 @@ const { getLoggedUser } = storeToRefs(usersStore);
 
 //RESULTS
 
-const store = useCircuitsStore();
+const store = useSightseeingStore();
 const { getResults } = storeToRefs(store)
 const { search, clearSearch } = store;
 const totalServices = ref(null)
-const catalogNameSearch = ref('')
+const serviceName = ref('')
 
 const activeOrderInfo = ref({
     field: 'Total',  // Campo inicial para la ordenación
@@ -98,7 +97,7 @@ const activeOrderInfo = ref({
 const filteredResults = computed(() => {
     const results = [...getResults.value]; // Hacemos una copia para no modificar el original
     const { field, direction } = activeOrderInfo.value;
-    const filtered = results.filter(item => item.Name.toLowerCase().includes(catalogNameSearch.value.toLowerCase()));
+    const filtered = results.filter(item => item.Title.toLowerCase().includes(serviceName.value.toLowerCase()));
     return filtered.sort((a, b) => {
         const aValue = a[field];
         const bValue = b[field];
@@ -145,45 +144,31 @@ const pageNumber = computed(() => {
 })
 
 const searchResults = async (route?) => {
-    if (!route) route = useRoute()
-    loading.value = true
-    let payload: CatalogsSearchRequest = {
-        Search: {
-            Search: route.query.code || '',
-            DurationFrom: '1',
-            DurationTo: '99',
-            Currency: "USD",
-            PriceFrom: "0",
-            PriceTo: "99999",
-            Nationality: "AR",
-            Residence: "AR",
-            Language: "es"
-        },
-        Paging: { Page: pageNumber.value, PageSize: 24 },
-        Sorting: {
-            PropertyName: "Total",
-            Direction: "asc"
-        },
-        Features: filters.value
-    }
+    // if (!route) route = useRoute()
+    // loading.value = true
+    // let payload = {
+    //     cityId:  route.query.destinationId || '',
+    //     Paging: { Page: pageNumber.value, PageSize: 24 },
+    //     Sorting: {
+    //         PropertyName: "Total",
+    //         Direction: "asc"
+    //     },
+    //     Features: filters.value
+    // }
+    // try {
+    //     await useNuxtApp().$toast.promise(search(payload), {
+    //         pending: 'Buscando circuitos',
+    //         success: 'Datos obtenidos exitosamente',
+    //         error: 'Error al obtener los datos'
+    //     })
+    //     totalServices.value = store.totalServices
 
-    payload.Search.cities = route.query.cities ? route.query.cities.split(',') : []
-    payload.Search.countries = route.query.countries ? route.query.countries.split(',') : []
-    payload.Search.provider = route.query.provider
-    try {
-        await useNuxtApp().$toast.promise(search(payload), {
-            pending: 'Buscando circuitos',
-            success: 'Datos obtenidos exitosamente',
-            error: 'Error al obtener los datos'
-        })
-        totalServices.value = store.totalServices
-
-    } catch (error) {
-        console.log(error);
-    } finally {
-        loading.value = false
-        loadingMore.value = false
-    }
+    // } catch (error) {
+    //     console.log(error);
+    // } finally {
+    //     loading.value = false
+    //     loadingMore.value = false
+    // }
 }
 
 onBeforeRouteUpdate((to, from) => {
@@ -194,16 +179,14 @@ onBeforeRouteUpdate((to, from) => {
 })
 
 const router = useRouter();
-const goToAvail = (catalogId) => {
+const goToAvail = (productCode) => {
     let route = useRoute()
     router.push({
-        path: "/circuits/details",
+        path: "/sightseeing/details",
         query: {
-            catalogId: catalogId,
-            basketId: store.basketId,
-            currency: 'USD',
-            cities: route.query.cities,
-            countries: route.query.countries
+            productCode: productCode,
+            destinationId: route.query.destinationId,
+            destinationName: route.query.destinationName
         }
     });
 }
